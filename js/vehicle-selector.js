@@ -1397,21 +1397,38 @@ function handleBackButton() {
 }
 
 // Dans la fonction qui crée le diaporama
-function createSlideshow(brand, model, version) {
+async function createSlideshow(brand, model, version) {
     const slideshowContainer = document.createElement('div');
     slideshowContainer.className = 'slideshow-container';
 
     // Correction du chemin pour GitHub Pages
-    const slideshowPath = `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+    const basePath = `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
     
-    const images = [
-        `${slideshowPath}/1.jpg`,
-        `${slideshowPath}/2.jpg`,
-        `${slideshowPath}/3.jpg`
-    ];
+    // Tableau pour stocker les images existantes
+    const existingImages = [];
 
-    // Créer les slides
-    images.forEach((src, index) => {
+    // Vérifier chaque image avant de l'ajouter
+    for (let i = 1; i <= 3; i++) {
+        const imageUrl = `${basePath}/${i}.jpg`;
+        try {
+            const response = await fetch(imageUrl, {
+                method: 'HEAD',
+                cache: 'no-cache' // Désactiver le cache pour le débogage
+            });
+            
+            if (response.ok) {
+                existingImages.push(imageUrl);
+                console.log('Image trouvée:', imageUrl);
+            } else {
+                console.log('Image non trouvée (status):', response.status);
+            }
+        } catch (error) {
+            console.log('Erreur de chargement:', error);
+        }
+    }
+
+    // Créer les slides uniquement pour les images existantes
+    existingImages.forEach((src, index) => {
         const slide = document.createElement('div');
         slide.className = 'slide fade';
         if (index === 0) slide.style.opacity = '1';
@@ -1419,39 +1436,38 @@ function createSlideshow(brand, model, version) {
         const img = document.createElement('img');
         img.src = src;
         img.alt = `${brand} ${model} ${version} image ${index + 1}`;
-        img.onerror = () => {
-            console.warn(`Image non trouvée: ${src}`);
-            slide.style.display = 'none';
-        };
 
         slide.appendChild(img);
         slideshowContainer.appendChild(slide);
     });
 
-    // Ajouter les boutons de navigation
-    const prevButton = document.createElement('button');
-    prevButton.className = 'prev';
-    prevButton.innerHTML = '&#10094;';
-    
-    const nextButton = document.createElement('button');
-    nextButton.className = 'next';
-    nextButton.innerHTML = '&#10095;';
+    // N'ajouter les contrôles que s'il y a des images
+    if (existingImages.length > 0) {
+        // Ajouter les boutons de navigation
+        const prevButton = document.createElement('button');
+        prevButton.className = 'prev';
+        prevButton.innerHTML = '&#10094;';
+        
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next';
+        nextButton.innerHTML = '&#10095;';
 
-    slideshowContainer.appendChild(prevButton);
-    slideshowContainer.appendChild(nextButton);
+        slideshowContainer.appendChild(prevButton);
+        slideshowContainer.appendChild(nextButton);
 
-    // Ajouter les points de navigation
-    const dotsContainer = document.createElement('div');
-    dotsContainer.className = 'dots-container';
-    
-    images.forEach((_, index) => {
-        const dot = document.createElement('span');
-        dot.className = 'dot';
-        if (index === 0) dot.style.background = 'white';
-        dotsContainer.appendChild(dot);
-    });
+        // Ajouter les points de navigation
+        const dotsContainer = document.createElement('div');
+        dotsContainer.className = 'dots-container';
+        
+        existingImages.forEach((_, index) => {
+            const dot = document.createElement('span');
+            dot.className = 'dot';
+            if (index === 0) dot.style.background = 'white';
+            dotsContainer.appendChild(dot);
+        });
 
-    slideshowContainer.appendChild(dotsContainer);
+        slideshowContainer.appendChild(dotsContainer);
+    }
 
     return slideshowContainer;
 }
