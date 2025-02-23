@@ -299,7 +299,7 @@ function handleBrandSelection(brand, type) {
     // Scroll vers le haut de la section des détails
     setTimeout(() => {
         const headerHeight = document.querySelector('.header').offsetHeight || 0;
-        const detailsTop = detailsSection.getBoundingClientRect().top + window.pageYOffset;
+        const detailsTop = detailsSection.getBoundingClientRect().top + window.pageOffset;
         window.scrollTo({
             top: detailsTop - headerHeight - 20, // 20px de marge
             behavior: 'smooth'
@@ -317,7 +317,7 @@ function addEventListeners(detailsSection, brand, type, models) {
         
         const windowHeight = window.innerHeight;
         const modelStepHeight = modelStep.offsetHeight;
-        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageYOffset;
+        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageOffset;
         
         const scrollPosition = modelStepTop - (windowHeight - modelStepHeight) / 2;
         
@@ -349,7 +349,7 @@ function scrollToNextStepOnMobile(stepElement) {
     if (window.innerWidth <= 768) {
         const windowHeight = window.innerHeight;
         const elementHeight = stepElement.offsetHeight;
-        const elementTop = stepElement.getBoundingClientRect().top + window.pageYOffset;
+        const elementTop = stepElement.getBoundingClientRect().top + window.pageOffset;
         
         // Calculer la position pour centrer l'élément
         const scrollTo = elementTop - (windowHeight - elementHeight) / 2;
@@ -733,10 +733,6 @@ async function createSlideshow(brand, model, version) {
 
 function showResultPage(vehicleData) {
     const { brand, model, version, engineType, powerOriginal, powerStage1, torqueOriginal, torqueStage1 } = vehicleData;
-    
-    // Mettre à jour l'URL sans recharger la page
-    const newUrl = `#/results/${encodeURIComponent(brand)}/${encodeURIComponent(model)}/${encodeURIComponent(version)}`;
-    window.history.pushState(null, '', newUrl);
 
     // Créer le conteneur principal
     const container = document.createElement('div');
@@ -840,12 +836,12 @@ function showResultPage(vehicleData) {
                     <span class="stage-label">Stage 1 : </span>
                     <span class="price-amount">700 DT</span>
                     <span class="price-tax">HT</span>
-                </div>
+                    </div>
                 <button class="reserve-btn" onclick="handleReservation('${brand}', '${model}', '${version}', '${engineType}')">
                     Réserver maintenant
                 </button>
+                </div>
             </div>
-        </div>
     `;
 
     // Remplacer le contenu existant
@@ -1121,7 +1117,7 @@ function showResultPage(vehicleData) {
                                                 object-fit: contain;
                                                 border-radius: 4px;
                                              ">
-                                    </div>
+                </div>
                                 `).join('')}
                                 
                                 <button class="slide-nav prev" style="
@@ -1178,9 +1174,9 @@ function showResultPage(vehicleData) {
                                     `).join('')}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                `;
+            </div>
+        </div>
+    `;
 
                 const resultsTable = document.querySelector('.results-table');
                 if (resultsTable) {
@@ -1295,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
-        csvContent = await response.text(); // Stockage global
+        csvContent = await response.text();
         
         const lines = parseCSV(csvContent);
         const brands = extractBrands(lines);
@@ -1459,32 +1455,37 @@ function handleBackButton() {
     backButton.className = 'back-button';
     backButton.textContent = 'Retour';
     backButton.addEventListener('click', () => {
-        window.history.pushState(null, '', '/autotech-reprog/#boost');
-        // Recharger la section boost
-        loadBoostSection();
+        // Modifier le lien de retour pour GitHub Pages
+        window.location.href = '/autotech-reprog/#boost';
     });
     return backButton;
 }
 
-// Ajouter au début du fichier
-function handleRouting() {
-    // Récupérer le hash de l'URL
-    const hash = window.location.hash;
+// Au début du fichier
+function handleNavigation() {
+    // Récupérer le chemin actuel
+    const path = window.location.pathname;
     
-    // Si nous sommes sur une page de résultats
-    if (hash.startsWith('#/results/')) {
-        const params = hash.replace('#/results/', '').split('/');
-        const [brand, model, version] = params;
-        
-        // Charger les résultats
+    // Si on est sur une page de résultat
+    if (path.match(/\/reprogrammation\/(.*)/)) {
+        const [_, type, brand, model, version] = path.split('/');
+        // Restaurer l'état
         showResultPage({
             brand: decodeURIComponent(brand),
             model: decodeURIComponent(model),
-            version: decodeURIComponent(version)
+            version: decodeURIComponent(version),
+            type: type
         });
     }
 }
 
-// Ajouter l'écouteur d'événements
-window.addEventListener('hashchange', handleRouting);
-window.addEventListener('load', handleRouting);
+// Ajouter au chargement de la page
+window.addEventListener('load', handleNavigation);
+
+// Modifier les fonctions de navigation
+function navigateToResults(brand, model, version, type) {
+    const path = `/reprogrammation/${type}/${brand}/${model}/${version}`;
+    // Mettre à jour l'URL sans recharger la page
+    window.history.pushState({}, '', path);
+    showResultPage({brand, model, version, type});
+}
