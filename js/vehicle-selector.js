@@ -1395,3 +1395,31 @@ function handleBackButton() {
     });
     return backButton;
 }
+
+// Dans la fonction qui crée le diaporama
+function createSlideshow(brand, type) {
+    const slideshowContainer = document.createElement('div');
+    slideshowContainer.className = 'slideshow-container';
+
+    // Modifier les chemins des images pour GitHub Pages
+    const images = [
+        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/1.jpg`,
+        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/2.jpg`,
+        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/3.jpg`
+    ];
+
+    images.forEach((src, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide fade';
+        if (index === 0) slide.style.display = 'block';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `${brand} image ${index + 1}`;
+
+        slide.appendChild(img);
+        slideshowContainer.appendChild(slide);
+    });
+
+    // ... reste du code du diaporama ...
+}
