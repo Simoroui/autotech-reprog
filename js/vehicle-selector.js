@@ -543,9 +543,9 @@ function handleVersionSelection(brand, type, model, version) {
 function handleEngineSelection(brand, type, model, version, engineData) {
     // Stocker toutes les données du moteur dans currentSelection
     currentSelection = {
-        brand: brand,
-        model: model,
-        version: version,
+                brand: brand,
+                model: model,
+                version: version,
         type: type,
         engine: engineData.type,
         powerOriginal: engineData.powerOriginal,
@@ -802,23 +802,22 @@ function showResultPage(vehicleData) {
 
             <div class="results-table">
                 <div class="table-header">
-                    <div></div>
-                    <div class="stage-column">ORIGINE</div>
-                    <div class="stage-column">STAGE1</div>
-                    <div>DIFFÉRENCE</div>
+                    <div>ORIGINE</div>
+                    <div>STAGE1</div>
+                    <div>GAINS</div>
                 </div>
                 <div class="table-content">
                     <div class="table-row">
-                        <div class="label">Puissance</div>
-                        <div class="value">${powerOriginal}</div>
-                        <div class="value stage-value">${powerStage1}</div>
-                        <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
+                        <div>Puissance</div>
+                        <div>${powerOriginal} Hp</div>
+                        <div>${powerStage1} Hp</div>
+                        <div class="power-diff">+${powerStage1 - powerOriginal} Hp</div>
                     </div>
                     <div class="table-row">
-                        <div class="label">Couple</div>
-                        <div class="value">${torqueOriginal}</div>
-                        <div class="value stage-value">${torqueStage1}</div>
-                        <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
+                        <div>Couple</div>
+                        <div>${torqueOriginal} Nm</div>
+                        <div>${torqueStage1} Nm</div>
+                        <div class="torque-diff">+${torqueStage1 - torqueOriginal} Nm</div>
                     </div>
             </div>
             </div>
