@@ -571,6 +571,23 @@ function handleEngineSelection(brand, type, model, version, engine) {
             });
         }
     }, 100);
+
+    // Vérifier cette partie où les images sont chargées
+    const vehicleData = {
+        // ... autres données ...
+        images: [
+            // Modifier ces chemins
+            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/1.jpg`,
+            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/2.jpg`,
+            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/3.jpg`
+        ]
+    };
+
+    // Vérifier aussi la fonction qui charge les images
+    function loadVehicleImages() {
+        const basePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+        // ... reste du code ...
+    }
 }
 
 // Ajouter la fonction de nettoyage des noms
