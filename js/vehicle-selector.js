@@ -1163,7 +1163,7 @@ function initializeSlideshow() {
 // Fonction séparée pour gérer le retour
 function handleBack() {
     // Rediriger vers la section #boost de la page d'accueil
-    window.location.href = '/index.html#boost';
+    window.location.href = '/autotech-reprog/#boost';
 }
 
 // Modifier l'écouteur popstate
@@ -1171,7 +1171,7 @@ window.addEventListener('popstate', (event) => {
     // Vérifier si on est sur une page de résultats (URL contient /reprogrammation/ suivi du type)
     if (window.location.pathname.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//)) {
         // Rediriger vers la section #boost de la page d'accueil
-        window.location.href = '/index.html#boost';
+        window.location.href = '/autotech-reprog/#boost';
     }
 });
 
@@ -1366,7 +1366,7 @@ function handleReservation(brand, model, version, engineType) {
     localStorage.setItem('prefilledMessage', prefilledMessage);
 
     // Rediriger vers la section contact de la page d'accueil
-    window.location.href = '/index.html#contact';
+    window.location.href = '/autotech-reprog/#contact';
 }
 
 // Ajouter dans le fichier contact-form.js ou au début du script
@@ -1383,3 +1383,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// Dans la fonction qui gère le bouton retour
+function handleBackButton() {
+    const backButton = document.createElement('button');
+    backButton.className = 'back-button';
+    backButton.textContent = 'Retour';
+    backButton.addEventListener('click', () => {
+        // Modifier le lien de retour pour GitHub Pages
+        window.location.href = '/autotech-reprog/#boost';
+    });
+    return backButton;
+}
