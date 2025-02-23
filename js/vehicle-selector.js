@@ -569,6 +569,28 @@ function handleEngineSelection(brand, type, model, version, engineData) {
         torqueStage1: engineData.torqueStage1
     });
 
+    // Centrer le tableau des résultats après un court délai
+    setTimeout(() => {
+        const resultsTable = document.querySelector('.results-table');
+        if (resultsTable) {
+            const headerHeight = document.querySelector('.header').offsetHeight || 0;
+            const windowHeight = window.innerHeight;
+            const tableHeight = resultsTable.offsetHeight;
+            
+            // Calculer la position pour centrer le tableau
+            const scrollPosition = 
+                resultsTable.getBoundingClientRect().top + 
+                window.pageYOffset - 
+                (windowHeight - tableHeight) / 2;
+
+            // Scroll avec animation
+            window.scrollTo({
+                top: Math.max(0, scrollPosition - headerHeight),
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
+
     // Ajouter le bouton de réservation
     const reserveButton = document.createElement('button');
     reserveButton.className = 'reserve-btn';
@@ -585,7 +607,6 @@ Motorisation : ${engineData.type}`;
     };
 
     // Ajouter le bouton après le tableau
-    const resultsTable = document.querySelector('.results-table');
     if (resultsTable) {
         resultsTable.insertAdjacentElement('afterend', reserveButton);
     }
