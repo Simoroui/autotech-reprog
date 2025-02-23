@@ -97,6 +97,14 @@ function extractBrands(lines) {
     return result;
 }
 
+// Fonction pour obtenir le bon chemin des logos selon l'environnement
+function getLogoPath(brand) {
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    return isGitHubPages 
+        ? `/autotech-reprog/images/logos/${brand}.png`
+        : `images/logos/${brand}.png`;
+}
+
 // Fonction pour afficher les marques
 function displayBrands(brands, type) {
     const grid = document.getElementById(`${type}-grid`);
@@ -112,13 +120,10 @@ function displayBrands(brands, type) {
             div.className = 'brand-item';
             div.style.setProperty('--item-index', index);
             
-            // Ajouter l'événement de clic
             div.addEventListener('click', () => handleBrandSelection(brand.name, type));
             
-            console.log(`🔍 Chargement logo pour ${brand.name}:`, brand.logo);
-            
             const img = document.createElement('img');
-            img.src = brand.logo;
+            img.src = getLogoPath(brand.name);
             img.alt = brand.name;
             img.className = 'brand-logo';
             img.loading = 'lazy';
@@ -275,7 +280,7 @@ function handleBrandSelection(brand, type) {
                 <div class="step-title">Marque sélectionnée</div>
                 <div class="step-content">
                     <div class="selection-item selected" data-scroll-to="model">
-                        <img src="images/logos/${brand}.png" alt="${brand}" class="brand-logo" 
+                        <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
                              onerror="this.onerror=null; this.style.display='none';"
                              onload="this.style.display='block';">
                         <span class="brand-name">${brand}</span>
@@ -432,12 +437,9 @@ function handleVersionSelection(brand, type, model, version) {
         }
     });
 
-    // Générer l'URL avec les paramètres
-    const url = window.location.pathname.includes('autotech-reprog') 
-        ? `/autotech-reprog/results.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}&type=${encodeURIComponent(type)}`
-        : `/results.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}&type=${encodeURIComponent(type)}`;
-
-    // Mettre à jour l'URL et le breadcrumb
+    // Revenir à l'ancienne version de l'URL
+    const url = `/autotech-reprog/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
+    
     window.history.pushState({ type, brand, model, version }, '', url);
     updateBreadcrumb({ type, brand, model, version });
 
@@ -1294,18 +1296,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
-        csvContent = await response.text(); // Stockage global
+        csvContent = await response.text();
         
         const lines = parseCSV(csvContent);
         const brands = extractBrands(lines);
         
-        // Ne plus appeler displayAllBrands ici
-        // displayAllBrands(brands);
-        
-        // Ajouter des gestionnaires d'événements pour les onglets
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', (event) => {
-                handleTabClick(event, brands); // Passer brands en paramètre
+                handleTabClick(event, brands);
             });
         });
         
