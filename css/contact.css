@@ -1,0 +1,39 @@
+/* Ajustement de l'alignement des informations de contact */
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.contact-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-top: 0.3rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.contact-item div {
+    flex: 1;
+}
+
+.contact-item h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: white;
+    text-align: left;
+}
+
+.contact-item p {
+    margin: 0.5rem 0 0;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: left;
+}
+
+.contact-item a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
