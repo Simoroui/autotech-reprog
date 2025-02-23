@@ -529,7 +529,7 @@ function handleVersionSelection(brand, type, model, version) {
         item.addEventListener('click', () => {
             try {
                 const engineData = JSON.parse(item.dataset.engine);
-                handleEngineSelection(brand, type, model, version, engineData);
+                handleEngineSelection(brand, type, model, version, engineData.type);
             } catch (error) {
                 console.error('Erreur lors de la sélection du moteur:', error);
             }
@@ -540,13 +540,13 @@ function handleVersionSelection(brand, type, model, version) {
     scrollToNextStepOnMobile(engineStep);
 }
 
-function handleEngineSelection(brand, type, model, version, engine) {
+function handleEngineSelection(brand, type, model, version, engineType) {
     currentSelection = {
-                brand: brand,
-                model: model,
-                version: version,
+        brand: brand,
+        model: model,
+        version: version,
         type: type,
-        engine: engine.type
+        engine: engineType
     };
 
     // Mettre à jour le breadcrumb
@@ -557,11 +557,11 @@ function handleEngineSelection(brand, type, model, version, engine) {
         brand,
         model,
         version,
-        engineType: engine.type,
-        powerOriginal: engine.powerOriginal,
-        powerStage1: engine.powerStage1,
-        torqueOriginal: engine.torqueOriginal,
-        torqueStage1: engine.torqueStage1
+        engineType: engineType,
+        powerOriginal: currentSelection.powerOriginal,
+        powerStage1: currentSelection.powerStage1,
+        torqueOriginal: currentSelection.torqueOriginal,
+        torqueStage1: currentSelection.torqueStage1
     });
 
     // Modifier la partie du scroll
@@ -594,6 +594,31 @@ function handleEngineSelection(brand, type, model, version, engine) {
     function loadVehicleImages() {
         const basePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
         // ... reste du code ...
+    }
+
+    // Ajouter le bouton de réservation avec l'événement de clic
+    const reserveButton = document.createElement('button');
+    reserveButton.className = 'reserve-btn';
+    reserveButton.textContent = 'Réserver maintenant';
+    reserveButton.onclick = () => {
+        // Créer le message pré-rempli
+        const prefilledMessage = `Demande de reprogrammation pour :
+Marque : ${brand}
+Modèle : ${model}
+Version : ${version}
+Motorisation : ${engineType}`;
+
+        // Stocker le message dans localStorage
+        localStorage.setItem('prefilledMessage', prefilledMessage);
+
+        // Rediriger vers la section contact
+        window.location.href = '/autotech-reprog/#contact';
+    };
+
+    // Ajouter le bouton après le tableau des résultats
+    const resultsTable = document.querySelector('.results-table');
+    if (resultsTable) {
+        resultsTable.insertAdjacentElement('afterend', reserveButton);
     }
 }
 
@@ -1432,13 +1457,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // Ajouter cette nouvelle fonction
 function handleReservation(brand, model, version, engineType) {
     // Créer le message pré-rempli
-    const prefilledMessage = `Demande de reprogrammation pour:\n` +
-        `Marque: ${brand}\n` +
-        `Modèle: ${model}\n` +
-        `Version: ${version}\n` +
-        `Motorisation: ${engineType}`;
+    const prefilledMessage = `Demande de reprogrammation pour :
+Marque : ${brand}
+Modèle : ${model}
+Version : ${version}
+Motorisation : ${engineType}`;
 
-    // Stocker le message dans le localStorage
+    // Stocker le message dans localStorage
     localStorage.setItem('prefilledMessage', prefilledMessage);
 
     // Rediriger vers la section contact de la page d'accueil
@@ -1499,4 +1524,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     // ... reste du code d'initialisation ...
+});
+
+// Ajouter l'initialisation du formulaire de contact
+document.addEventListener('DOMContentLoaded', () => {
+    // Vérifier si on est sur la page d'accueil et s'il y a un message pré-rempli
+    if (window.location.hash === '#contact') {
+        const prefilledMessage = localStorage.getItem('prefilledMessage');
+        if (prefilledMessage) {
+            // Attendre que le formulaire soit chargé
+            setTimeout(() => {
+                const messageField = document.querySelector('#message');
+                if (messageField) {
+                    messageField.value = prefilledMessage;
+                    // Nettoyer le localStorage
+                    localStorage.removeItem('prefilledMessage');
+                    
+                    // Scroll vers le formulaire
+                    const contactSection = document.querySelector('#contact');
+                    if (contactSection) {
+                        contactSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            }, 500);
+        }
+    }
 });
