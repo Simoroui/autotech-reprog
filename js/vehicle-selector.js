@@ -299,7 +299,7 @@ function handleBrandSelection(brand, type) {
     // Scroll vers le haut de la section des détails
     setTimeout(() => {
         const headerHeight = document.querySelector('.header').offsetHeight || 0;
-        const detailsTop = detailsSection.getBoundingClientRect().top + window.pageOffset;
+        const detailsTop = detailsSection.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({
             top: detailsTop - headerHeight - 20, // 20px de marge
             behavior: 'smooth'
@@ -317,7 +317,7 @@ function addEventListeners(detailsSection, brand, type, models) {
         
         const windowHeight = window.innerHeight;
         const modelStepHeight = modelStep.offsetHeight;
-        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageOffset;
+        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageYOffset;
         
         const scrollPosition = modelStepTop - (windowHeight - modelStepHeight) / 2;
         
@@ -349,7 +349,7 @@ function scrollToNextStepOnMobile(stepElement) {
     if (window.innerWidth <= 768) {
         const windowHeight = window.innerHeight;
         const elementHeight = stepElement.offsetHeight;
-        const elementTop = stepElement.getBoundingClientRect().top + window.pageOffset;
+        const elementTop = stepElement.getBoundingClientRect().top + window.pageYOffset;
         
         // Calculer la position pour centrer l'élément
         const scrollTo = elementTop - (windowHeight - elementHeight) / 2;
@@ -422,9 +422,8 @@ function handleModelSelection(brand, type, model) {
 
 // Modifier la fonction handleVersionSelection
 function handleVersionSelection(brand, type, model, version) {
-    // Mettre à jour la sélection actuelle
     currentSelection.version = version;
-
+    
     // Mettre à jour le style de la version sélectionnée
     document.querySelectorAll('.selection-item[data-version]').forEach(item => {
         item.classList.remove('selected');
@@ -432,6 +431,15 @@ function handleVersionSelection(brand, type, model, version) {
             item.classList.add('selected');
         }
     });
+
+    // Générer l'URL avec les paramètres
+    const url = window.location.pathname.includes('autotech-reprog') 
+        ? `/autotech-reprog/results.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}&type=${encodeURIComponent(type)}`
+        : `/results.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}&type=${encodeURIComponent(type)}`;
+
+    // Mettre à jour l'URL et le breadcrumb
+    window.history.pushState({ type, brand, model, version }, '', url);
+    updateBreadcrumb({ type, brand, model, version });
 
     // Récupérer les motorisations disponibles
     const engines = [];
@@ -525,11 +533,6 @@ function handleVersionSelection(brand, type, model, version) {
             }
         });
     });
-
-    // Mettre à jour l'URL et le breadcrumb
-    const url = `/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
-    window.history.pushState({ type, brand, model, version }, '', url);
-    updateBreadcrumb({ type, brand, model, version });
 
     // Ajouter le défilement sur mobile
     scrollToNextStepOnMobile(engineStep);
@@ -1291,7 +1294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
-        csvContent = await response.text();
+        csvContent = await response.text(); // Stockage global
         
         const lines = parseCSV(csvContent);
         const brands = extractBrands(lines);
@@ -1461,31 +1464,31 @@ function handleBackButton() {
     return backButton;
 }
 
-// Au début du fichier
-function handleNavigation() {
-    // Récupérer le chemin actuel
-    const path = window.location.pathname;
-    
-    // Si on est sur une page de résultat
-    if (path.match(/\/reprogrammation\/(.*)/)) {
-        const [_, type, brand, model, version] = path.split('/');
-        // Restaurer l'état
-        showResultPage({
-            brand: decodeURIComponent(brand),
-            model: decodeURIComponent(model),
-            version: decodeURIComponent(version),
-            type: type
-        });
+// Ajouter une fonction pour lire les paramètres d'URL
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        brand: params.get('brand'),
+        model: params.get('model'),
+        version: params.get('version'),
+        type: params.get('type')
+    };
+}
+
+// Modifier l'initialisation pour gérer le chargement direct
+document.addEventListener('DOMContentLoaded', async () => {
+    // Si on est sur la page results.html, charger les données depuis l'URL
+    if (window.location.pathname.includes('results.html')) {
+        const params = getUrlParams();
+        if (params.brand && params.model && params.version) {
+            // Charger les résultats directement
+            showResultPage({
+                brand: params.brand,
+                model: params.model,
+                version: params.version,
+                type: params.type
+            });
+        }
     }
-}
-
-// Ajouter au chargement de la page
-window.addEventListener('load', handleNavigation);
-
-// Modifier les fonctions de navigation
-function navigateToResults(brand, model, version, type) {
-    const path = `/reprogrammation/${type}/${brand}/${model}/${version}`;
-    // Mettre à jour l'URL sans recharger la page
-    window.history.pushState({}, '', path);
-    showResultPage({brand, model, version, type});
-}
+    // ... reste du code d'initialisation ...
+});
