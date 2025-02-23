@@ -564,18 +564,28 @@ function handleEngineSelection(brand, type, model, version, engine) {
         torqueStage1: engine.torqueStage1
     });
 
-    // Scroll vers le breadcrumb
+    // Modifier la partie du scroll
     setTimeout(() => {
-        const breadcrumb = document.querySelector('.selection-breadcrumb');
-        const headerHeight = document.querySelector('.header').offsetHeight;
-        
-        if (breadcrumb) {
+        const resultsTable = document.querySelector('.results-table');
+        if (resultsTable) {
+            const headerHeight = document.querySelector('.header').offsetHeight || 0;
+            const windowHeight = window.innerHeight;
+            const tableHeight = resultsTable.offsetHeight;
+            
+            // Calculer la position pour centrer le tableau
+            const scrollPosition = 
+                resultsTable.getBoundingClientRect().top + 
+                window.pageYOffset - 
+                (windowHeight - tableHeight) / 2 - 
+                headerHeight;
+
+            // Scroll avec animation
             window.scrollTo({
-                top: breadcrumb.offsetTop - headerHeight - 20,
+                top: scrollPosition,
                 behavior: 'smooth'
             });
         }
-    }, 100);
+    }, 100); // Petit délai pour laisser le DOM se mettre à jour
 
     // Vérifier cette partie où les images sont chargées
     const imagePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
