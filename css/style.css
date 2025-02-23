@@ -3362,3 +3362,95 @@ html {
         min-height: 300px;
     }
 }
+
+/* Styles pour la page de sélection en mode mobile */
+@media screen and (max-width: 768px) {
+    /* Container principal */
+    .vehicle-details {
+        padding: 20px 8px;
+        width: 100vw;
+        max-width: 100%;
+    }
+
+    /* Étapes de sélection */
+    .selection-steps {
+        width: 100%;
+        padding: 0 12px;
+    }
+
+    /* Contenu de chaque étape */
+    .step-content {
+        width: 100%;
+        overflow-x: hidden;
+        padding: 0 8px;
+    }
+
+    /* Items de sélection */
+    .selection-item {
+        width: 100%;
+        min-height: 70px;     /* Encore augmenté */
+        padding: 18px;        /* Encore augmenté */
+        margin: 10px 0;       /* Encore augmenté */
+    display: flex;
+    align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;  /* Augmenté */
+    }
+
+    /* Texte dans les items */
+    .selection-item span {
+        font-size: 17px;      /* Encore augmenté */
+        line-height: 1.5;     /* Augmenté */
+        padding: 0 15px;      /* Encore augmenté */
+        width: 100%;
+        text-align: left;
+    }
+
+    /* Informations de motorisation */
+    .motorisation-info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;           /* Encore augmenté */
+        padding: 8px;        /* Augmenté */
+    }
+
+    .motorisation-info span {
+        width: 100%;
+        padding: 15px;       /* Encore augmenté */
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;  /* Encore augmenté */
+        font-size: 17px;     /* Encore augmenté */
+        line-height: 1.5;    /* Augmenté */
+    }
+
+    /* Titres des étapes */
+    .step-title {
+        font-size: 20px;     /* Encore augmenté */
+        margin-bottom: 18px; /* Encore augmenté */
+        padding: 0 8px;      /* Augmenté */
+        font-weight: 500;    /* Ajouté */
+    }
+}
+
+/* Supprimer les points rouges en mode mobile */
+@media screen and (max-width: 768px) {
+    .step-title::before {
+        display: none !important; /* Supprime le point rouge */
+    }
+
+    /* Ajuster le padding pour compenser la suppression du point */
+    .step-title {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    /* Centrer le titre */
+    .step-title {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 20px;
+        font-weight: 500;
+        color: #fff;
+    }
+}

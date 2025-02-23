@@ -829,6 +829,57 @@
         display: block !important;
         padding-top: 50px !important;
     }
+
+    /* Ajustement des colonnes pour mobile */
+    .selection-steps {
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* Ajustement des colonnes */
+    .step-content {
+        display: grid;
+        grid-template-columns: 1fr; /* Une seule colonne en mobile */
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* Style des items de sélection */
+    .selection-item {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        min-height: 60px;
+    }
+
+    /* Ajustement du texte */
+    .selection-item span {
+        width: 100%;
+        text-align: left;
+        padding: 0 10px;
+        word-break: break-word; /* Pour éviter le débordement du texte */
+    }
+
+    /* Style pour les informations de motorisation */
+    .motorisation-info {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .motorisation-info span {
+        width: 100%;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
+    }
 }
 
 /* Pour les très petits écrans */
