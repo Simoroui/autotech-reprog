@@ -21,11 +21,15 @@ function createFolderStructure() {
         const csvContent = fs.readFileSync('data/marques.csv', 'utf-8');
         const lines = csvContent.split('\n');
 
-        // Créer le dossier principal s'il n'existe pas
-        const baseDir = path.join('images', 'vehicles');
-        if (!fs.existsSync(baseDir)) {
-            fs.mkdirSync(baseDir, { recursive: true });
-        }
+        // Créer les dossiers principaux
+        const vehiclesDir = path.join('images', 'vehicles');
+        const slideshowDir = path.join('images', 'slideshow');
+        
+        [vehiclesDir, slideshowDir].forEach(dir => {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+        });
 
         // Set pour éviter les doublons
         const folderStructure = new Set();
@@ -38,16 +42,20 @@ function createFolderStructure() {
                 const model = cleanFolderName(columns[1].trim().toLowerCase());
                 const version = cleanFolderName(columns[2].trim().toLowerCase());
 
-                // Créer le chemin complet
-                const folderPath = path.join(baseDir, brand, model, version);
-                folderStructure.add(folderPath);
+                // Chemins pour vehicles et slideshow
+                const vehiclePath = path.join(vehiclesDir, brand, model, version);
+                const slideshowPath = path.join(slideshowDir, brand, model, version);
+                
+                folderStructure.add(vehiclePath);
+                folderStructure.add(slideshowPath);
             }
         }
 
-        // Créer les dossiers
+        // Créer tous les dossiers et ajouter .gitkeep
         folderStructure.forEach(folderPath => {
             if (!fs.existsSync(folderPath)) {
                 fs.mkdirSync(folderPath, { recursive: true });
+                fs.writeFileSync(path.join(folderPath, '.gitkeep'), '');
                 console.log(`Dossier créé : ${folderPath}`);
             }
         });

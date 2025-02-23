@@ -1397,29 +1397,60 @@ function handleBackButton() {
 }
 
 // Dans la fonction qui crée le diaporama
-function createSlideshow(brand, type) {
+function createSlideshow(brand, model, version) {
     const slideshowContainer = document.createElement('div');
     slideshowContainer.className = 'slideshow-container';
 
-    // Modifier les chemins des images pour GitHub Pages
+    // Modifier les chemins des images pour la nouvelle structure
+    const slideshowPath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
     const images = [
-        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/1.jpg`,
-        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/2.jpg`,
-        `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/3.jpg`
+        `${slideshowPath}/1.jpg`,
+        `${slideshowPath}/2.jpg`,
+        `${slideshowPath}/3.jpg`
     ];
 
+    // Créer les slides
     images.forEach((src, index) => {
         const slide = document.createElement('div');
         slide.className = 'slide fade';
-        if (index === 0) slide.style.display = 'block';
+        if (index === 0) slide.style.opacity = '1';
 
         const img = document.createElement('img');
         img.src = src;
-        img.alt = `${brand} image ${index + 1}`;
+        img.alt = `${brand} ${model} ${version} image ${index + 1}`;
+        img.onerror = () => {
+            console.warn(`Image non trouvée: ${src}`);
+            slide.style.display = 'none';
+        };
 
         slide.appendChild(img);
         slideshowContainer.appendChild(slide);
     });
 
-    // ... reste du code du diaporama ...
+    // Ajouter les boutons de navigation
+    const prevButton = document.createElement('button');
+    prevButton.className = 'prev';
+    prevButton.innerHTML = '&#10094;';
+    
+    const nextButton = document.createElement('button');
+    nextButton.className = 'next';
+    nextButton.innerHTML = '&#10095;';
+
+    slideshowContainer.appendChild(prevButton);
+    slideshowContainer.appendChild(nextButton);
+
+    // Ajouter les points de navigation
+    const dotsContainer = document.createElement('div');
+    dotsContainer.className = 'dots-container';
+    
+    images.forEach((_, index) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        if (index === 0) dot.style.background = 'white';
+        dotsContainer.appendChild(dot);
+    });
+
+    slideshowContainer.appendChild(dotsContainer);
+
+    return slideshowContainer;
 }
