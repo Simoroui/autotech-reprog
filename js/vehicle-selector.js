@@ -529,7 +529,7 @@ function handleVersionSelection(brand, type, model, version) {
         item.addEventListener('click', () => {
             try {
                 const engineData = JSON.parse(item.dataset.engine);
-                handleEngineSelection(brand, type, model, version, engineData.type);
+                handleEngineSelection(brand, type, model, version, engineData);
             } catch (error) {
                 console.error('Erreur lors de la sélection du moteur:', error);
             }
@@ -540,82 +540,51 @@ function handleVersionSelection(brand, type, model, version) {
     scrollToNextStepOnMobile(engineStep);
 }
 
-function handleEngineSelection(brand, type, model, version, engineType) {
+function handleEngineSelection(brand, type, model, version, engineData) {
+    // Stocker toutes les données du moteur dans currentSelection
     currentSelection = {
         brand: brand,
         model: model,
         version: version,
         type: type,
-        engine: engineType
+        engine: engineData.type,
+        powerOriginal: engineData.powerOriginal,
+        powerStage1: engineData.powerStage1,
+        torqueOriginal: engineData.torqueOriginal,
+        torqueStage1: engineData.torqueStage1
     };
 
     // Mettre à jour le breadcrumb
     updateBreadcrumb(currentSelection);
 
-    // Afficher la page de résultat
+    // Afficher la page de résultats avec toutes les données
     showResultPage({
         brand,
         model,
         version,
-        engineType: engineType,
-        powerOriginal: currentSelection.powerOriginal,
-        powerStage1: currentSelection.powerStage1,
-        torqueOriginal: currentSelection.torqueOriginal,
-        torqueStage1: currentSelection.torqueStage1
+        engineType: engineData.type,
+        powerOriginal: engineData.powerOriginal,
+        powerStage1: engineData.powerStage1,
+        torqueOriginal: engineData.torqueOriginal,
+        torqueStage1: engineData.torqueStage1
     });
 
-    // Modifier la partie du scroll
-    setTimeout(() => {
-        const resultsTable = document.querySelector('.results-table');
-        if (resultsTable) {
-            const headerHeight = document.querySelector('.header').offsetHeight || 0;
-            const windowHeight = window.innerHeight;
-            const tableHeight = resultsTable.offsetHeight;
-            
-            // Calculer la position pour centrer le tableau
-            const scrollPosition = 
-                resultsTable.getBoundingClientRect().top + 
-                window.pageYOffset - 
-                (windowHeight - tableHeight) / 2 - 
-                headerHeight;
-
-            // Scroll avec animation
-            window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth'
-            });
-        }
-    }, 100); // Petit délai pour laisser le DOM se mettre à jour
-
-    // Vérifier cette partie où les images sont chargées
-    const imagePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
-    
-    // Vérifier aussi la fonction qui charge les images
-    function loadVehicleImages() {
-        const basePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
-        // ... reste du code ...
-    }
-
-    // Ajouter le bouton de réservation avec l'événement de clic
+    // Ajouter le bouton de réservation
     const reserveButton = document.createElement('button');
     reserveButton.className = 'reserve-btn';
     reserveButton.textContent = 'Réserver maintenant';
     reserveButton.onclick = () => {
-        // Créer le message pré-rempli
         const prefilledMessage = `Demande de reprogrammation pour :
 Marque : ${brand}
 Modèle : ${model}
 Version : ${version}
-Motorisation : ${engineType}`;
+Motorisation : ${engineData.type}`;
 
-        // Stocker le message dans localStorage
         localStorage.setItem('prefilledMessage', prefilledMessage);
-
-        // Rediriger vers la section contact
         window.location.href = '/autotech-reprog/#contact';
     };
 
-    // Ajouter le bouton après le tableau des résultats
+    // Ajouter le bouton après le tableau
     const resultsTable = document.querySelector('.results-table');
     if (resultsTable) {
         resultsTable.insertAdjacentElement('afterend', reserveButton);
