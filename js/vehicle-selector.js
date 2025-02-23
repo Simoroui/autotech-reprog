@@ -733,6 +733,10 @@ async function createSlideshow(brand, model, version) {
 
 function showResultPage(vehicleData) {
     const { brand, model, version, engineType, powerOriginal, powerStage1, torqueOriginal, torqueStage1 } = vehicleData;
+    
+    // Mettre à jour l'URL sans recharger la page
+    const newUrl = `#/results/${encodeURIComponent(brand)}/${encodeURIComponent(model)}/${encodeURIComponent(version)}`;
+    window.history.pushState(null, '', newUrl);
 
     // Créer le conteneur principal
     const container = document.createElement('div');
@@ -1455,8 +1459,32 @@ function handleBackButton() {
     backButton.className = 'back-button';
     backButton.textContent = 'Retour';
     backButton.addEventListener('click', () => {
-        // Modifier le lien de retour pour GitHub Pages
-        window.location.href = '/autotech-reprog/#boost';
+        window.history.pushState(null, '', '/autotech-reprog/#boost');
+        // Recharger la section boost
+        loadBoostSection();
     });
     return backButton;
 }
+
+// Ajouter au début du fichier
+function handleRouting() {
+    // Récupérer le hash de l'URL
+    const hash = window.location.hash;
+    
+    // Si nous sommes sur une page de résultats
+    if (hash.startsWith('#/results/')) {
+        const params = hash.replace('#/results/', '').split('/');
+        const [brand, model, version] = params;
+        
+        // Charger les résultats
+        showResultPage({
+            brand: decodeURIComponent(brand),
+            model: decodeURIComponent(model),
+            version: decodeURIComponent(version)
+        });
+    }
+}
+
+// Ajouter l'écouteur d'événements
+window.addEventListener('hashchange', handleRouting);
+window.addEventListener('load', handleRouting);

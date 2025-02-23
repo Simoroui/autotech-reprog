@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Redirection...</title>
+    <script>
+        // Récupérer le chemin actuel
+        const path = window.location.pathname;
+        
+        // Vérifier si c'est une page de résultats
+        if (path.includes('/reprogrammation/')) {
+            // Rediriger vers la section boost avec les paramètres
+            window.location.href = '/autotech-reprog/#boost';
+        } else {
+            // Rediriger vers la page d'accueil
+            window.location.href = '/autotech-reprog/';
+        }
+    </script>
+</head>
+<body>
+    Redirection en cours...
+</body>
+</html> 
