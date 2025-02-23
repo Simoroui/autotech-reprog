@@ -573,16 +573,8 @@ function handleEngineSelection(brand, type, model, version, engine) {
     }, 100);
 
     // Vérifier cette partie où les images sont chargées
-    const vehicleData = {
-        // ... autres données ...
-        images: [
-            // Modifier ces chemins
-            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/1.jpg`,
-            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/2.jpg`,
-            `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}/3.jpg`
-        ]
-    };
-
+    const imagePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+    
     // Vérifier aussi la fonction qui charge les images
     function loadVehicleImages() {
         const basePath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
@@ -619,20 +611,24 @@ function checkImageExists(url) {
     });
 }
 
-// Fonction pour vérifier les images
-async function checkForImages(brand, model, version) {
-    // Utiliser la même fonction de nettoyage que pour la création des dossiers
+// Fonction pour obtenir le chemin des images selon l'environnement
+function getImagePath(brand, model, version) {
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
     const cleanBrand = cleanFolderName(brand.toLowerCase());
     const cleanModel = cleanFolderName(model.toLowerCase());
     const cleanVersion = cleanFolderName(version.toLowerCase());
     
-    console.log('Vérification pour:', {cleanBrand, cleanModel, cleanVersion});
+    return isGitHubPages 
+        ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
+        : `/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+}
 
-    // Utiliser un chemin absolu avec / au début
-    const basePath = `/images/vehicles/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+// Fonction pour vérifier les images
+async function checkForImages(brand, model, version) {
+    const basePath = getImagePath(brand, model, version);
     console.log('Chemin de base:', basePath);
     
-    const imageFiles = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'];
+    const imageFiles = ['1.jpg', '2.jpg', '3.jpg'];  // Réduit à 3 images
     const existingImages = [];
 
     for (const file of imageFiles) {
@@ -641,8 +637,44 @@ async function checkForImages(brand, model, version) {
         try {
             const response = await fetch(imageUrl, { 
                 method: 'HEAD',
+                cache: 'no-cache'
+            });
+            if (response.ok) {
+                existingImages.push(imageUrl);
+                console.log('Image trouvée:', imageUrl);
+            }
+        } catch (error) {
+            console.log('Erreur de chargement:', error);
+        }
+    }
+
+    return existingImages;
+}
+
+async function createSlideshow(brand, model, version) {
+    const slideshowContainer = document.createElement('div');
+    slideshowContainer.className = 'slideshow-container';
+
+    // Détecter si nous sommes en local ou sur GitHub Pages
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    
+    // Choisir le bon chemin selon l'environnement
+    const basePath = isGitHubPages 
+        ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
+        : `/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+
+    // Tableau pour stocker les images existantes
+    const existingImages = [];
+
+    // Vérifier chaque image avant de l'ajouter
+    for (let i = 1; i <= 3; i++) {
+        const imageUrl = `${basePath}/${i}.jpg`;
+        try {
+            const response = await fetch(imageUrl, {
+                method: 'HEAD',
                 cache: 'no-cache' // Désactiver le cache pour le débogage
             });
+            
             if (response.ok) {
                 existingImages.push(imageUrl);
                 console.log('Image trouvée:', imageUrl);
@@ -654,39 +686,71 @@ async function checkForImages(brand, model, version) {
         }
     }
 
-    console.log('Images trouvées:', existingImages);
-    return existingImages;
+    // Créer les slides uniquement pour les images existantes
+    existingImages.forEach((src, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'slide fade';
+        if (index === 0) slide.style.opacity = '1';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `${brand} ${model} ${version} image ${index + 1}`;
+
+        slide.appendChild(img);
+        slideshowContainer.appendChild(slide);
+    });
+
+    // N'ajouter les contrôles que s'il y a des images
+    if (existingImages.length > 0) {
+        // Ajouter les boutons de navigation
+        const prevButton = document.createElement('button');
+        prevButton.className = 'prev';
+        prevButton.innerHTML = '&#10094;';
+        
+        const nextButton = document.createElement('button');
+        nextButton.className = 'next';
+        nextButton.innerHTML = '&#10095;';
+
+        slideshowContainer.appendChild(prevButton);
+        slideshowContainer.appendChild(nextButton);
+
+        // Ajouter les points de navigation
+        const dotsContainer = document.createElement('div');
+        dotsContainer.className = 'dots-container';
+        
+        existingImages.forEach((_, index) => {
+            const dot = document.createElement('span');
+            dot.className = 'dot';
+            if (index === 0) dot.style.background = 'white';
+            dotsContainer.appendChild(dot);
+        });
+
+        slideshowContainer.appendChild(dotsContainer);
+    }
+
+    return slideshowContainer;
 }
 
-function showResultPage(engineData) {
-    // Mettre à jour la sélection finale
-    currentSelection = {
-        ...currentSelection,
-        type: engineData.type,
-        engineData: engineData
-    };
+function showResultPage(vehicleData) {
+    const { brand, model, version, engineType, powerOriginal, powerStage1, torqueOriginal, torqueStage1 } = vehicleData;
 
-    // Masquer les étapes de sélection
-    document.querySelector('.selection-steps').style.display = 'none';
-    const detailsSection = document.querySelector('.vehicle-details');
-    detailsSection.style.display = 'block';
+    // Créer le conteneur principal
+    const container = document.createElement('div');
+    container.className = 'results-page';
 
-    // Calculer les différences
-    const powerDiff = parseInt(engineData.powerStage1) - parseInt(engineData.powerOriginal);
-    const torqueDiff = parseInt(engineData.torqueStage1) - parseInt(engineData.torqueOriginal);
+    // Ajouter le diaporama
+    createSlideshow(brand, model, version).then(slideshow => {
+        container.appendChild(slideshow);
+        initializeSlideshow(); // Initialiser le diaporama après l'avoir ajouté
+    });
 
-    // Calculer les valeurs pour Stage 2
-    const powerStage2 = parseInt(engineData.powerStage1) + 10;
-    const torqueStage2 = parseInt(engineData.torqueStage1) + 20;
-    const powerDiffStage2 = powerStage2 - parseInt(engineData.powerOriginal);
-    const torqueDiffStage2 = torqueStage2 - parseInt(engineData.torqueOriginal);
-
-    const resultTemplate = `
+    // Ajouter le reste du contenu
+    container.innerHTML += `
         <div class="results-container">
             <button class="back-button" onclick="handleBack()">Retour</button>
             
-            <h1 class="vehicle-title">${engineData.brand} ${engineData.model} ${engineData.version}</h1>
-            <h2 class="engine-type">${engineData.engineType}</h2>
+            <h1 class="vehicle-title">${brand} ${model} ${version}</h1>
+            <h2 class="engine-type">${engineType}</h2>
 
             <div class="stage-selector">
                 <button class="stage-btn active" data-stage="1">Stage 1</button>
@@ -716,15 +780,15 @@ function showResultPage(engineData) {
                 <div class="table-content">
                     <div class="table-row">
                         <div class="label">Puissance</div>
-                        <div class="value">${engineData.powerOriginal}</div>
-                        <div class="value stage-value">${engineData.powerStage1}</div>
-                        <div class="diff power-diff"><span>+${powerDiff} Hp</span></div>
+                        <div class="value">${powerOriginal}</div>
+                        <div class="value stage-value">${powerStage1}</div>
+                        <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
                     </div>
                     <div class="table-row">
                         <div class="label">Couple</div>
-                        <div class="value">${engineData.torqueOriginal}</div>
-                        <div class="value stage-value">${engineData.torqueStage1}</div>
-                        <div class="diff torque-diff"><span>+${torqueDiff} Nm</span></div>
+                        <div class="value">${torqueOriginal}</div>
+                        <div class="value stage-value">${torqueStage1}</div>
+                        <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
                     </div>
             </div>
             </div>
@@ -773,15 +837,17 @@ function showResultPage(engineData) {
                     <span class="price-amount">700 DT</span>
                     <span class="price-tax">HT</span>
                 </div>
-                <button class="reserve-btn" onclick="handleReservation('${engineData.brand}', '${engineData.model}', '${engineData.version}', '${engineData.engineType}')">
+                <button class="reserve-btn" onclick="handleReservation('${brand}', '${model}', '${version}', '${engineType}')">
                     Réserver maintenant
                 </button>
             </div>
         </div>
     `;
 
-    // Insérer le contenu dans la page
-    detailsSection.innerHTML = resultTemplate;
+    // Remplacer le contenu existant
+    const mainContent = document.querySelector('.section-container');
+    mainContent.innerHTML = '';
+    mainContent.appendChild(container);
 
     // Initialiser le graphique
     const ctx = document.getElementById('performanceChart').getContext('2d');
@@ -793,8 +859,8 @@ function showResultPage(engineData) {
             datasets: [{
                 label: 'Origine',
                 data: [
-                    parseInt(engineData.powerOriginal),
-                    parseInt(engineData.torqueOriginal)
+                    parseInt(powerOriginal),
+                    parseInt(torqueOriginal)
                 ],
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
                 borderColor: 'rgba(255, 255, 255, 0.8)',
@@ -803,8 +869,8 @@ function showResultPage(engineData) {
             }, {
                 label: 'Stage 1',
                 data: [
-                    parseInt(engineData.powerStage1),
-                    parseInt(engineData.torqueStage1)
+                    parseInt(powerStage1),
+                    parseInt(torqueStage1)
                 ],
                 backgroundColor: function(context) {
                     const chart = context.chart;
@@ -873,12 +939,10 @@ function showResultPage(engineData) {
                     },
                     min: 0,
                     max: Math.max(
-                        parseInt(engineData.powerOriginal),
-                        parseInt(engineData.powerStage1),
-                        powerStage2,
-                        parseInt(engineData.torqueOriginal),
-                        parseInt(engineData.torqueStage1),
-                        torqueStage2
+                        parseInt(powerOriginal),
+                        parseInt(powerStage1),
+                        parseInt(torqueOriginal),
+                        parseInt(torqueStage1)
                     ) + 50
                 },
                 y: {
@@ -921,7 +985,7 @@ function showResultPage(engineData) {
     });
 
     // Ajouter les écouteurs pour les boutons Stage AVANT le return
-    const stageButtons = detailsSection.querySelectorAll('.stage-btn');
+    const stageButtons = container.querySelectorAll('.stage-btn');
     stageButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Mettre à jour les classes active
@@ -929,51 +993,51 @@ function showResultPage(engineData) {
             button.classList.add('active');
 
             // Mettre à jour les valeurs selon le stage
-            const stageColumns = detailsSection.querySelectorAll('.stage-column');
-            const stageValues = detailsSection.querySelectorAll('.stage-value');
-            const powerDiff = detailsSection.querySelector('.power-diff span');
-            const torqueDiff = detailsSection.querySelector('.torque-diff span');
+            const stageColumns = container.querySelectorAll('.stage-column');
+            const stageValues = container.querySelectorAll('.stage-value');
+            const powerDiff = container.querySelector('.power-diff span');
+            const torqueDiff = container.querySelector('.torque-diff span');
 
             if (button.dataset.stage === '2') {
                 // Mise à jour du tableau
                 stageColumns[1].textContent = 'STAGE2';
-                stageValues[0].textContent = `${powerStage2} Hp`;
-                stageValues[1].textContent = `${torqueStage2} Nm`;
-                powerDiff.textContent = `+${powerDiffStage2} Hp`;
-                torqueDiff.textContent = `+${torqueDiffStage2} Nm`;
+                stageValues[0].textContent = `${parseInt(powerStage1) + 10} Hp`;
+                stageValues[1].textContent = `${parseInt(torqueStage1) + 20} Nm`;
+                powerDiff.textContent = `+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp`;
+                torqueDiff.textContent = `+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm`;
 
                 // Mise à jour du graphique avec animation
                 chart.data.datasets[1].label = 'Stage 2';
                 chart.data.datasets[1].data = [
-                    powerStage2,
-                    torqueStage2
+                    parseInt(powerStage1) + 10,
+                    parseInt(torqueStage1) + 20
                 ];
                 chart.update('active');
 
                 // Afficher/masquer les informations appropriées
-                const stage1Info = detailsSection.querySelector('.stage1-info');
-                const stage2Info = detailsSection.querySelector('.stage2-info');
+                const stage1Info = container.querySelector('.stage1-info');
+                const stage2Info = container.querySelector('.stage2-info');
                 stage1Info.style.display = 'none';
                 stage2Info.style.display = 'block';
             } else {
                 // Mise à jour du tableau
                 stageColumns[1].textContent = 'STAGE1';
-                stageValues[0].textContent = engineData.powerStage1;
-                stageValues[1].textContent = engineData.torqueStage1;
-                powerDiff.textContent = `+${parseInt(engineData.powerStage1) - parseInt(engineData.powerOriginal)} Hp`;
-                torqueDiff.textContent = `+${parseInt(engineData.torqueStage1) - parseInt(engineData.torqueOriginal)} Nm`;
+                stageValues[0].textContent = powerStage1;
+                stageValues[1].textContent = torqueStage1;
+                powerDiff.textContent = `+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp`;
+                torqueDiff.textContent = `+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm`;
 
                 // Mise à jour du graphique avec animation
                 chart.data.datasets[1].label = 'Stage 1';
                 chart.data.datasets[1].data = [
-                    parseInt(engineData.powerStage1),
-                    parseInt(engineData.torqueStage1)
+                    parseInt(powerStage1),
+                    parseInt(torqueStage1)
                 ];
                 chart.update('active');
 
                 // Afficher/masquer les informations appropriées
-                const stage1Info = detailsSection.querySelector('.stage1-info');
-                const stage2Info = detailsSection.querySelector('.stage2-info');
+                const stage1Info = container.querySelector('.stage1-info');
+                const stage2Info = container.querySelector('.stage2-info');
                 stage1Info.style.display = 'block';
                 stage2Info.style.display = 'none';
             }
@@ -988,7 +1052,7 @@ function showResultPage(engineData) {
     animate();
 
     // Vérifier et ajouter le diaporama après l'initialisation du graphique
-    checkForImages(engineData.brand, engineData.model, engineData.version)
+    checkForImages(brand, model, version)
         .then(images => {
             if (images && images.length > 0) {
                 const slideshowHTML = `
@@ -1046,7 +1110,7 @@ function showResultPage(engineData) {
                                         padding: 20px;
                                     ">
                                         <img src="${img}" 
-                                             alt="${engineData.brand} ${engineData.model}" 
+                                             alt="${brand} ${model}" 
                                              style="
                                                 width: 100%;
                                                 height: 100%;
@@ -1119,6 +1183,8 @@ function showResultPage(engineData) {
                     resultsTable.insertAdjacentHTML('afterend', slideshowHTML);
                     initializeSlideshow();
                 }
+            } else {
+                console.log('Aucune image trouvée pour:', brand, model, version);
             }
         })
         .catch(error => {
@@ -1310,33 +1376,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function displayVehicleResults(vehicleData) {
-    // Création du tableau HTML avec les unités dans la colonne différence
-    const resultsTable = `
-        <div class="results-table">
-            <div class="table-header">
-                <div>ORIGINE</div>
-                <div>STAGE1</div>
-                <div>DIFFÉRENCE</div>
-            </div>
-            <div class="table-row">
-                <div>Puissance</div>
-                <div>${vehicleData.power} Hp</div>
-                <div>${vehicleData.stage1Power} Hp</div>
-                <div class="power-diff">+${vehicleData.stage1Power - vehicleData.power} Hp</div>
-            </div>
-            <div class="table-row">
-                <div>Couple</div>
-                <div>${vehicleData.torque} Nm</div>
-                <div>${vehicleData.stage1Torque} Nm</div>
-                <div class="torque-diff">+${vehicleData.stage1Torque - vehicleData.torque} Nm</div>
-            </div>
-        </div>
-    `;
+function displayVehicleResults(brand, model, version) {
+    // ... code existant ...
 
-    // Insérer le tableau dans la page
-    const resultsContainer = document.querySelector('.vehicle-results');
-    resultsContainer.innerHTML = resultsTable;
+    // Chercher cette partie et la corriger
+    const vehicleImages = {
+        path: `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
+    };
+
+    // ... reste du code ...
 }
 
 // Fonction pour gérer le scroll vers la section boost
@@ -1411,80 +1459,4 @@ function handleBackButton() {
         window.location.href = '/autotech-reprog/#boost';
     });
     return backButton;
-}
-
-// Dans la fonction qui crée le diaporama
-async function createSlideshow(brand, model, version) {
-    const slideshowContainer = document.createElement('div');
-    slideshowContainer.className = 'slideshow-container';
-
-    // Correction du chemin pour GitHub Pages
-    const basePath = `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
-    
-    // Tableau pour stocker les images existantes
-    const existingImages = [];
-
-    // Vérifier chaque image avant de l'ajouter
-    for (let i = 1; i <= 3; i++) {
-        const imageUrl = `${basePath}/${i}.jpg`;
-        try {
-            const response = await fetch(imageUrl, {
-                method: 'HEAD',
-                cache: 'no-cache' // Désactiver le cache pour le débogage
-            });
-            
-            if (response.ok) {
-                existingImages.push(imageUrl);
-                console.log('Image trouvée:', imageUrl);
-            } else {
-                console.log('Image non trouvée (status):', response.status);
-            }
-        } catch (error) {
-            console.log('Erreur de chargement:', error);
-        }
-    }
-
-    // Créer les slides uniquement pour les images existantes
-    existingImages.forEach((src, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide fade';
-        if (index === 0) slide.style.opacity = '1';
-
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `${brand} ${model} ${version} image ${index + 1}`;
-
-        slide.appendChild(img);
-        slideshowContainer.appendChild(slide);
-    });
-
-    // N'ajouter les contrôles que s'il y a des images
-    if (existingImages.length > 0) {
-        // Ajouter les boutons de navigation
-        const prevButton = document.createElement('button');
-        prevButton.className = 'prev';
-        prevButton.innerHTML = '&#10094;';
-        
-        const nextButton = document.createElement('button');
-        nextButton.className = 'next';
-        nextButton.innerHTML = '&#10095;';
-
-        slideshowContainer.appendChild(prevButton);
-        slideshowContainer.appendChild(nextButton);
-
-        // Ajouter les points de navigation
-        const dotsContainer = document.createElement('div');
-        dotsContainer.className = 'dots-container';
-        
-        existingImages.forEach((_, index) => {
-            const dot = document.createElement('span');
-            dot.className = 'dot';
-            if (index === 0) dot.style.background = 'white';
-            dotsContainer.appendChild(dot);
-        });
-
-        slideshowContainer.appendChild(dotsContainer);
-    }
-
-    return slideshowContainer;
 }
