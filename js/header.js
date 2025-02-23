@@ -25,4 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
             body.classList.remove('menu-open');
         }
     });
+
+    // Mettre à jour le lien du logo
+    const logoLink = document.querySelector('.logo a');
+    if (logoLink) {
+        const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+        logoLink.href = isGitHubPages 
+            ? 'https://simoroui.github.io/autotech-reprog/'
+            : '/';
+    }
 }); 
