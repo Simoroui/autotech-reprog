@@ -1401,8 +1401,9 @@ function createSlideshow(brand, model, version) {
     const slideshowContainer = document.createElement('div');
     slideshowContainer.className = 'slideshow-container';
 
-    // Modifier les chemins des images pour la nouvelle structure
-    const slideshowPath = `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+    // Correction du chemin pour GitHub Pages
+    const slideshowPath = `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
+    
     const images = [
         `${slideshowPath}/1.jpg`,
         `${slideshowPath}/2.jpg`,
