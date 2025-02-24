@@ -97,28 +97,19 @@ function extractBrands(lines) {
     return result;
 }
 
-// Fonction pour obtenir le chemin du logo selon l'environnement
+// Fonction pour obtenir le chemin du logo
 function getLogoPath(brand) {
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog/images/logos' : 'images/logos';
     
-    // Nettoyer le nom
-    const brandName = brand
+    // Nettoyer et formater le nom de la marque
+    const cleanBrand = brand
         .trim()
-        .replace(/\s+/g, '')
-        .replace(/[^a-zA-Z0-9]/g, '');
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join('-');
     
-    // Créer deux versions du nom (première lettre majuscule et tout minuscule)
-    const capitalizedBrand = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
-    const lowercaseBrand = brandName.toLowerCase();
-    
-    const basePath = isGitHubPages 
-        ? '/autotech-reprog/images/logos'
-        : 'images/logos';
-
-    return {
-        capitalized: `${basePath}/${capitalizedBrand}.png`,
-        lowercase: `${basePath}/${lowercaseBrand}.png`
-    };
+    return `${basePath}/${cleanBrand}.png`;
 }
 
 // Fonction pour afficher les marques
@@ -139,30 +130,17 @@ function displayBrands(brands, type) {
             div.addEventListener('click', () => handleBrandSelection(brand.name, type));
             
             const img = document.createElement('img');
-            const paths = getLogoPath(brand.name);
-            
-            // Essayer d'abord avec la version majuscule
-            img.src = paths.capitalized;
+            img.src = getLogoPath(brand.name);
             img.alt = brand.name;
             img.className = 'brand-logo';
-            img.loading = 'lazy';
             img.style.display = 'none';
             
-            // Si la version majuscule échoue, essayer la version minuscule
-            img.onerror = function() {
-                console.log(`Tentative avec le logo en minuscules pour ${brand.name}`);
-                this.src = paths.lowercase;
-                
-                // Si les deux échouent, masquer l'image
-                this.onerror = function() {
-                    console.log(`Aucun logo trouvé pour ${brand.name}`);
-                    this.style.display = 'none';
-                };
+            img.onload = function() {
+                this.style.display = 'block';
             };
             
-            img.onload = function() {
-                console.log(`Logo chargé avec succès pour ${brand.name}`);
-                this.style.display = 'block';
+            img.onerror = function() {
+                this.style.display = 'none';
             };
             
             const span = document.createElement('span');
@@ -325,7 +303,7 @@ function handleBrandSelection(brand, type) {
                 <div class="step-title">Marque sélectionnée</div>
                 <div class="step-content">
                     <div class="selection-item selected" data-scroll-to="model">
-                        <img src="${getLogoPath(brand).capitalized}" alt="${brand}" class="brand-logo" 
+                        <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
                              onerror="this.onerror=null; this.src='images/logos/default.png';"
                              onload="this.style.display='block';">
                         <span class="brand-name">${brand}</span>
@@ -1152,20 +1130,24 @@ async function loadAndCacheCSV() {
     }
 }
 
-// Modifier l'initialisation
+// Initialisation
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Page chargée, début du chargement des données');
-    
     try {
         const response = await fetch('data/marques.csv');
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        csvContent = await response.text();
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
         
+        csvContent = await response.text();
         const lines = parseCSV(csvContent);
         const brands = extractBrands(lines);
         
+        // Afficher les marques du premier onglet
+        const defaultTab = document.querySelector('.tab-button.active');
+        if (defaultTab) {
+            const defaultType = defaultTab.dataset.type;
+            displayBrands(brands, defaultType);
+        }
+        
+        // Gestionnaire pour les onglets
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', (event) => {
                 handleTabClick(event, brands);
@@ -1286,145 +1268,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Ajouter cette nouvelle fonction
 function handleReservation(brand, model, version, engineType) {
-    // Créer le message pré-rempli
     const prefilledMessage = `Demande de reprogrammation pour :
 Marque : ${brand}
 Modèle : ${model}
 Version : ${version}
 Motorisation : ${engineType}`;
 
-    // Stocker le message dans localStorage
     localStorage.setItem('prefilledMessage', prefilledMessage);
-
-    // Rediriger vers la section contact de la page d'accueil
     window.location.href = '/autotech-reprog/#contact';
-}
-
-// Ajouter dans le fichier contact-form.js ou au début du script
-document.addEventListener('DOMContentLoaded', () => {
-    // Vérifier s'il y a un message pré-rempli
-    const prefilledMessage = localStorage.getItem('prefilledMessage');
-    if (prefilledMessage) {
-        // Remplir le champ message du formulaire
-        const messageField = document.querySelector('#message');
-        if (messageField) {
-            messageField.value = prefilledMessage;
-            // Nettoyer le localStorage après utilisation
-            localStorage.removeItem('prefilledMessage');
-        }
-    }
-});
-
-// Dans la fonction qui gère le bouton retour
-function handleBackButton() {
-    const backButton = document.createElement('button');
-    backButton.className = 'back-button';
-    backButton.textContent = 'Retour';
-    backButton.addEventListener('click', () => {
-        // Modifier le lien de retour pour GitHub Pages
-        window.location.href = '/autotech-reprog/#boost';
-    });
-    return backButton;
-}
-
-// Ajouter une fonction pour lire les paramètres d'URL
-function getUrlParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-        brand: params.get('brand'),
-        model: params.get('model'),
-        version: params.get('version'),
-        type: params.get('type')
-    };
-}
-
-// Modifier l'initialisation pour gérer le chargement direct
-document.addEventListener('DOMContentLoaded', async () => {
-    // Si on est sur la page results.html, charger les données depuis l'URL
-    if (window.location.pathname.includes('results.html')) {
-        const params = getUrlParams();
-        if (params.brand && params.model && params.version) {
-            // Charger les résultats directement
-            showResultPage({
-                brand: params.brand,
-                model: params.model,
-                version: params.version,
-                type: params.type
-            });
-        }
-    }
-    // ... reste du code d'initialisation ...
-});
-
-// Ajouter l'initialisation du formulaire de contact
-document.addEventListener('DOMContentLoaded', () => {
-    // Vérifier si on est sur la page d'accueil et s'il y a un message pré-rempli
-    if (window.location.hash === '#contact') {
-        const prefilledMessage = localStorage.getItem('prefilledMessage');
-        if (prefilledMessage) {
-            // Attendre que le formulaire soit chargé
-            setTimeout(() => {
-                const messageField = document.querySelector('#message');
-                if (messageField) {
-                    messageField.value = prefilledMessage;
-                    // Nettoyer le localStorage
-                    localStorage.removeItem('prefilledMessage');
-                    
-                    // Scroll vers le formulaire
-                    const contactSection = document.querySelector('#contact');
-                    if (contactSection) {
-                        contactSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }
-            }, 500);
-        }
-    }
-});
-
-// Modifions updatePerformanceData pour utiliser les valeurs initiales
-function updatePerformanceData(isStage2) {
-    // Récupérer les éléments
-    const powerStageCell = document.querySelector('.table-row:first-child .stage-value');
-    const torqueStageCell = document.querySelector('.table-row:last-child .stage-value');
-    const powerDiffCell = document.querySelector('.power-diff span');
-    const torqueDiffCell = document.querySelector('.torque-diff span');
-    const stageColumn = document.querySelector('.stage-column:nth-child(3)');
-
-    if (isStage2) {
-        // Calculer les valeurs Stage 2
-        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp
-        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm
-
-        // Mettre à jour le titre
-        stageColumn.textContent = 'STAGE2';
-
-        // Mettre à jour les valeurs
-        powerStageCell.textContent = `${powerStage2} Hp`;
-        torqueStageCell.textContent = `${torqueStage2} Nm`;
-        powerDiffCell.textContent = `+${powerStage2 - initialValues.powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${torqueStage2 - initialValues.torqueOriginal} Nm`;
-
-        // Mettre à jour le graphique
-        const chart = Chart.getChart('performanceChart');
-        if (chart) {
-            chart.data.datasets[1].data = [powerStage2, torqueStage2];
-            chart.data.datasets[1].label = 'Stage 2';
-            chart.update();
-        }
-    } else {
-        // Restaurer Stage 1
-        stageColumn.textContent = 'STAGE1';
-        powerStageCell.textContent = `${initialValues.powerStage1} Hp`;
-        torqueStageCell.textContent = `${initialValues.torqueStage1} Nm`;
-        powerDiffCell.textContent = `+${initialValues.powerStage1 - initialValues.powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${initialValues.torqueStage1 - initialValues.torqueOriginal} Nm`;
-
-        // Restaurer le graphique
-        const chart = Chart.getChart('performanceChart');
-        if (chart) {
-            chart.data.datasets[1].data = [initialValues.powerStage1, initialValues.torqueStage1];
-            chart.data.datasets[1].label = 'Stage 1';
-            chart.update();
-        }
-    }
 }
