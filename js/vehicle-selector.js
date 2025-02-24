@@ -1277,3 +1277,51 @@ Motorisation : ${engineType}`;
     localStorage.setItem('prefilledMessage', prefilledMessage);
     window.location.href = '/autotech-reprog/#contact';
 }
+
+// Ajouter cette fonction à la fin du fichier
+function updatePerformanceData(isStage2) {
+    // Récupérer les éléments
+    const powerStageCell = document.querySelector('.table-row:first-child .stage-value');
+    const torqueStageCell = document.querySelector('.table-row:last-child .stage-value');
+    const powerDiffCell = document.querySelector('.power-diff span');
+    const torqueDiffCell = document.querySelector('.torque-diff span');
+    const stageColumn = document.querySelector('.stage-column:nth-child(3)');
+
+    if (isStage2) {
+        // Calculer les valeurs Stage 2
+        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp
+        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm
+
+        // Mettre à jour le titre
+        stageColumn.textContent = 'STAGE2';
+
+        // Mettre à jour les valeurs
+        powerStageCell.textContent = `${powerStage2} Hp`;
+        torqueStageCell.textContent = `${torqueStage2} Nm`;
+        powerDiffCell.textContent = `+${powerStage2 - initialValues.powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${torqueStage2 - initialValues.torqueOriginal} Nm`;
+
+        // Mettre à jour le graphique
+        const chart = Chart.getChart('performanceChart');
+        if (chart) {
+            chart.data.datasets[1].data = [powerStage2, torqueStage2];
+            chart.data.datasets[1].label = 'Stage 2';
+            chart.update();
+        }
+    } else {
+        // Restaurer Stage 1
+        stageColumn.textContent = 'STAGE1';
+        powerStageCell.textContent = `${initialValues.powerStage1} Hp`;
+        torqueStageCell.textContent = `${initialValues.torqueStage1} Nm`;
+        powerDiffCell.textContent = `+${initialValues.powerStage1 - initialValues.powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${initialValues.torqueStage1 - initialValues.torqueOriginal} Nm`;
+
+        // Restaurer le graphique
+        const chart = Chart.getChart('performanceChart');
+        if (chart) {
+            chart.data.datasets[1].data = [initialValues.powerStage1, initialValues.torqueStage1];
+            chart.data.datasets[1].label = 'Stage 1';
+            chart.update();
+        }
+    }
+}
