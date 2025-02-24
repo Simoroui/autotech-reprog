@@ -97,12 +97,19 @@ function extractBrands(lines) {
     return result;
 }
 
-// Fonction pour obtenir le bon chemin des logos selon l'environnement
+// Fonction pour obtenir le chemin du logo selon l'environnement
 function getLogoPath(brand) {
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
-    return isGitHubPages 
-        ? `/autotech-reprog/images/logos/${brand}.png`
-        : `images/logos/${brand}.png`;
+    const cleanBrand = brand.toLowerCase()
+        .replace(/\s+/g, '-')  // Remplacer les espaces par des tirets
+        .replace(/[^a-z0-9-]/g, '')  // Garder uniquement les lettres, chiffres et tirets
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');  // Enlever les accents
+    
+    const basePath = isGitHubPages 
+        ? '/autotech-reprog/images/logos'
+        : 'images/logos';
+    
+    return `${basePath}/${cleanBrand}.png`;
 }
 
 // Fonction pour afficher les marques
@@ -127,18 +134,24 @@ function displayBrands(brands, type) {
             img.alt = brand.name;
             img.className = 'brand-logo';
             img.loading = 'lazy';
-            img.decoding = 'async';
-            img.sizes = '(max-width: 768px) 100px, 150px';
-            img.style.padding = '3px';
-            img.style.borderRadius = '2px';
+            img.style.display = 'none';  // Cacher l'image par défaut
             
+            // Gestion des erreurs de chargement
             img.onerror = function() {
-                console.error(`❌ Erreur de chargement pour ${brand.name}:`, this.src);
-                this.style.display = 'none';
+                console.log(`Logo non trouvé pour ${brand.name}, tentative avec le nom en minuscules`);
+                // Essayer avec le nom en minuscules si la première tentative échoue
+                this.src = getLogoPath(brand.name.toLowerCase());
+                
+                // Si ça échoue encore, masquer l'image
+                this.onerror = function() {
+                    console.log(`Logo définitivement non trouvé pour ${brand.name}`);
+                    this.style.display = 'none';
+                };
             };
             
+            // Afficher l'image quand elle est chargée
             img.onload = function() {
-                console.log(`✅ Logo chargé avec succès pour ${brand.name}`);
+                console.log(`Logo chargé avec succès pour ${brand.name}`);
                 this.style.display = 'block';
             };
             
@@ -229,7 +242,29 @@ let currentSelection = {
     type: null
 };
 
-// Modifier la fonction handleBrandSelection pour sauvegarder l'état
+// Renommons la fonction pour refléter son nouveau comportement
+function scrollToStepCenter(stepElement) {
+    if (!stepElement) return;
+
+    // Attendre que le DOM soit mis à jour
+    setTimeout(() => {
+        const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+        const windowHeight = window.innerHeight;
+        const elementHeight = stepElement.offsetHeight;
+        
+        // Calculer la position pour centrer l'élément
+        const elementTop = stepElement.getBoundingClientRect().top + window.scrollY;
+        const targetScroll = elementTop - (windowHeight - elementHeight) / 2;
+
+        // Scroll avec animation
+        window.scrollTo({
+            top: Math.max(0, targetScroll - headerHeight),
+            behavior: 'smooth'
+        });
+    }, 100);
+}
+
+// Modifier handleBrandSelection pour utiliser la nouvelle fonction
 function handleBrandSelection(brand, type) {
     currentSelection = {
         brand: brand,
@@ -281,7 +316,7 @@ function handleBrandSelection(brand, type) {
                 <div class="step-content">
                     <div class="selection-item selected" data-scroll-to="model">
                         <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
-                             onerror="this.onerror=null; this.style.display='none';"
+                             onerror="this.onerror=null; this.src='images/logos/default.png';"
                              onload="this.style.display='block';">
                         <span class="brand-name">${brand}</span>
                     </div>
@@ -301,15 +336,11 @@ function handleBrandSelection(brand, type) {
     // Ajouter les écouteurs d'événements
     addEventListeners(detailsSection, brand, type, models);
 
-    // Scroll vers le haut de la section des détails
-    setTimeout(() => {
-        const headerHeight = document.querySelector('.header').offsetHeight || 0;
-        const detailsTop = detailsSection.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({
-            top: detailsTop - headerHeight - 20, // 20px de marge
-            behavior: 'smooth'
-        });
-    }, 100);
+    // Scroll vers le modèle step après l'affichage
+    const modelStep = document.getElementById('model-step');
+    if (modelStep) {
+        scrollToStepCenter(modelStep);
+    }
 }
 
 // Fonction séparée pour ajouter les écouteurs d'événements
@@ -322,7 +353,7 @@ function addEventListeners(detailsSection, brand, type, models) {
         
         const windowHeight = window.innerHeight;
         const modelStepHeight = modelStep.offsetHeight;
-        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageYOffset;
+        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageOffset;
         
         const scrollPosition = modelStepTop - (windowHeight - modelStepHeight) / 2;
         
@@ -348,25 +379,7 @@ function addEventListeners(detailsSection, brand, type, models) {
     });
 }
 
-// Fonction utilitaire pour le défilement mobile
-function scrollToNextStepOnMobile(stepElement) {
-    // Vérifier si on est sur mobile (largeur < 768px)
-    if (window.innerWidth <= 768) {
-        const windowHeight = window.innerHeight;
-        const elementHeight = stepElement.offsetHeight;
-        const elementTop = stepElement.getBoundingClientRect().top + window.pageYOffset;
-        
-        // Calculer la position pour centrer l'élément
-        const scrollTo = elementTop - (windowHeight - elementHeight) / 2;
-        
-        window.scrollTo({
-            top: scrollTo,
-            behavior: 'smooth'
-        });
-    }
-}
-
-// Modifier la fonction handleModelSelection
+// Modifier handleModelSelection pour centrer la sélection de version
 function handleModelSelection(brand, type, model) {
     currentSelection.model = model;
     
@@ -391,12 +404,16 @@ function handleModelSelection(brand, type, model) {
     }
 
     // Créer ou mettre à jour la colonne des versions
-    let versionStep = document.querySelector('.step[data-step="version"]');
-    if (!versionStep) {
+    const existingVersionStep = document.querySelector('.step[data-step="version"]');
+    let versionStep;
+
+    if (!existingVersionStep) {
         versionStep = document.createElement('div');
         versionStep.className = 'step active';
         versionStep.setAttribute('data-step', 'version');
         document.querySelector('.selection-steps').appendChild(versionStep);
+    } else {
+        versionStep = existingVersionStep;
     }
 
     // Mettre à jour le contenu de la colonne des versions
@@ -416,8 +433,8 @@ function handleModelSelection(brand, type, model) {
         });
     });
 
-    // Ajouter le défilement sur mobile
-    scrollToNextStepOnMobile(versionStep);
+    // Scroll vers le version step
+    scrollToStepCenter(versionStep);
 
     // Mettre à jour l'URL et le breadcrumb
     const url = `/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
@@ -425,7 +442,7 @@ function handleModelSelection(brand, type, model) {
     updateBreadcrumb({ type, brand, model });
 }
 
-// Modifier la fonction handleVersionSelection
+// Modifier handleVersionSelection pour centrer la sélection de motorisation
 function handleVersionSelection(brand, type, model, version) {
     currentSelection.version = version;
     
@@ -481,12 +498,16 @@ function handleVersionSelection(brand, type, model, version) {
     }
 
     // Créer ou mettre à jour la colonne des motorisations
-    let engineStep = document.querySelector('.step[data-step="engine"]');
-    if (!engineStep) {
+    const existingEngineStep = document.querySelector('.step[data-step="engine"]');
+    let engineStep;
+
+    if (!existingEngineStep) {
         engineStep = document.createElement('div');
         engineStep.className = 'step active';
         engineStep.setAttribute('data-step', 'engine');
         document.querySelector('.selection-steps').appendChild(engineStep);
+    } else {
+        engineStep = existingEngineStep;
     }
 
     // Mettre à jour le contenu avec les motorisations trouvées
@@ -536,12 +557,12 @@ function handleVersionSelection(brand, type, model, version) {
         });
     });
 
-    // Ajouter le défilement sur mobile
-    scrollToNextStepOnMobile(engineStep);
+    // Scroll vers le engine step
+    scrollToStepCenter(engineStep);
 }
 
 function handleEngineSelection(brand, type, model, version, engineData) {
-    // Stocker toutes les données du moteur dans currentSelection
+    // Mettre à jour la sélection courante
     currentSelection = {
                 brand: brand,
                 model: model,
@@ -557,8 +578,8 @@ function handleEngineSelection(brand, type, model, version, engineData) {
     // Mettre à jour le breadcrumb
     updateBreadcrumb(currentSelection);
 
-    // Afficher la page de résultats avec toutes les données
-    showResultPage({
+    // Créer et afficher la page de résultats
+    const container = showResultPage({
         brand,
         model,
         version,
@@ -569,46 +590,11 @@ function handleEngineSelection(brand, type, model, version, engineData) {
         torqueStage1: engineData.torqueStage1
     });
 
-    // Centrer le tableau des résultats après un court délai
-    setTimeout(() => {
-        const resultsTable = document.querySelector('.results-table');
-        if (resultsTable) {
-            const headerHeight = document.querySelector('.header').offsetHeight || 0;
-            const windowHeight = window.innerHeight;
-            const tableHeight = resultsTable.offsetHeight;
-            
-            // Calculer la position pour centrer le tableau
-            const scrollPosition = 
-                resultsTable.getBoundingClientRect().top + 
-                window.pageYOffset - 
-                (windowHeight - tableHeight) / 2;
-
-            // Scroll avec animation
-            window.scrollTo({
-                top: Math.max(0, scrollPosition - headerHeight),
-                behavior: 'smooth'
-            });
-        }
-    }, 100);
-
-    // Ajouter le bouton de réservation
-    const reserveButton = document.createElement('button');
-    reserveButton.className = 'reserve-btn';
-    reserveButton.textContent = 'Réserver maintenant';
-    reserveButton.onclick = () => {
-        const prefilledMessage = `Demande de reprogrammation pour :
-Marque : ${brand}
-Modèle : ${model}
-Version : ${version}
-Motorisation : ${engineData.type}`;
-
-        localStorage.setItem('prefilledMessage', prefilledMessage);
-        window.location.href = '/autotech-reprog/#contact';
-    };
-
-    // Ajouter le bouton après le tableau
-    if (resultsTable) {
-        resultsTable.insertAdjacentElement('afterend', reserveButton);
+    // Remplacer le contenu existant
+    const mainContent = document.querySelector('.section-container');
+    if (mainContent) {
+        mainContent.innerHTML = '';
+        mainContent.appendChild(container);
     }
 }
 
@@ -681,101 +667,139 @@ async function checkForImages(brand, model, version) {
     return existingImages;
 }
 
+// Fonction pour créer le diaporama
 async function createSlideshow(brand, model, version) {
-    const slideshowContainer = document.createElement('div');
-    slideshowContainer.className = 'slideshow-container';
+    // Nettoyer les noms pour les chemins
+    const cleanBrand = cleanFolderName(brand.toLowerCase());
+    const cleanModel = cleanFolderName(model.toLowerCase());
+    const cleanVersion = cleanFolderName(version.toLowerCase());
 
-    // Détecter si nous sommes en local ou sur GitHub Pages
-    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    // Construire le chemin de base
+    const basePath = window.location.hostname === 'simoroui.github.io'
+        ? `/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
+        : `images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+
+    // Vérifier quelles images existent
+    const images = await checkForImages(brand, model, version);
     
-    // Choisir le bon chemin selon l'environnement
-    const basePath = isGitHubPages 
-        ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
-        : `/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`;
-
-    // Tableau pour stocker les images existantes
-    const existingImages = [];
-
-    // Vérifier chaque image avant de l'ajouter
-    for (let i = 1; i <= 3; i++) {
-        const imageUrl = `${basePath}/${i}.jpg`;
-        try {
-            const response = await fetch(imageUrl, {
-                method: 'HEAD',
-                cache: 'no-cache' // Désactiver le cache pour le débogage
-            });
-            
-            if (response.ok) {
-                existingImages.push(imageUrl);
-                console.log('Image trouvée:', imageUrl);
-            } else {
-                console.log('Image non trouvée (status):', response.status);
-            }
-        } catch (error) {
-            console.log('Erreur de chargement:', error);
-        }
+    // Si aucune image n'existe, retourner null
+    if (images.length === 0) {
+        console.log('Aucune image trouvée pour:', brand, model, version);
+        return null;
     }
 
-    // Créer les slides uniquement pour les images existantes
-    existingImages.forEach((src, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide fade';
-        if (index === 0) slide.style.opacity = '1';
+    // Créer l'élément du diaporama seulement si des images existent
+    const slideshow = document.createElement('div');
+    slideshow.className = 'vehicle-slideshow';
+    slideshow.innerHTML = `
+        <h3 style="
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        ">Photos prises dans notre atelier</h3>
+        <div class="slideshow-container" style="
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        ">
+            ${images.map((imageUrl, index) => `
+                <div class="slide" style="
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    opacity: ${index === 0 ? '1' : '0'};
+                ">
+                    <img src="${imageUrl}" alt="${brand} ${model}" style="
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        background: rgba(0, 0, 0, 0.5);
+                    ">
+                </div>
+            `).join('')}
 
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `${brand} ${model} ${version} image ${index + 1}`;
+            ${images.length > 1 ? `
+                <button class="slide-nav prev" style="
+                    position: absolute;
+                    left: 20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 10;
+                    background: rgba(227, 6, 19, 0.8);
+                    color: white;
+                    border: none;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 20px;
+                ">❮</button>
+                <button class="slide-nav next" style="
+                    position: absolute;
+                    right: 20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 10;
+                    background: rgba(227, 6, 19, 0.8);
+                    color: white;
+                    border: none;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 20px;
+                ">❯</button>
+                
+                <div class="slide-dots">
+                    ${images.map((_, index) => `
+                        <button class="dot" data-index="${index}" style="
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 50%;
+                            background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.5)'};
+                            border: none;
+                            cursor: pointer;
+                        "></button>
+                    `).join('')}
+            </div>
+            ` : ''}
+        </div>
+    `;
 
-        slide.appendChild(img);
-        slideshowContainer.appendChild(slide);
-    });
-
-    // N'ajouter les contrôles que s'il y a des images
-    if (existingImages.length > 0) {
-        // Ajouter les boutons de navigation
-        const prevButton = document.createElement('button');
-        prevButton.className = 'prev';
-        prevButton.innerHTML = '&#10094;';
-        
-        const nextButton = document.createElement('button');
-        nextButton.className = 'next';
-        nextButton.innerHTML = '&#10095;';
-
-        slideshowContainer.appendChild(prevButton);
-        slideshowContainer.appendChild(nextButton);
-
-        // Ajouter les points de navigation
-        const dotsContainer = document.createElement('div');
-        dotsContainer.className = 'dots-container';
-        
-        existingImages.forEach((_, index) => {
-            const dot = document.createElement('span');
-            dot.className = 'dot';
-            if (index === 0) dot.style.background = 'white';
-            dotsContainer.appendChild(dot);
-        });
-
-        slideshowContainer.appendChild(dotsContainer);
-    }
-
-    return slideshowContainer;
+    return slideshow;
 }
 
+// Variables globales pour stocker les valeurs initiales
+let initialValues = {
+    powerOriginal: 0,
+    torqueOriginal: 0,
+    powerStage1: 0,
+    torqueStage1: 0
+};
+
+// Dans showResultPage, stockons les valeurs
 function showResultPage(vehicleData) {
     const { brand, model, version, engineType, powerOriginal, powerStage1, torqueOriginal, torqueStage1 } = vehicleData;
 
-    // Créer le conteneur principal
+    // Stocker les valeurs initiales
+    initialValues = {
+        powerOriginal: parseInt(powerOriginal),
+        torqueOriginal: parseInt(torqueOriginal),
+        powerStage1: parseInt(powerStage1),
+        torqueStage1: parseInt(torqueStage1)
+    };
+
+    // Créer le conteneur
     const container = document.createElement('div');
-    container.className = 'results-page';
-
-    // Ajouter le diaporama
-    createSlideshow(brand, model, version).then(slideshow => {
-        container.appendChild(slideshow);
-        initializeSlideshow(); // Initialiser le diaporama après l'avoir ajouté
-    });
-
-    // Ajouter le reste du contenu
-    container.innerHTML += `
+    container.className = 'results-container';
+    
+    // Ajouter le contenu HTML
+    container.innerHTML = `
         <div class="results-container">
             <button class="back-button" onclick="handleBack()">Retour</button>
             
@@ -802,24 +826,25 @@ function showResultPage(vehicleData) {
 
             <div class="results-table">
                 <div class="table-header">
-                    <div>ORIGINE</div>
-                    <div>STAGE1</div>
-                    <div>GAINS</div>
+                    <div class="label"></div>
+                    <div class="stage-column">ORIGINE</div>
+                    <div class="stage-column">STAGE1</div>
+                    <div>DIFFÉRENCE</div>
                 </div>
                 <div class="table-content">
                     <div class="table-row">
-                        <div>Puissance</div>
-                        <div>${powerOriginal} Hp</div>
-                        <div>${powerStage1} Hp</div>
-                        <div class="power-diff">+${powerStage1 - powerOriginal} Hp</div>
+                        <div class="label">Puissance</div>
+                        <div class="value">${powerOriginal}</div>
+                        <div class="value stage-value">${powerStage1}</div>
+                        <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
                     </div>
                     <div class="table-row">
-                        <div>Couple</div>
-                        <div>${torqueOriginal} Nm</div>
-                        <div>${torqueStage1} Nm</div>
-                        <div class="torque-diff">+${torqueStage1 - torqueOriginal} Nm</div>
+                        <div class="label">Couple</div>
+                        <div class="value">${torqueOriginal}</div>
+                        <div class="value stage-value">${torqueStage1}</div>
+                        <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
                     </div>
-            </div>
+                </div>
             </div>
 
             <div class="performance-graph">
@@ -830,7 +855,7 @@ function showResultPage(vehicleData) {
             <div class="advantages-list">
                 <div class="advantage-item">
                     Reprog sur banc de puissance (dyno)
-            </div>
+                    </div>
                 <div class="advantage-item">
                     Reprog sur fichier d'origine
                     </div>
@@ -865,365 +890,171 @@ function showResultPage(vehicleData) {
                     <span class="stage-label">Stage 1 : </span>
                     <span class="price-amount">700 DT</span>
                     <span class="price-tax">HT</span>
-                    </div>
+                </div>
                 <button class="reserve-btn" onclick="handleReservation('${brand}', '${model}', '${version}', '${engineType}')">
                     Réserver maintenant
                 </button>
                 </div>
             </div>
-    `;
-
-    // Remplacer le contenu existant
-    const mainContent = document.querySelector('.section-container');
-    mainContent.innerHTML = '';
-    mainContent.appendChild(container);
-
-    // Initialiser le graphique
-    const ctx = document.getElementById('performanceChart').getContext('2d');
-
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Puissance', 'Couple'],
-            datasets: [{
-                label: 'Origine',
-                data: [
-                    parseInt(powerOriginal),
-                    parseInt(torqueOriginal)
-                ],
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderColor: 'rgba(255, 255, 255, 0.8)',
-                borderWidth: 1,
-                barPercentage: 0.8
-            }, {
-                label: 'Stage 1',
-                data: [
-                    parseInt(powerStage1),
-                    parseInt(torqueStage1)
-                ],
-                backgroundColor: function(context) {
-                    const chart = context.chart;
-                    const {ctx, chartArea} = chart;
-                    
-                    if (!chartArea) {
-                        return 'rgba(227, 6, 19, 0.4)';
-                    }
-
-                    // Créer un dégradé horizontal pour l'effet laser
-                    const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                    
-                    // Animation basée sur le temps
-                    const time = Date.now() * 0.001;
-                    const position = (Math.sin(time * 2) + 1) / 2; // Animation plus rapide
-
-                    // Effet laser plus intense
-                    gradient.addColorStop(0, 'rgba(227, 6, 19, 0.4)');
-                    gradient.addColorStop(Math.max(0, position - 0.1), 'rgba(227, 6, 19, 0.4)');
-                    gradient.addColorStop(position, 'rgba(255, 255, 255, 0.9)');
-                    gradient.addColorStop(Math.min(1, position + 0.1), 'rgba(227, 6, 19, 0.4)');
-                    gradient.addColorStop(1, 'rgba(227, 6, 19, 0.4)');
-
-                    return gradient;
-                },
-                borderColor: 'rgba(227, 6, 19, 0.8)',
-                borderWidth: 2,
-                barPercentage: 0.8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            animation: {
-                duration: 800,
-                easing: 'easeInOutQuart'
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: 'white',
-                        font: { size: 12 }
-                    }
-                },
-                tooltip: {
-                    enabled: false
-                },
-                customLabels: {
-                    enabled: true,
-                    color: 'white',
-                    font: { size: 12 }
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: { 
-                        color: 'white',
-                        callback: function(value) {
-                            return value;
-                        }
-                    },
-                    min: 0,
-                    max: Math.max(
-                        parseInt(powerOriginal),
-                        parseInt(powerStage1),
-                        parseInt(torqueOriginal),
-                        parseInt(torqueStage1)
-                    ) + 50
-                },
-                y: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: { color: 'white' }
-                }
-            }
-        },
-        plugins: [{
-            id: 'customLabels',
-            afterDatasetsDraw(chart, args, options) {
-                const { ctx } = chart;
-                ctx.save();
-                
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    
-                    meta.data.forEach((bar, index) => {
-                        const value = dataset.data[index];
-                        const unit = chart.data.labels[index] === 'Puissance' ? ' Hp' : ' Nm';
-                        
-                        ctx.fillStyle = 'white';
-                        ctx.font = '12px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        
-                        // Position du texte au centre de la barre
-                        const x = bar.x + (datasetIndex === 0 ? 30 : -30); // Décalage pour éviter le chevauchement
-                        const y = bar.y;
-                        
-                        ctx.fillText(value + unit, x, y);
-                    });
-                });
-                
-                ctx.restore();
-            }
-        }]
-    });
-
-    // Ajouter les écouteurs pour les boutons Stage AVANT le return
-    const stageButtons = container.querySelectorAll('.stage-btn');
-    stageButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Mettre à jour les classes active
-            stageButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            // Mettre à jour les valeurs selon le stage
-            const stageColumns = container.querySelectorAll('.stage-column');
-            const stageValues = container.querySelectorAll('.stage-value');
-            const powerDiff = container.querySelector('.power-diff span');
-            const torqueDiff = container.querySelector('.torque-diff span');
-
-            if (button.dataset.stage === '2') {
-                // Mise à jour du tableau
-                stageColumns[1].textContent = 'STAGE2';
-                stageValues[0].textContent = `${parseInt(powerStage1) + 10} Hp`;
-                stageValues[1].textContent = `${parseInt(torqueStage1) + 20} Nm`;
-                powerDiff.textContent = `+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp`;
-                torqueDiff.textContent = `+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm`;
-
-                // Mise à jour du graphique avec animation
-                chart.data.datasets[1].label = 'Stage 2';
-                chart.data.datasets[1].data = [
-                    parseInt(powerStage1) + 10,
-                    parseInt(torqueStage1) + 20
-                ];
-                chart.update('active');
-
-                // Afficher/masquer les informations appropriées
-                const stage1Info = container.querySelector('.stage1-info');
-                const stage2Info = container.querySelector('.stage2-info');
-                stage1Info.style.display = 'none';
-                stage2Info.style.display = 'block';
-            } else {
-                // Mise à jour du tableau
-                stageColumns[1].textContent = 'STAGE1';
-                stageValues[0].textContent = powerStage1;
-                stageValues[1].textContent = torqueStage1;
-                powerDiff.textContent = `+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp`;
-                torqueDiff.textContent = `+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm`;
-
-                // Mise à jour du graphique avec animation
-                chart.data.datasets[1].label = 'Stage 1';
-                chart.data.datasets[1].data = [
-                    parseInt(powerStage1),
-                    parseInt(torqueStage1)
-                ];
-                chart.update('active');
-
-                // Afficher/masquer les informations appropriées
-                const stage1Info = container.querySelector('.stage1-info');
-                const stage2Info = container.querySelector('.stage2-info');
-                stage1Info.style.display = 'block';
-                stage2Info.style.display = 'none';
-            }
-        });
-    });
-
-    // Animation continue
-    function animate() {
-        chart.update('none');
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // Vérifier et ajouter le diaporama après l'initialisation du graphique
-    checkForImages(brand, model, version)
-        .then(images => {
-            if (images && images.length > 0) {
-                const slideshowHTML = `
-                    <div class="results-table">
-                        <div class="vehicle-slideshow">
-                            <h3 style="
-                                text-align: center; 
-                                margin: 10px 0;
-                                padding: 10px;
-                                font-size: 1.2rem;
-                                color: white;
-                                position: relative;
-                                overflow: hidden;
-                                text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-                            ">
-                                Photos prises dans notre atelier
-                                <div style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: -100%;
-                                    width: 100%;
-                                    height: 100%;
-                                    background: linear-gradient(
-                                        90deg,
-                                        transparent,
-                                        rgba(227, 6, 19, 0.8),
-                                        transparent
-                                    );
-                                    animation: laserScan 2s linear infinite;
-                                "></div>
-                            </h3>
-                            <style>
-                                @keyframes laserScan {
-                                    0% { left: -100%; }
-                                    100% { left: 200%; }
-                                }
-                            </style>
-                            <div class="slideshow-container" style="
-                                position: relative;
-                                width: 100%;
-                                height: 400px;
-                                background: rgba(0, 0, 0, 0.2);
-                                border-radius: 8px;
-                                overflow: hidden;
-                            ">
-                                ${images.map((img, index) => `
-                                    <div class="slide" style="
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 100%;
-                                        height: 100%;
-                                        opacity: ${index === 0 ? '1' : '0'};
-                                        transition: all 0.3s ease;
-                                        padding: 20px;
-                                    ">
-                                        <img src="${img}" 
-                                             alt="${brand} ${model}" 
-                                             style="
-                                                width: 100%;
-                                                height: 100%;
-                                                object-fit: contain;
-                                                border-radius: 4px;
-                                             ">
-                </div>
-                                `).join('')}
-                                
-                                <button class="slide-nav prev" style="
-                                    position: absolute;
-                                    left: 20px;
-                                    top: 50%;
-                                    transform: translateY(-50%);
-                                    z-index: 10;
-                                    background: rgba(227, 6, 19, 0.8);
-                                    color: white;
-                                    border: none;
-                                    width: 40px;
-                                    height: 40px;
-                                    border-radius: 50%;
-                                    cursor: pointer;
-                                    font-size: 20px;
-                                ">❮</button>
-                                
-                                <button class="slide-nav next" style="
-                                    position: absolute;
-                                    right: 20px;
-                                    top: 50%;
-                                    transform: translateY(-50%);
-                                    z-index: 10;
-                                    background: rgba(227, 6, 19, 0.8);
-                                    color: white;
-                                    border: none;
-                                    width: 40px;
-                                    height: 40px;
-                                    border-radius: 50%;
-                                    cursor: pointer;
-                                    font-size: 20px;
-                                ">❯</button>
-                                
-                                <div class="slide-dots" style="
-                                    position: absolute;
-                                    bottom: 20px;
-                                    left: 50%;
-                                    transform: translateX(-50%);
-                                    display: flex;
-                                    gap: 10px;
-                                    z-index: 10;
-                                ">
-                                    ${images.map((_, index) => `
-                                        <button class="dot" style="
-                                            width: 12px;
-                                            height: 12px;
-                                            border-radius: 50%;
-                                            border: none;
-                                            background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.5)'};
-                                            cursor: pointer;
-                                            padding: 0;
-                                        " data-index="${index}"></button>
-                                    `).join('')}
-                                </div>
-                            </div>
-            </div>
         </div>
     `;
 
-                const resultsTable = document.querySelector('.results-table');
-                if (resultsTable) {
-                    resultsTable.insertAdjacentHTML('afterend', slideshowHTML);
-                    initializeSlideshow();
-                }
-            } else {
-                console.log('Aucune image trouvée pour:', brand, model, version);
-            }
-        })
-        .catch(error => {
-            console.error("Erreur lors de la vérification des images:", error);
-        });
+    // Ajouter au DOM
+    document.querySelector('.section-container').appendChild(container);
 
-    // Retourner la fonction de nettoyage
-    return () => {
-        chart.destroy();
-    };
+    // Initialiser le graphique
+    setTimeout(() => {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        if (ctx) {
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Puissance', 'Couple'],
+                    datasets: [{
+                        label: 'Origine',
+                        data: [initialValues.powerOriginal, initialValues.torqueOriginal],
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1,
+                        barPercentage: 0.8
+                    }, {
+                        label: 'Stage 1',
+                        data: [initialValues.powerStage1, initialValues.torqueStage1],
+                        backgroundColor: function(context) {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            
+                            if (!chartArea) {
+                                return 'rgba(227, 6, 19, 0.4)';
+                            }
+
+                            const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                            const time = Date.now() * 0.001;
+                            const position = (Math.sin(time * 2) + 1) / 2;
+
+                            gradient.addColorStop(0, 'rgba(227, 6, 19, 0.4)');
+                            gradient.addColorStop(Math.max(0, position - 0.1), 'rgba(227, 6, 19, 0.4)');
+                            gradient.addColorStop(position, 'rgba(255, 255, 255, 0.9)');
+                            gradient.addColorStop(Math.min(1, position + 0.1), 'rgba(227, 6, 19, 0.4)');
+                            gradient.addColorStop(1, 'rgba(227, 6, 19, 0.4)');
+
+                            requestAnimationFrame(() => chart.draw());
+
+                            return gradient;
+                        },
+                        borderColor: 'rgba(227, 6, 19, 0.8)',
+                        borderWidth: 2,
+                        barPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    animation: {
+                        duration: 1
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white',
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: { 
+                                color: 'white',
+                                callback: function(value) {
+                                    return value;
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: { color: 'white' }
+                        }
+                    }
+                }
+            });
+
+            // Fonction d'animation
+            function animate() {
+                chart.update('none');
+                requestAnimationFrame(animate);
+            }
+
+            // Démarrer l'animation
+            animate();
+        }
+    }, 100);
+
+    // Centrer le tableau des résultats
+    setTimeout(() => {
+        const resultsTable = container.querySelector('.results-table');
+        if (resultsTable) {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+            const windowHeight = window.innerHeight;
+            const tableHeight = resultsTable.offsetHeight;
+            
+            // Calculer la position pour centrer le tableau
+            const targetScroll = resultsTable.getBoundingClientRect().top + window.scrollY - 
+                               (windowHeight - tableHeight) / 2 - headerHeight;
+
+            // Scroll avec animation
+            window.scrollTo({
+                top: Math.max(0, targetScroll),
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
+
+    // Ajouter le diaporama
+    const resultsTable = container.querySelector('.results-table');
+    if (resultsTable) {
+        createSlideshow(brand, model, version).then(slideshow => {
+            resultsTable.insertAdjacentElement('afterend', slideshow);
+            initializeSlideshow();
+        });
+    }
+
+    // Ajouter les écouteurs d'événements pour les boutons de stage
+    const stageButtons = container.querySelectorAll('.stage-btn');
+    const stage1Info = container.querySelector('.stage1-info');
+    const stage2Info = container.querySelector('.stage2-info');
+
+    stageButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Mettre à jour les classes actives
+            stageButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Afficher/masquer les infos correspondantes
+            if (button.dataset.stage === '1') {
+                stage1Info.style.display = 'block';
+                stage2Info.style.display = 'none';
+            } else {
+                stage1Info.style.display = 'none';
+                stage2Info.style.display = 'block';
+            }
+
+            // Mettre à jour le tableau et le graphique selon le stage
+            const isStage2 = button.dataset.stage === '2';
+            updatePerformanceData(isStage2);
+        });
+    });
+
+    return container;
 }
 
 // Nouvelle version de la fonction initializeSlideshow
@@ -1539,3 +1370,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// Modifions updatePerformanceData pour utiliser les valeurs initiales
+function updatePerformanceData(isStage2) {
+    // Récupérer les éléments
+    const powerStageCell = document.querySelector('.table-row:first-child .stage-value');
+    const torqueStageCell = document.querySelector('.table-row:last-child .stage-value');
+    const powerDiffCell = document.querySelector('.power-diff span');
+    const torqueDiffCell = document.querySelector('.torque-diff span');
+    const stageColumn = document.querySelector('.stage-column:nth-child(3)');
+
+    if (isStage2) {
+        // Calculer les valeurs Stage 2
+        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp
+        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm
+
+        // Mettre à jour le titre
+        stageColumn.textContent = 'STAGE2';
+
+        // Mettre à jour les valeurs
+        powerStageCell.textContent = `${powerStage2} Hp`;
+        torqueStageCell.textContent = `${torqueStage2} Nm`;
+        powerDiffCell.textContent = `+${powerStage2 - initialValues.powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${torqueStage2 - initialValues.torqueOriginal} Nm`;
+
+        // Mettre à jour le graphique
+        const chart = Chart.getChart('performanceChart');
+        if (chart) {
+            chart.data.datasets[1].data = [powerStage2, torqueStage2];
+            chart.data.datasets[1].label = 'Stage 2';
+            chart.update();
+        }
+    } else {
+        // Restaurer Stage 1
+        stageColumn.textContent = 'STAGE1';
+        powerStageCell.textContent = `${initialValues.powerStage1} Hp`;
+        torqueStageCell.textContent = `${initialValues.torqueStage1} Nm`;
+        powerDiffCell.textContent = `+${initialValues.powerStage1 - initialValues.powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${initialValues.torqueStage1 - initialValues.torqueOriginal} Nm`;
+
+        // Restaurer le graphique
+        const chart = Chart.getChart('performanceChart');
+        if (chart) {
+            chart.data.datasets[1].data = [initialValues.powerStage1, initialValues.torqueStage1];
+            chart.data.datasets[1].label = 'Stage 1';
+            chart.update();
+        }
+    }
+}
