@@ -90,7 +90,7 @@ function extractBrands(lines) {
     Object.entries(brands).forEach(([key, set]) => {
         result[key] = Array.from(set).map(name => ({
             name: name,
-            logo: `images/logos/${name}.png`
+            logo: getLogoPath(name)
         }));
     });
     
@@ -99,23 +99,26 @@ function extractBrands(lines) {
 
 // Fonction pour obtenir le chemin du logo selon l'environnement
 function getLogoPath(brand) {
-    // Ne pas ajouter /autotech-reprog/ en local
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
     
-    // Nettoyer le nom en gardant juste la première lettre majuscule
-    const cleanBrand = brand
-        .trim()  // Enlever les espaces au début et à la fin
-        .replace(/\s+/g, '')  // Enlever tous les espaces
-        .replace(/[^a-zA-Z0-9]/g, '')  // Garder uniquement les lettres et chiffres
-        .charAt(0).toUpperCase() + // Première lettre majuscule
-        brand.slice(1).toLowerCase();  // Reste en minuscules
+    // Nettoyer le nom
+    const brandName = brand
+        .trim()
+        .replace(/\s+/g, '')
+        .replace(/[^a-zA-Z0-9]/g, '');
     
-    // Construire le chemin selon l'environnement
+    // Créer deux versions du nom (première lettre majuscule et tout minuscule)
+    const capitalizedBrand = brandName.charAt(0).toUpperCase() + brandName.slice(1).toLowerCase();
+    const lowercaseBrand = brandName.toLowerCase();
+    
     const basePath = isGitHubPages 
         ? '/autotech-reprog/images/logos'
         : 'images/logos';
-    
-    return `${basePath}/${cleanBrand}.png`;
+
+    return {
+        capitalized: `${basePath}/${capitalizedBrand}.png`,
+        lowercase: `${basePath}/${lowercaseBrand}.png`
+    };
 }
 
 // Fonction pour afficher les marques
@@ -136,19 +139,27 @@ function displayBrands(brands, type) {
             div.addEventListener('click', () => handleBrandSelection(brand.name, type));
             
             const img = document.createElement('img');
-            img.src = getLogoPath(brand.name);
+            const paths = getLogoPath(brand.name);
+            
+            // Essayer d'abord avec la version majuscule
+            img.src = paths.capitalized;
             img.alt = brand.name;
             img.className = 'brand-logo';
             img.loading = 'lazy';
-            img.style.display = 'none';  // Cacher l'image par défaut
+            img.style.display = 'none';
             
-            // Gestion des erreurs de chargement
+            // Si la version majuscule échoue, essayer la version minuscule
             img.onerror = function() {
-                console.log(`Logo non trouvé pour ${brand.name}`);
-                this.style.display = 'none';
+                console.log(`Tentative avec le logo en minuscules pour ${brand.name}`);
+                this.src = paths.lowercase;
+                
+                // Si les deux échouent, masquer l'image
+                this.onerror = function() {
+                    console.log(`Aucun logo trouvé pour ${brand.name}`);
+                    this.style.display = 'none';
+                };
             };
             
-            // Afficher l'image quand elle est chargée
             img.onload = function() {
                 console.log(`Logo chargé avec succès pour ${brand.name}`);
                 this.style.display = 'block';
@@ -314,7 +325,7 @@ function handleBrandSelection(brand, type) {
                 <div class="step-title">Marque sélectionnée</div>
                 <div class="step-content">
                     <div class="selection-item selected" data-scroll-to="model">
-                        <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
+                        <img src="${getLogoPath(brand).capitalized}" alt="${brand}" class="brand-logo" 
                              onerror="this.onerror=null; this.src='images/logos/default.png';"
                              onload="this.style.display='block';">
                         <span class="brand-name">${brand}</span>
