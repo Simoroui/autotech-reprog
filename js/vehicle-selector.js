@@ -99,12 +99,18 @@ function extractBrands(lines) {
 
 // Fonction pour obtenir le chemin du logo selon l'environnement
 function getLogoPath(brand) {
+    // Ne pas ajouter /autotech-reprog/ en local
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
-    const cleanBrand = brand.toLowerCase()
-        .replace(/\s+/g, '-')  // Remplacer les espaces par des tirets
-        .replace(/[^a-z0-9-]/g, '')  // Garder uniquement les lettres, chiffres et tirets
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');  // Enlever les accents
     
+    // Nettoyer le nom en gardant juste la première lettre majuscule
+    const cleanBrand = brand
+        .trim()  // Enlever les espaces au début et à la fin
+        .replace(/\s+/g, '')  // Enlever tous les espaces
+        .replace(/[^a-zA-Z0-9]/g, '')  // Garder uniquement les lettres et chiffres
+        .charAt(0).toUpperCase() + // Première lettre majuscule
+        brand.slice(1).toLowerCase();  // Reste en minuscules
+    
+    // Construire le chemin selon l'environnement
     const basePath = isGitHubPages 
         ? '/autotech-reprog/images/logos'
         : 'images/logos';
@@ -138,15 +144,8 @@ function displayBrands(brands, type) {
             
             // Gestion des erreurs de chargement
             img.onerror = function() {
-                console.log(`Logo non trouvé pour ${brand.name}, tentative avec le nom en minuscules`);
-                // Essayer avec le nom en minuscules si la première tentative échoue
-                this.src = getLogoPath(brand.name.toLowerCase());
-                
-                // Si ça échoue encore, masquer l'image
-                this.onerror = function() {
-                    console.log(`Logo définitivement non trouvé pour ${brand.name}`);
+                console.log(`Logo non trouvé pour ${brand.name}`);
                 this.style.display = 'none';
-                };
             };
             
             // Afficher l'image quand elle est chargée
