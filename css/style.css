@@ -6,6 +6,7 @@
     --background-color: #ffffff;
 }
 
+/* Reset et polices */
 * {
     margin: 0;
     padding: 0;
@@ -13,26 +14,38 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
 }
 
-.main-content {
-    padding-top: 80px;
-}
-
-/* Hero Section */
-.hero {
+.page-wrapper {
     position: relative;
-    min-height: 90vh;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
+    width: 100%;
+    min-height: 100vh;
     overflow: hidden;
-    padding-bottom: 8rem;
-    margin-top: 0;     /* Assure qu'il n'y a pas de margin en haut */
-    padding-top: 0;    /* Assure qu'il n'y a pas de padding en haut */
+}
+
+.hero-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.hero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000;
 }
 
 .hero-background {
@@ -41,12 +54,34 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../images/hero-bg.jpg');
-    background-size: cover;
-    background-position: center 60%;
-    background-repeat: no-repeat;
-    filter: brightness(0.7);
+    background: url('../images/hero-bg.jpg') center center/cover no-repeat;
     z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+}
+
+.main-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .hero-background::after {
@@ -56,20 +91,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 2;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 3;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
 }
 
 .hero h1 {
@@ -86,26 +109,29 @@ body {
 }
 
 .text-red {
-    color: white;
+    color: #ffffff; /* Changement de la couleur en blanc */
     font-size: 2rem;
-    text-align: center;
-    padding: 0;
-    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 2.5rem;
 }
 
 .boost-button {
-    margin: 0;
-    padding: 1rem 2rem;
     display: inline-block;
-    font-size: 1.2rem;
-    text-transform: uppercase;
+    padding: 1rem 2rem;
+    background-color: #E30613;
     color: white;
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
     text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: 1.5rem; /* Ajout d'un espacement en haut */
 }
 
 .boost-button:hover {
@@ -3461,6 +3487,6 @@ html {
 
 /* Assure que le conteneur principal n'a pas d'espaces indésirables */
 .container-fluid {
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
