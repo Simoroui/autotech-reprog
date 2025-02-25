@@ -12,7 +12,7 @@
 .header-container {
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 2rem;
 }
 
 .nav-main {
@@ -28,6 +28,7 @@
     height: 100%;
     display: flex;
     align-items: center;
+    margin-right: 1rem;
 }
 
 .nav-links {
@@ -37,13 +38,17 @@
     list-style: none;
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 1rem;
 }
 
 .nav-links li {
     height: 100%;
     display: flex;
     align-items: center;
+}
+
+.nav-links li:last-child {
+    margin-right: 1rem;
 }
 
 .nav-links a {
@@ -67,11 +72,14 @@
     align-items: center;
     height: 100%;
     padding: 10px 0;
+    margin-left: 1rem;
 }
 
 .logo-img {
     height: 43px;
     width: auto;
+    max-height: 50px;
+    margin-left: 1rem;
 }
 
 .logo a {
