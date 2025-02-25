@@ -31,6 +31,8 @@ body {
     justify-content: flex-start;
     overflow: hidden;
     padding-bottom: 8rem;
+    margin-top: 0;     /* Assure qu'il n'y a pas de margin en haut */
+    padding-top: 0;    /* Assure qu'il n'y a pas de padding en haut */
 }
 
 .hero-background {
@@ -899,6 +901,8 @@ body {
     text-align: center;
     background: rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0;  /* Assure qu'il n'y a pas de margin en bas */
+    padding-bottom: 0; /* Assure qu'il n'y a pas de padding en bas */
 }
 
 .results-title {
@@ -3453,4 +3457,10 @@ html {
         font-weight: 500;
         color: #fff;
     }
+}
+
+/* Assure que le conteneur principal n'a pas d'espaces indésirables */
+.container-fluid {
+    padding: 0;
+    margin: 0;
 }

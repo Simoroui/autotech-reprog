@@ -1116,7 +1116,7 @@ async function loadAndCacheCSV() {
     if (csvCache) {
         return csvCache;
     }
-
+    
     try {
         const response = await fetch('data/marques.csv');
         if (!response.ok) {
