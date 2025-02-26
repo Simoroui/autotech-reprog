@@ -60,12 +60,12 @@
                                 <li><a href="#options">Clonage ECU</a></li>
                             </ul>
                         </li>
-                        <li><a href="enconstruction.html">Dyno</a></li>
+                        <li><a href="dyno.html">Dyno</a></li>
                         <li><a href="enconstruction.html">Service</a></li>
                         <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
                         <li><a href="enconstruction.html">Réalisations</a></li>
                     <li><a href="#news">News</a></li>
-                        <li><a href="enconstruction.html">FAQ</a></li>
+                        <li><a href="ensavoirplus.html">En savoir +</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
             </div>
@@ -599,7 +599,7 @@
                         <div class="footer-nav">
                             <h3>Navigation</h3>
                             <a href="#boost">Reprogrammation</a>
-                            <a href="enconstruction.html">Dyno</a>
+                            <a href="dyno.html">Dyno</a>
                             <a href="enconstruction.html">Service</a>
                             <a href="#contact">Contact</a>
                         </div>
@@ -608,7 +608,7 @@
                             <h3>Services</h3>
                             <a href="#boost">Reprogrammation</a>
                             <a href="#options">Options de reprog</a>
-                            <a href="enconstruction.html">Passage au banc</a>
+                            <a href="dyno.html">Passage au banc</a>
                             <a href="enconstruction.html">Échappement</a>
                             <a href="enconstruction.html">Downpipe</a>
                         </div>
@@ -633,5 +633,29 @@
     <script src="js/contact-form.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/social-icons.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifier si on a une cible de défilement stockée
+            if (window.innerWidth > 768) {
+                const scrollTarget = localStorage.getItem('scrollTarget');
+                if (scrollTarget) {
+                    setTimeout(() => {
+                        const element = document.getElementById(scrollTarget);
+                        if (element) {
+                            const headerHeight = 80; // Ajusté pour que le titre soit en haut
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - headerHeight;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'instant' // Changé pour un défilement instantané
+                            });
+                        }
+                        localStorage.removeItem('scrollTarget');
+                    }, 0); // Réduit le délai à 0
+                }
+            }
+        });
+    </script>
 </body>
 </html>
