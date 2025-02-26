@@ -14,6 +14,50 @@
             src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" 
             nonce="your-nonce">
     </script>
+    <style>
+        .laser-container {
+            position: relative;
+            margin: 20px auto;
+            width: fit-content;
+            padding: 10px;
+        }
+
+        .laser-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid red;
+            animation: laser 2s infinite;
+            box-shadow: 0 0 10px red, inset 0 0 10px red;
+            pointer-events: none;
+        }
+
+        @keyframes laser {
+            0% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 20px red, inset 0 0 20px red;
+            }
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .text-description {
+            font-size: 0.95em;  /* Réduction légère de la taille du texte */
+        }
+
+        .description-text {
+            color: white;
+            font-size: 1.1em; /* Augmentation de la taille du texte */
+            text-align: justify;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="page-wrapper">
@@ -77,90 +121,93 @@
         </header>
 
         <main class="main-content">
-            <!-- Article principal du Banc -->
-            <article class="dyno-article">
-                <div class="section-container">
-                    <div class="article-header">
-                        <h1 class="article-title">Notre Banc de Puissance BPA-2R HP</h1>
-                    </div>
+            <div class="laser-container">
+                <div class="laser-border"></div>
+                <div class="grid-container">
+                    <div class="grid">
+                        <!-- Article principal du Banc -->
+                        <article class="dyno-article">
+                            <div class="section-container">
+                                <div class="article-header">
+                                    <h1 class="article-title">Notre Banc de Puissance BPA-2R HP</h1>
+                                </div>
 
-                    <div class="article-content-wrapper">
-                        <div class="article-text">
-                            <p class="article-intro">
-                                Notre banc de puissance offre le meilleur service possible en termes de précision et de fiabilité. 
-                                Équipé de rouleaux godronnés de 400 mm et d'un châssis robuste, il répond à tous vos besoins : 
-                                Tests, Recherche et Développement, Motorsport, Tuning et Chip Tuning.
-                            </p>
-                            <p class="article-intro">
-                                La série HP représente l'excellence en matière de précision et de fiabilité grâce à ses rouleaux 
-                                de 400 mm, accouplés et reliés par des sangles de haute densité. Son châssis, fabriqué avec un 
-                                métal épais, assure la plus haute précision pour tous types de tests et de développements.
-                            </p>
-                        </div>
-                        <img src="images/dyno-main.jpg" alt="Banc de puissance AUTOTECH" class="article-image">
-                    </div>
+                                <div class="article-content-wrapper">
+                                    <div class="article-text">
+                                        <div class="description-text">
+                                            Notre banc de puissance offre le meilleur service possible en termes de précision et de fiabilité. Équipé de rouleaux godronnés de 400 mm et d'un châssis robuste, il répond à tous vos besoins : Tests, Recherche et Développement, Motorsport, Tuning et Chip Tuning.
+                                        </div>
+                                        <div class="description-text">
+                                            La série HP représente l'excellence en matière de précision et de fiabilité grâce à ses rouleaux de 400 mm, accouplés et reliés par des sangles de haute densité. Son châssis, fabriqué avec un métal épais, assure la plus haute précision pour tous types de tests et de développements
+                                        </div>
+                                    </div>
+                                    <img src="images/dyno-main.jpg" alt="Banc de puissance AUTOTECH" class="article-image">
+                                </div>
 
-                    <div class="specs-section">
-                        <h2>Caractéristiques Techniques</h2>
-                        <div class="specs-grid">
-                            <div class="spec-card">
-                                <i class="fas fa-cog"></i>
-                                <h3>Performances</h3>
-                                <ul>
-                                    <li>Vitesse maximale : 360 km/h</li>
-                                    <li>Puissance absorbable : 650 CV</li>
-                                    <li>Puissance mesurable : 1000 CV</li>
-                                    <li>Force de traction max : 8000 N</li>
-                                </ul>
+                                <div class="specs-section">
+                                    <h2>Caractéristiques Techniques</h2>
+                                    <div class="specs-grid">
+                                        <div class="spec-card">
+                                            <i class="fas fa-cog"></i>
+                                            <h3>Performances</h3>
+                                            <ul>
+                                                <li>Vitesse maximale : 360 km/h</li>
+                                                <li>Puissance absorbable : 650 CV</li>
+                                                <li>Puissance mesurable : 1000 CV</li>
+                                                <li>Force de traction max : 8000 N</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="spec-card">
+                                            <i class="fas fa-ruler"></i>
+                                            <h3>Caractéristiques Mécaniques</h3>
+                                            <ul>
+                                                <li>Diamètre des rouleaux : 400 mm</li>
+                                                <li>Largeur des rouleaux : 700 mm</li>
+                                                <li>Qualité d'équilibrage : G 2.5</li>
+                                                <li>Poids max supporté : 2500 kg</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="programs-section">
+                                    <h2>Nos Services de Mesure</h2>
+                                    <div class="programs-grid">
+                                        <div class="program-item">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            <h3>Tests de Performance</h3>
+                                            <ul>
+                                                <li>Test de puissance par paliers</li>
+                                                <li>Test de puissance en continu</li>
+                                                <li>Simulation routière</li>
+                                                <li>Cartographie moteur</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="program-item">
+                                            <i class="fas fa-tools"></i>
+                                            <h3>Diagnostics</h3>
+                                            <ul>
+                                                <li>Vérification transmission</li>
+                                                <li>Contrôle système de refroidissement</li>
+                                                <li>Diagnostic avec analyseur de gaz</li>
+                                                <li>Tests de durabilité</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="contact-section">
+                                    <h2>Réservez Votre Passage au Banc</h2>
+                                    <p>Contactez-nous pour plus d'informations ou pour prendre rendez-vous</p>
+                                    <a href="index.html#contact" class="contact-button">Nous Contacter</a>
+                                </div>
                             </div>
-
-                            <div class="spec-card">
-                                <i class="fas fa-ruler"></i>
-                                <h3>Caractéristiques Mécaniques</h3>
-                                <ul>
-                                    <li>Diamètre des rouleaux : 400 mm</li>
-                                    <li>Largeur des rouleaux : 700 mm</li>
-                                    <li>Qualité d'équilibrage : G 2.5</li>
-                                    <li>Poids max supporté : 2500 kg</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="programs-section">
-                        <h2>Nos Services de Mesure</h2>
-                        <div class="programs-grid">
-                            <div class="program-item">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <h3>Tests de Performance</h3>
-                                <ul>
-                                    <li>Test de puissance par paliers</li>
-                                    <li>Test de puissance en continu</li>
-                                    <li>Simulation routière</li>
-                                    <li>Cartographie moteur</li>
-                                </ul>
-                            </div>
-
-                            <div class="program-item">
-                                <i class="fas fa-tools"></i>
-                                <h3>Diagnostics</h3>
-                                <ul>
-                                    <li>Vérification transmission</li>
-                                    <li>Contrôle système de refroidissement</li>
-                                    <li>Diagnostic avec analyseur de gaz</li>
-                                    <li>Tests de durabilité</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="contact-section">
-                        <h2>Réservez Votre Passage au Banc</h2>
-                        <p>Contactez-nous pour plus d'informations ou pour prendre rendez-vous</p>
-                        <a href="index.html#contact" class="contact-button">Nous Contacter</a>
+                        </article>
                     </div>
                 </div>
-            </article>
+            </div>
         </main>
 
         <!-- Footer -->
