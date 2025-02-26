@@ -25,17 +25,45 @@
                         <img src="images/logo.png" alt="Logo" class="logo-img">
                     </a>
                 </div>
+                <div class="social-media">
+                    <a href="https://www.facebook.com/autotechreprogrammation" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/autotech_reprog/" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@autotechtunis2888" target="_blank">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
                 <div class="nav-container">
                     <ul class="nav-links">
-                        <li><a href="/autotech-reprog/">Accueil</a></li>
-                        <li><a href="/autotech-reprog/#boost">Reprogrammation</a></li>
-                        <li><a href="./enconstruction.html">Dyno</a></li>
-                        <li><a href="./enconstruction.html">Service</a></li>
-                        <li><a href="./enconstruction.html">Échappement & Downpipe</a></li>
-                        <li><a href="./enconstruction.html">Réalisations</a></li>
-                        <li><a href="./index.html#news">News</a></li>
-                        <li><a href="./enconstruction.html">FAQ</a></li>
-                        <li><a href="./index.html#contact">Contact</a></li>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li class="has-submenu">
+                            <a href="index.html#boost">Reprogrammation</a>
+                            <ul class="submenu">
+                                <li><a href="index.html#boost">Stage 1</a></li>
+                                <li><a href="index.html#boost">Stage 2</a></li>
+                                <li><a href="index.html#options">Filtres à particules off (FAP)</a></li>
+                                <li><a href="index.html#options">EGR off</a></li>
+                                <li><a href="index.html#options">Adblue off</a></li>
+                                <li><a href="index.html#options">Decata</a></li>
+                                <li><a href="index.html#options">OPF/GPF off</a></li>
+                                <li><a href="index.html#options">Pop & Bang</a></li>
+                                <li><a href="index.html#options">Hard Cut</a></li>
+                                <li><a href="index.html#options">Launch Control</a></li>
+                                <li><a href="index.html#options">Vmax off</a></li>
+                                <li><a href="index.html#options">Reprog BVA/DSG</a></li>
+                                <li><a href="index.html#options">Clonage ECU</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="dyno.html">Dyno</a></li>
+                        <li><a href="enconstruction.html">Service</a></li>
+                        <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
+                        <li><a href="enconstruction.html">Réalisations</a></li>
+                        <li><a href="index.html#news">News</a></li>
+                        <li><a href="enconstruction.html">En savoir +</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
             </nav>
@@ -84,18 +112,19 @@
                 <div class="footer-links">
                     <div class="footer-nav">
                         <h3>Navigation</h3>
-                        <a href="/autotech-reprog/#boost">Reprogrammation</a>
-                        <a href="./enconstruction.html">Dyno</a>
-                        <a href="./enconstruction.html">Service</a>
-                        <a href="./index.html#contact">Contact</a>
+                        <a href="#boost">Reprogrammation</a>
+                        <a href="dyno.html">Dyno</a>
+                        <a href="enconstruction.html">Service</a>
+                        <a href="#contact">Contact</a>
                     </div>
                     
                     <div class="footer-nav">
                         <h3>Services</h3>
-                        <a href="/autotech-reprog/#boost">Reprogrammation</a>
-                        <a href="./enconstruction.html">Passage au banc</a>
-                        <a href="./enconstruction.html">Échappement</a>
-                        <a href="./enconstruction.html">Downpipe</a>
+                        <a href="#boost">Reprogrammation</a>
+                        <a href="#options">Options de reprog</a>
+                        <a href="dyno.html">Passage au banc</a>
+                        <a href="enconstruction.html">Échappement</a>
+                        <a href="enconstruction.html">Downpipe</a>
                     </div>
                 </div>
             </div>
@@ -114,8 +143,20 @@
             hamburger.addEventListener('click', () => {
                 navContainer.classList.toggle('active');
             });
+
+            // Gestion des liens avec ancres pour la version PC
+            if (window.innerWidth > 768) {
+                document.querySelectorAll('a[href*="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        // Si le lien pointe vers une autre page
+                        if (this.href.includes('index.html')) {
+                            // Ne pas empêcher la navigation
+                            localStorage.setItem('scrollTarget', this.href.split('#')[1]);
+                        }
+                    });
+                });
+            }
         });
     </script>
-    <script src="js/social-icons.js"></script>
 </body>
 </html>
