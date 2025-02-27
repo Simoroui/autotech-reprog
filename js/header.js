@@ -27,6 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
                path.endsWith('/autotech-reprog/index.html');
     };
 
+    // Fonction pour gérer le scroll vers une ancre
+    const scrollToAnchor = (targetId) => {
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            const headerHeight = document.querySelector('.header').offsetHeight;
+            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     // Fonction pour mettre à jour le lien actif
     const updateActiveLink = () => {
         const path = window.location.pathname;
@@ -63,27 +76,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (isHomePage() && isAnchorLink) {
                         // Si on est sur la page d'accueil et que c'est un lien d'ancrage
+                        e.preventDefault();
                         closeMenu();
                         // Ajouter un petit délai pour le défilement
                         setTimeout(() => {
                             const targetId = href.split('#')[1];
-                            const targetElement = document.getElementById(targetId);
-                            if (targetElement) {
-                                const headerHeight = document.querySelector('.header').offsetHeight;
-                                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                                window.scrollTo({
-                                    top: targetPosition,
-                                    behavior: 'smooth'
-                                });
-                            }
+                            scrollToAnchor(targetId);
                         }, 300);
-                    } else if (!isAnchorLink || !isHomePage()) {
-                        // Si ce n'est pas un lien d'ancrage ou si on n'est pas sur la page d'accueil
+                    } else if (isAnchorLink && !isHomePage()) {
+                        // Si c'est un lien d'ancrage mais qu'on n'est pas sur la page d'accueil
+                        closeMenu();
+                        // Stocker l'ancre pour le scroll après le chargement de la page
+                        const targetId = href.split('#')[1];
+                        localStorage.setItem('scrollTarget', targetId);
+                    } else {
+                        // Pour les autres liens
                         closeMenu();
                     }
                 }
             });
         });
+    }
+
+    // Vérifier s'il y a une ancre à scroller au chargement
+    const scrollTarget = localStorage.getItem('scrollTarget');
+    if (scrollTarget && isHomePage()) {
+        setTimeout(() => {
+            scrollToAnchor(scrollTarget);
+            localStorage.removeItem('scrollTarget');
+        }, 500);
     }
 
     // Mettre à jour le lien actif au chargement
