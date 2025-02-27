@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger-menu');
     const navContainer = document.querySelector('.nav-container');
     const body = document.body;
-    const reprogLink = document.querySelector('.has-submenu > a[href="index.html#boost"]');
     const headerSocial = document.querySelector('.header-social');
 
     // Fonction pour fermer le menu
@@ -49,46 +48,39 @@ document.addEventListener('DOMContentLoaded', () => {
             body.classList.toggle('menu-open');
 
             const isMenuOpen = navContainer.classList.contains('active');
+            if (headerSocial) {
+                headerSocial.style.display = isMenuOpen ? 'flex' : 'none';
+            }
             console.log(isMenuOpen ? 'Menu ouvert' : 'Menu fermé');
         });
 
-        // Gestionnaire pour tous les liens du menu principal
+        // Gestionnaire pour tous les liens du menu
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
-                    const isSubmenuToggle = link.parentElement.classList.contains('has-submenu');
                     const href = link.getAttribute('href');
                     const isAnchorLink = href.includes('#');
                     
-                    if (isSubmenuToggle) {
-                        e.preventDefault();
-                        const parent = link.parentElement;
-                        parent.classList.toggle('active');
-                        
-                        // Changer le texte du lien Reprogrammation
-                        if (link === reprogLink) {
-                            link.textContent = parent.classList.contains('active') ? 'Reprog.' : 'Reprogrammation';
-                            // Gérer l'affichage des icônes sociales
-                            if (headerSocial) {
-                                headerSocial.style.display = parent.classList.contains('active') ? 'none' : 'flex';
-                            }
-                        }
-                    } else if (isHomePage() && isAnchorLink) {
+                    if (isHomePage() && isAnchorLink) {
                         // Si on est sur la page d'accueil et que c'est un lien d'ancrage
                         closeMenu();
+                        // Ajouter un petit délai pour le défilement
+                        setTimeout(() => {
+                            const targetId = href.split('#')[1];
+                            const targetElement = document.getElementById(targetId);
+                            if (targetElement) {
+                                const headerHeight = document.querySelector('.header').offsetHeight;
+                                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                                window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 300);
                     } else if (!isAnchorLink || !isHomePage()) {
                         // Si ce n'est pas un lien d'ancrage ou si on n'est pas sur la page d'accueil
                         closeMenu();
                     }
-                }
-            });
-        });
-
-        // Gestionnaire spécifique pour les liens du sous-menu
-        document.querySelectorAll('.submenu a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    closeMenu();
                 }
             });
         });

@@ -749,4 +749,21 @@
         width: 100%;
         padding-right: 50px;
     }
+
+    .header-social {
+        position: relative;
+        bottom: auto;
+        margin-top: 20px;
+        background: none;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-container.active .header-social {
+        display: flex;
+    }
+
+    body:not(.menu-open) .header-social {
+        display: none;
+    }
 }
