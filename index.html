@@ -173,57 +173,89 @@
                 left: 100%;
             }
         }
+
+        .nav-links > li > a {
+            min-height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Style pour les icônes sociales */
+        .header-social {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+            z-index: 10001;
+        }
     </style>
 </head>
 <body>
     <div class="page-wrapper">
     <header class="header">
-            <div class="header-container">
-                <!-- Ajouter le bouton hamburger -->
-                <button class="hamburger-menu">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
-                
-        <nav class="nav-main">
-            <div class="logo">
+        <button class="hamburger-menu" aria-label="Menu">
+            <i class="fas fa-bars hamburger-icon" aria-hidden="true"></i>
+            <i class="fas fa-times close-icon" aria-hidden="true"></i>
+        </button>
+        <div class="header-container">
+            <nav class="nav-main">
+                <div class="logo">
                     <a href="https://simoroui.github.io/autotech-reprog/">
-                    <img src="images/logo.png" alt="Logo" class="logo-img">
-                </a>
-            </div>
-            <div class="nav-container">
-                <ul class="nav-links">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li class="has-submenu">
-                            <a href="#boost">Reprogrammation</a>
-                            <ul class="submenu">
-                                <li><a href="#boost">Stage 1</a></li>
-                                <li><a href="#boost">Stage 2</a></li>
-                                <li><a href="#options">Filtres à particules off (FAP)</a></li>
-                                <li><a href="#options">EGR off</a></li>
-                                <li><a href="#options">Adblue off</a></li>
-                                <li><a href="#options">Decata</a></li>
-                                <li><a href="#options">OPF/GPF off</a></li>
-                                <li><a href="#options">Pop & Bang</a></li>
-                                <li><a href="#options">Hard Cut</a></li>
-                                <li><a href="#options">Launch Control</a></li>
-                                <li><a href="#options">Vmax off</a></li>
-                                <li><a href="#options">Reprog BVA/DSG</a></li>
-                                <li><a href="#options">Clonage ECU</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="dyno.html">Dyno</a></li>
-                        <li><a href="enconstruction.html">Service</a></li>
-                        <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
-                        <li><a href="enconstruction.html">Réalisations</a></li>
-                    <li><a href="#news">News</a></li>
-                        <li><a href="enconstruction.html">En savoir +</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-            </div>
+                        <img src="images/logo.png" alt="Logo" class="logo-img">
+                    </a>
+                </div>
+                <div class="nav-container">
+                    <ul class="nav-links">
+                            <li><a href="index.html">Accueil</a></li>
+                            <li class="has-submenu">
+                                <a href="#boost">Reprogrammation</a>
+                                <ul class="submenu">
+                                    <li><a href="#boost">Stage 1</a></li>
+                                    <li><a href="#boost">Stage 2</a></li>
+                                    <li><a href="#options">Filtres à particules off (FAP)</a></li>
+                                    <li><a href="#options">EGR off</a></li>
+                                    <li><a href="#options">Adblue off</a></li>
+                                    <li><a href="#options">Decata</a></li>
+                                    <li><a href="#options">OPF/GPF off</a></li>
+                                    <li><a href="#options">Pop & Bang</a></li>
+                                    <li><a href="#options">Hard Cut</a></li>
+                                    <li><a href="#options">Launch Control</a></li>
+                                    <li><a href="#options">Vmax off</a></li>
+                                    <li><a href="#options">Reprog BVA/DSG</a></li>
+                                    <li><a href="#options">Clonage ECU</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="dyno.html">Dyno</a></li>
+                            <li><a href="enconstruction.html">Service</a></li>
+                            <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
+                            <li><a href="enconstruction.html">Réalisations</a></li>
+                        <li><a href="#news">News</a></li>
+                            <li><a href="ensavoirplus.html">En savoir +</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <div class="header-social">
+                        <a href="https://www.facebook.com/autotechreprogrammation" target="_blank" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/autotech_reprog/" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@autotechtunis2888" target="_blank" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
     </header>
 
     <main class="main-content">
@@ -782,6 +814,8 @@
 
     </div>
 
+    <!-- Scripts -->
+    <script src="js/header.js"></script>
     <script src="js/vehicle-selector.js"></script>
     <script src="js/contact-form.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

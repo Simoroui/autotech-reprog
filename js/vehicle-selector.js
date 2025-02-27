@@ -18,14 +18,6 @@ async function testFileAccess() {
 // Fonction pour parser le contenu
 function parseCSV(text) {
     const lines = text.split('\n');
-    console.log('Nombre de lignes:', lines.length);
-    
-    // Afficher les 3 premières lignes pour vérification
-    console.log('Premières lignes:');
-    lines.slice(0, 3).forEach((line, index) => {
-        console.log(`Ligne ${index}:`, line);
-    });
-    
     return lines;
 }
 
@@ -40,7 +32,6 @@ function extractBrands(lines) {
         agricultural: new Set()
     };
     
-    // Mapping des types avec majuscules
     const typeMapping = {
         'VOITURE': 'cars',
         'Voiture': 'cars',
@@ -57,35 +48,20 @@ function extractBrands(lines) {
         'agricole & engin': 'agricultural'
     };
     
-    // Ignorer la première ligne (en-tête)
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
         
         const columns = line.split(',');
         const brand = columns[0].trim();
-        const rawType = columns[columns.length - 1].trim(); // Ne pas convertir en minuscules
-        
-        console.log('------------------------');
-        console.log(`Ligne ${i}:`);
-        console.log(`Marque: "${brand}"`);
-        console.log(`Type brut: "${rawType}"`);
+        const rawType = columns[columns.length - 1].trim();
         
         const type = typeMapping[rawType];
         if (type && brands[type]) {
             brands[type].add(brand);
-            console.log(`✅ Ajout de ${brand} aux ${type}`);
-        } else {
-            console.warn(`⚠️ Type de véhicule non reconnu: "${rawType}" pour ${brand}`);
         }
     }
     
-    // Log du contenu final des Sets
-    Object.entries(brands).forEach(([key, set]) => {
-        console.log(`${key}: ${Array.from(set).join(', ')}`);
-    });
-    
-    // Convertir les Sets en Arrays avec les chemins de logos
     const result = {};
     Object.entries(brands).forEach(([key, set]) => {
         result[key] = Array.from(set).map(name => ({
@@ -102,7 +78,6 @@ function getLogoPath(brand) {
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
     const basePath = isGitHubPages ? '/autotech-reprog/images/logos' : 'images/logos';
     
-    // Nettoyer et formater le nom de la marque
     const cleanBrand = brand
         .trim()
         .split(' ')
@@ -115,10 +90,7 @@ function getLogoPath(brand) {
 // Fonction pour afficher les marques
 function displayBrands(brands, type) {
     const grid = document.getElementById(`${type}-grid`);
-    if (!grid) {
-        console.error('Grid non trouvée:', type);
-        return;
-    }
+    if (!grid) return;
     
     grid.innerHTML = '';
     if (brands[type]) {
@@ -1140,14 +1112,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lines = parseCSV(csvContent);
         const brands = extractBrands(lines);
         
-        // Afficher les marques du premier onglet
         const defaultTab = document.querySelector('.tab-button.active');
         if (defaultTab) {
             const defaultType = defaultTab.dataset.type;
             displayBrands(brands, defaultType);
         }
         
-        // Gestionnaire pour les onglets
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', (event) => {
                 handleTabClick(event, brands);
@@ -1155,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         
     } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
+        // Gérer l'erreur silencieusement
     }
 });
 
@@ -1325,3 +1295,89 @@ function updatePerformanceData(isStage2) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const vehicleTabs = document.querySelectorAll('.vehicle-tabs button');
+    const brandsGrids = document.querySelectorAll('.brands-grid');
+
+    // Gestion des onglets
+    vehicleTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            vehicleTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            brandsGrids.forEach(grid => grid.classList.remove('active'));
+            const targetGrid = document.getElementById(`${tab.dataset.type}-grid`);
+            if (targetGrid) {
+                targetGrid.classList.add('active');
+            }
+        });
+    });
+
+    // Charger et traiter les données CSV
+    fetch('data/marques.csv')
+        .then(response => response.text())
+        .then(data => {
+            const lines = data.split('\n');
+            const cars = new Set();
+            const motorcycles = new Set();
+            const jetski = new Set();
+            const quad = new Set();
+            const trucks = new Set();
+            const agricultural = new Set();
+
+            lines.forEach(line => {
+                const [marque, type] = line.split(',').map(item => item.trim());
+                if (!marque || !type) return;
+
+                switch (type.toLowerCase()) {
+                    case 'voiture': cars.add(marque); break;
+                    case 'moto': motorcycles.add(marque); break;
+                    case 'jetski': jetski.add(marque); break;
+                    case 'quad': quad.add(marque); break;
+                    case 'camion': trucks.add(marque); break;
+                    case 'agricole': agricultural.add(marque); break;
+                }
+            });
+
+            const createBrandElements = (brands, gridId) => {
+                const grid = document.getElementById(gridId);
+                if (!grid) return;
+
+                Array.from(brands).sort().forEach(brand => {
+                    const brandElement = document.createElement('div');
+                    brandElement.className = 'brand-item';
+                    
+                    const link = document.createElement('a');
+                    link.href = 'enconstruction.html';
+                    link.className = 'brand-link';
+                    
+                    const logo = document.createElement('div');
+                    logo.className = 'brand-logo';
+                    const img = document.createElement('img');
+                    img.src = `images/logos/${brand.toLowerCase().replace(/\s+/g, '-')}.png`;
+                    img.alt = `${brand} logo`;
+                    img.loading = 'lazy';
+                    
+                    const name = document.createElement('div');
+                    name.className = 'brand-name';
+                    name.textContent = brand;
+                    
+                    logo.appendChild(img);
+                    link.appendChild(logo);
+                    link.appendChild(name);
+                    brandElement.appendChild(link);
+                    grid.appendChild(brandElement);
+                });
+            };
+
+            createBrandElements(cars, 'cars-grid');
+            createBrandElements(motorcycles, 'motorcycles-grid');
+            createBrandElements(jetski, 'jetski-grid');
+            createBrandElements(quad, 'quad-grid');
+            createBrandElements(trucks, 'trucks-grid');
+            createBrandElements(agricultural, 'agricultural-grid');
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des marques:', error);
+        });
+});
