@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger-menu');
     const navContainer = document.querySelector('.nav-container');
     const body = document.body;
-    const reprogLink = document.querySelector('.has-submenu > a[href="#boost"]');
+    const reprogLink = document.querySelector('.has-submenu > a[href="index.html#boost"]');
     const headerSocial = document.querySelector('.header-social');
 
     // Fonction pour fermer le menu
@@ -19,12 +19,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Menu fermé');
     };
 
+    // Fonction pour vérifier si nous sommes sur la page d'accueil
+    const isHomePage = () => {
+        const path = window.location.pathname;
+        return path.endsWith('index.html') || 
+               path.endsWith('/') || 
+               path.endsWith('/autotech-reprog/') || 
+               path.endsWith('/autotech-reprog/index.html');
+    };
+
     // Fonction pour mettre à jour le lien actif
     const updateActiveLink = () => {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const path = window.location.pathname;
+        const currentPage = path.split('/').pop() || 'index.html';
         document.querySelectorAll('.nav-links > li > a').forEach(link => {
             const href = link.getAttribute('href');
-            if (href === currentPage || (currentPage === 'index.html' && href === '#')) {
+            if (href === currentPage || (isHomePage() && href === '#')) {
                 link.parentElement.classList.add('current-page');
             } else {
                 link.parentElement.classList.remove('current-page');
@@ -48,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.innerWidth <= 768) {
                     const isSubmenuToggle = link.parentElement.classList.contains('has-submenu');
                     const href = link.getAttribute('href');
-                    const isCurrentPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
                     const isAnchorLink = href.includes('#');
                     
                     if (isSubmenuToggle) {
@@ -64,10 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 headerSocial.style.display = parent.classList.contains('active') ? 'none' : 'flex';
                             }
                         }
-                    } else if (isCurrentPage && isAnchorLink) {
-                        // Si on est sur index.html et que c'est un lien d'ancrage, fermer le menu
+                    } else if (isHomePage() && isAnchorLink) {
+                        // Si on est sur la page d'accueil et que c'est un lien d'ancrage
                         closeMenu();
-                    } else if (!isAnchorLink || !isCurrentPage) {
+                    } else if (!isAnchorLink || !isHomePage()) {
                         // Si ce n'est pas un lien d'ancrage ou si on n'est pas sur la page d'accueil
                         closeMenu();
                     }
