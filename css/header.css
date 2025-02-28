@@ -7,6 +7,35 @@
     background: rgba(0, 0, 0, 0.95);
 }
 
+/* Ajout de la ligne laser */
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent,
+        rgba(255, 0, 0, 0.8),
+        rgba(255, 0, 0, 1),
+        rgba(255, 0, 0, 0.8),
+        transparent
+    );
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5),
+                0 0 10px rgba(255, 0, 0, 0.3);
+    animation: laserScan 2s linear infinite;
+}
+
+@keyframes laserScan {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
 .header-container {
     width: 100%;
     padding: 0 2rem;
@@ -16,12 +45,15 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 20px;
 }
 
 .nav-container {
     display: flex;
     align-items: center;
+    flex: 1;
+    margin-left: 50px;
 }
 
 .nav-links {
@@ -32,6 +64,8 @@
     height: 100%;
     margin: 0;
     padding: 0 1rem;
+    margin-left: auto;
+    margin-right: 20px;
 }
 
 .nav-links li {
@@ -100,6 +134,8 @@
     .nav-main {
         position: relative;
         width: 100%;
+        padding-right: 0;
+        display: block;
     }
 
     .nav-container {
@@ -113,6 +149,8 @@
         z-index: 9999;
         display: none;
         overflow: auto;
+        padding: 0;
+        margin: 0;
     }
 
     .nav-container::before {
@@ -139,9 +177,10 @@
     .nav-container.active {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         animation: menuFadeIn 0.3s ease forwards;
+        padding-top: 80px;
     }
 
     @keyframes menuFadeIn {
@@ -157,7 +196,7 @@
 
     .nav-links {
         padding: 0;
-        margin-top: 60px;
+        margin: 0 auto;
         width: 90%;
         max-width: 400px;
         position: relative;
@@ -373,16 +412,15 @@
 
     /* Style pour les icônes sociales */
     .header-social {
-        position: fixed;
-        bottom: 20px;
-        left: 0;
+        position: relative;
+        bottom: auto;
+        margin-top: 20px;
+        background: none;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         width: 100%;
-        display: flex;
         justify-content: center;
-        gap: 20px;
-        padding: 10px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
-        z-index: 10001;
+        margin-left: 0;
     }
 
     .header-social a {
@@ -539,6 +577,11 @@
         width: 100%;
         border-radius: 8px;
         font-weight: 500;
+    }
+
+    /* Version mobile - cacher la ligne laser */
+    .header::after {
+        display: none;
     }
 }
 
@@ -731,6 +774,33 @@
     font-size: 16px;
 }
 
+/* Style par défaut pour header-social (version PC) */
+.header-social {
+    display: flex;
+    gap: 15px;
+    margin-left: auto;
+    padding: 0 20px;
+}
+
+.header-social a {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.header-social a:hover {
+    color: #E30613;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
 /* Version mobile */
 @media screen and (max-width: 768px) {
     .header-container {
@@ -750,6 +820,7 @@
         padding-right: 50px;
     }
 
+    /* Styles spécifiques pour header-social en mobile */
     .header-social {
         position: relative;
         bottom: auto;
@@ -757,6 +828,9 @@
         background: none;
         padding: 20px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
     }
 
     .nav-container.active .header-social {

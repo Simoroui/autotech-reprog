@@ -851,6 +851,11 @@ function showResultPage(vehicleData) {
                     <span class="price-amount">700 DT</span>
                     <span class="price-tax">HT</span>
                 </div>
+                <div class="price-info">
+                    <span class="stage-label">Stage 2 : </span>
+                    <span class="price-amount">Sur devis</span>
+                    <span class="price-tax">!</span>
+                </div>
                 <button class="reserve-btn" onclick="handleReservation('${brand}', '${model}', '${version}', '${engineType}')">
                     Réserver maintenant
                 </button>

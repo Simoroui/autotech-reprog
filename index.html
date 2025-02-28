@@ -80,15 +80,15 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255, 0, 0, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.2) 1px, transparent 1px);
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(0deg, rgba(255, 0, 0, 0.3) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.3) 2px, transparent 2px);
             background-size: 60px 60px;
-            animation: gridMove 20s linear infinite;
-            z-index: -2;
             opacity: 0.6;
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
         }
 
         @keyframes gridMove {
@@ -186,16 +186,10 @@
 
         /* Style pour les icônes sociales */
         .header-social {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 10px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
-            z-index: 10001;
+            gap: 15px;
+            margin-left: auto;
+            padding: 0 20px;
         }
     </style>
 </head>
@@ -215,32 +209,15 @@
                 </div>
                 <div class="nav-container">
                     <ul class="nav-links">
-                            <li><a href="index.html">Accueil</a></li>
-                            <li class="has-submenu">
-                                <a href="#boost">Reprogrammation</a>
-                                <ul class="submenu">
-                                    <li><a href="#boost">Stage 1</a></li>
-                                    <li><a href="#boost">Stage 2</a></li>
-                                    <li><a href="#options">Filtres à particules off (FAP)</a></li>
-                                    <li><a href="#options">EGR off</a></li>
-                                    <li><a href="#options">Adblue off</a></li>
-                                    <li><a href="#options">Decata</a></li>
-                                    <li><a href="#options">OPF/GPF off</a></li>
-                                    <li><a href="#options">Pop & Bang</a></li>
-                                    <li><a href="#options">Hard Cut</a></li>
-                                    <li><a href="#options">Launch Control</a></li>
-                                    <li><a href="#options">Vmax off</a></li>
-                                    <li><a href="#options">Reprog BVA/DSG</a></li>
-                                    <li><a href="#options">Clonage ECU</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="dyno.html">Dyno</a></li>
-                            <li><a href="enconstruction.html">Service</a></li>
-                            <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
-                            <li><a href="enconstruction.html">Réalisations</a></li>
-                        <li><a href="#news">News</a></li>
-                            <li><a href="ensavoirplus.html">En savoir +</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="index.html#boost">Reprogrammation</a></li>
+                        <li><a href="dyno.html">Dyno</a></li>
+                        <li><a href="enconstruction.html">Service</a></li>
+                        <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
+                        <li><a href="enconstruction.html">Réalisations</a></li>
+                        <li><a href="index.html#news">News</a></li>
+                        <li><a href="ensavoirplus.html">En savoir +</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                     <div class="header-social">
                         <a href="https://www.facebook.com/autotechreprogrammation" target="_blank" class="social-link">
