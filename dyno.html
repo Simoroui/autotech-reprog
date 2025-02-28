@@ -58,6 +58,131 @@
             margin: 20px 0;
             font-weight: normal;
         }
+
+        /* Styles pour la section Rapports Techniques */
+        .technical-reports-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .technical-reports-section h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            position: relative;
+        }
+
+        .technical-reports-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            animation: glow 1.5s infinite;
+        }
+
+        /* Styles du diaporama */
+        .slideshow-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(227, 6, 19, 0.3);
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Points de navigation */
+        .dots-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: #666;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* Animation de fondu */
+        .fade {
+            animation: fade 1.5s ease-in-out;
+        }
+
+        @keyframes fade {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+
+        /* Liste des points techniques */
+        .technical-points {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .technical-points li {
+            color: white;
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .technical-points li::before {
+            content: '•';
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+            font-size: 1.5em;
+            line-height: 1;
+        }
+
+        /* Responsive design */
+        @media screen and (max-width: 768px) {
+            .technical-reports-section {
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .technical-reports-section h2 {
+                font-size: 1.5em;
+            }
+
+            .technical-points li {
+                font-size: 0.9em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -81,7 +206,7 @@
                             <li><a href="dyno.html">Dyno</a></li>
                             <li><a href="enconstruction.html">Service</a></li>
                             <li><a href="enconstruction.html">Échappement & Downpipe</a></li>
-                            <li><a href="enconstruction.html">Réalisations</a></li>
+                            <li><a href="https://www.facebook.com/autotechreprogrammation/photos_albums" target="_blank">Réalisations</a></li>
                             <li><a href="index.html#news">News</a></li>
                             <li><a href="ensavoirplus.html">En savoir +</a></li>
                             <li><a href="index.html#contact">Contact</a></li>
@@ -111,7 +236,7 @@
                         <article class="dyno-article">
                             <div class="section-container">
                                 <div class="article-header">
-                                    <h1 class="article-title">Notre Banc de Puissance BPA-2R HP</h1>
+                                    <h1 class="article-title">Notre Banc de Puissance "Bapro BPA-2R HP"</h1>
                                 </div>
 
                                 <div class="article-content-wrapper">
@@ -124,6 +249,51 @@
                                         </div>
                                     </div>
                                     <img src="images/dyno-main.jpg" alt="Banc de puissance AUTOTECH" class="article-image">
+                                </div>
+
+                                <!-- Nouvelle section Rapports Techniques -->
+                                <div class="technical-reports-section">
+                                    <h2>Nos Rapports Techniques</h2>
+                                    
+                                    <!-- Diaporama -->
+                                    <div class="slideshow-container">
+                                        <div class="slides">
+                                            <div class="slide fade">
+                                                <img src="images/rapport1.jpg" alt="Rapport technique 1">
+                                            </div>
+                                            <div class="slide fade">
+                                                <img src="images/rapport2.jpg" alt="Rapport technique 2">
+                                            </div>
+                                            <div class="slide fade">
+                                                <img src="images/rapport3.jpg" alt="Rapport technique 3">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Points de navigation -->
+                                        <div class="dots-container">
+                                            <span class="dot"></span>
+                                            <span class="dot"></span>
+                                            <span class="dot"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Texte explicatif -->
+                                    <div class="reports-description">
+                                        <p class="description-text">
+                                            Chez AUTOTECH, nous ne nous limitons pas à une simple mesure de puissance. Notre expertise technique nous permet de réaliser une analyse complète et détaillée de votre véhicule. Grâce à notre système de datalogging avancé sur banc, nous surveillons en temps réel tous les paramètres critiques :
+                                        </p>
+                                        <ul class="technical-points">
+                                            <li>Analyse des courbes de puissance et de couple</li>
+                                            <li>Monitoring des températures (eau, huile, air admission)</li>
+                                            <li>Surveillance des pressions (turbo, huile, rail)</li>
+                                            <li>Contrôle des paramètres d'injection</li>
+                                            <li>Analyse des corrections lambda</li>
+                                            <li>Diagnostic complet avant et après tests</li>
+                                        </ul>
+                                        <p class="description-text">
+                                            Cette approche exhaustive nous permet d'optimiser votre véhicule en toute sécurité tout en garantissant des performances optimales.
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div class="specs-section">
@@ -262,6 +432,48 @@
                 });
             });
         }
+
+        // Script pour le diaporama automatique
+        document.addEventListener('DOMContentLoaded', function() {
+            let slideIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            const slideInterval = 5000; // Changement toutes les 5 secondes
+
+            function showSlides() {
+                // Cacher toutes les slides
+                slides.forEach(slide => {
+                    slide.style.display = 'none';
+                });
+
+                // Désactiver tous les points
+                dots.forEach(dot => {
+                    dot.classList.remove('active');
+                });
+
+                // Incrémenter l'index
+                slideIndex++;
+                if (slideIndex > slides.length) {
+                    slideIndex = 1;
+                }
+
+                // Afficher la slide courante
+                slides[slideIndex - 1].style.display = 'block';
+                dots[slideIndex - 1].classList.add('active');
+            }
+
+            // Initialiser le diaporama
+            showSlides();
+            setInterval(showSlides, slideInterval);
+
+            // Ajouter les événements click sur les points
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    slideIndex = index;
+                    showSlides();
+                });
+            });
+        });
     </script>
 </body>
 </html> 
