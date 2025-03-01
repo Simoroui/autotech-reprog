@@ -18,7 +18,7 @@
             position: relative;
             margin: 120px auto 20px;
             width: fit-content;
-            padding: 30px 10px 10px;
+            padding: 20px 5px 5px;
         }
 
         .laser-border {
@@ -27,16 +27,37 @@
             left: 0;
             right: 0;
             bottom: 0;
-            border: 2px solid red;
-            animation: laser 2s infinite;
-            box-shadow: 0 0 10px red, inset 0 0 10px red;
+            border: 1px solid rgba(255, 0, 0, 0.8);
+            animation: laser 3s infinite;
+            box-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.5),
+                0 0 10px rgba(255, 0, 0, 0.3),
+                0 0 15px rgba(255, 0, 0, 0.2),
+                inset 0 0 5px rgba(255, 0, 0, 0.5),
+                inset 0 0 10px rgba(255, 0, 0, 0.3);
             pointer-events: none;
+            filter: blur(0.3px);
         }
 
         @keyframes laser {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; box-shadow: 0 0 20px red, inset 0 0 20px red; }
-            100% { opacity: 0.5; }
+            0% { 
+                opacity: 0.5;
+                border-color: rgba(255, 0, 0, 0.5);
+            }
+            50% { 
+                opacity: 1;
+                border-color: rgba(255, 0, 0, 1);
+                box-shadow: 
+                    0 0 8px rgba(255, 0, 0, 0.7),
+                    0 0 15px rgba(255, 0, 0, 0.5),
+                    0 0 20px rgba(255, 0, 0, 0.3),
+                    inset 0 0 8px rgba(255, 0, 0, 0.7),
+                    inset 0 0 15px rgba(255, 0, 0, 0.5);
+            }
+            100% { 
+                opacity: 0.5;
+                border-color: rgba(255, 0, 0, 0.5);
+            }
         }
 
         .exhaust-section {
@@ -246,7 +267,7 @@
                 <nav class="nav-main">
                     <div class="logo">
                         <a href="https://simoroui.github.io/autotech-reprog/">
-                            <img src="images/logo.png" alt="Logo" class="logo-img">
+                            <img src="images/logo.png" alt="Logo" class="logo-img" loading="eager" width="150" height="50">
                         </a>
                     </div>
                     <div class="nav-container">
@@ -303,12 +324,24 @@
                                         <a href="index.html#contact" class="contact-button">Contactez-nous</a>
                                     </div>
                                     <div class="exhaust-video">
-                                        <img src="images/echappement.jpg" alt="Échappement sur mesure" />
+                                        <picture>
+                                            <source srcset="images/echappement.webp" type="image/webp">
+                                            <img src="images/echappement.jpg" 
+                                                 alt="Échappement sur mesure" 
+                                                 loading="lazy"
+                                                 width="400"
+                                                 height="300">
+                                        </picture>
                                     </div>
                                 </div>
 
                                 <div class="bmc-section">
-                                    <img src="images/bmc.jpg" alt="BMC Performance" class="bmc-image" />
+                                    <img src="images/bmc.jpg" 
+                                         alt="BMC Performance" 
+                                         class="bmc-image"
+                                         loading="lazy"
+                                         width="800"
+                                         height="600">
                                     <div class="bmc-text">
                                         BMC bouaita motors company<br>
                                         Spécialiste des lignes d'échappements & préparateur de voitures de compétition ⚒️<br>
@@ -326,7 +359,12 @@
             <div class="section-container">
                 <div class="footer-content">
                     <div class="footer-brand">
-                        <img src="images/Logo-H.png" alt="AutoTech Logo" class="footer-logo">
+                        <img src="images/Logo-H.png" 
+                             alt="AutoTech Logo" 
+                             class="footer-logo"
+                             loading="lazy"
+                             width="200"
+                             height="80">
                         <p class="footer-tagline subtitle">Autotech reprogrammation & optimisation moteur</p>
                         <p class="footer-tagline">Une PASSION Qui BAT</p>
                         <div class="footer-social">

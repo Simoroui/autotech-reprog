@@ -15,35 +15,56 @@
             nonce="your-nonce">
     </script>
     <style>
+        /* Styles pour le cadre laser */
         .laser-container {
             position: relative;
-            margin: 20px auto;
+            margin: 120px auto 20px;
             width: fit-content;
-            padding: 10px;
+            padding: 20px 5px 5px;
         }
 
         .laser-border {
             position: absolute;
-            top: 0;
+            top: 20px;
             left: 0;
             right: 0;
             bottom: 0;
-            border: 2px solid red;
+            border: 1px solid red;
             animation: laser 2s infinite;
-            box-shadow: 0 0 10px red, inset 0 0 10px red;
+            box-shadow: 0 0 5px red, inset 0 0 5px red;
             pointer-events: none;
         }
 
         @keyframes laser {
-            0% {
-                opacity: 0.5;
-            }
-            50% {
-                opacity: 1;
-                box-shadow: 0 0 20px red, inset 0 0 20px red;
-            }
-            100% {
-                opacity: 0.5;
+            0% { opacity: 0.5; }
+            50% { opacity: 1; box-shadow: 0 0 8px red, inset 0 0 8px red; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Styles pour dyno-hero */
+        .dyno-hero {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .dyno-hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media screen and (max-width: 768px) {
+            .dyno-hero {
+                height: 200px;
+                padding: 0 10px;
             }
         }
 
@@ -52,11 +73,70 @@
         }
 
         .description-text {
-            color: white;
-            font-size: 1.1em;
+            color: #fff;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+            font-weight: 300;
             text-align: justify;
-            margin: 20px 0;
-            font-weight: normal;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .article-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: #E30613;
+        }
+
+        .specs-section h2,
+        .programs-section h2,
+        .video-section h2,
+        .technical-reports-section h2 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .technical-points li {
+            color: #fff;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+            font-weight: 300;
+        }
+
+        @media screen and (max-width: 768px) {
+            .article-title {
+                font-size: 1.8rem;
+            }
+
+            .description-text {
+                font-size: 0.9rem;
+            }
+
+            .specs-section h2,
+            .programs-section h2,
+            .video-section h2,
+            .technical-reports-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .technical-points li {
+                font-size: 0.9rem;
+            }
         }
 
         /* Styles pour la section Vidéo */
@@ -152,26 +232,70 @@
         /* Styles du diaporama */
         .slideshow-container {
             max-width: 1000px;
-            margin: 0 auto;
+            margin: 0 auto 40px;
             position: relative;
             overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(227, 6, 19, 0.3);
+            height: 600px;
+        }
+
+        /* Boutons de navigation */
+        .prev-btn, .next-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .prev-btn {
+            left: 20px;
+        }
+
+        .next-btn {
+            right: 20px;
+        }
+
+        .prev-btn:hover, .next-btn:hover {
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        @media screen and (max-width: 768px) {
+            .slideshow-container {
+                height: 400px;
+            }
+            
+            .prev-btn, .next-btn {
+                padding: 12px;
+                font-size: 16px;
+            }
         }
 
         .slides {
             display: flex;
             transition: transform 0.5s ease-in-out;
+            height: 100%; /* Prend toute la hauteur du conteneur */
         }
 
         .slide {
             min-width: 100%;
             position: relative;
+            height: 100%; /* Prend toute la hauteur */
         }
 
         .slide img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: contain; /* Assure que l'image est entièrement visible sans déformation */
             display: block;
         }
 
@@ -244,6 +368,56 @@
             .technical-points li {
                 font-size: 0.9em;
             }
+
+            .slideshow-container {
+                height: 400px; /* Hauteur réduite pour mobile */
+            }
+        }
+
+        .article-content-wrapper {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .article-text {
+            flex: 1;
+        }
+
+        .article-image {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .article-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media screen and (max-width: 768px) {
+            .article-content-wrapper {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .article-image {
+                order: -1;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .reports-description {
+            margin-top: 40px;
+        }
+
+        .reports-description .description-text {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -258,7 +432,7 @@
                 <nav class="nav-main">
                     <div class="logo">
                         <a href="https://simoroui.github.io/autotech-reprog/">
-                            <img src="images/logo.png" alt="Logo" class="logo-img">
+                            <img src="images/logo.png" alt="Logo" class="logo-img" loading="eager" width="150" height="50">
                         </a>
                     </div>
                     <div class="nav-container">
@@ -310,7 +484,16 @@
                                             La série HP représente l'excellence en matière de précision et de fiabilité grâce à ses rouleaux de 400 mm, accouplés et reliés par des sangles de haute densité. Son châssis, fabriqué avec un métal épais, assure la plus haute précision pour tous types de tests et de développements
                                         </div>
                                     </div>
-                                    <img src="images/dyno-main.jpg" alt="Banc de puissance AUTOTECH" class="article-image">
+                                    <div class="article-image">
+                                        <picture>
+                                            <source srcset="images/dyno-main.webp" type="image/webp">
+                                            <img src="images/dyno-main.jpg" 
+                                                 alt="Banc de puissance" 
+                                                 loading="eager"
+                                                 width="500"
+                                                 height="300">
+                                        </picture>
+                                    </div>
                                 </div>
 
                                 <!-- Nouvelle section Vidéo -->
@@ -335,15 +518,30 @@
                                     
                                     <!-- Diaporama -->
                                     <div class="slideshow-container">
+                                        <button class="prev-btn">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="next-btn">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
                                         <div class="slides">
                                             <div class="slide fade">
-                                                <img src="images/rapport1.jpg" alt="Rapport technique 1">
+                                                <picture>
+                                                    <source srcset="images/rapport1.webp" type="image/webp">
+                                                    <img src="images/rapport1.jpg" alt="Rapport technique 1" class="rapport-img" loading="lazy" width="800" height="600">
+                                                </picture>
                                             </div>
                                             <div class="slide fade">
-                                                <img src="images/rapport2.jpg" alt="Rapport technique 2">
+                                                <picture>
+                                                    <source srcset="images/rapport2.webp" type="image/webp">
+                                                    <img src="images/rapport2.jpg" alt="Rapport technique 2" class="rapport-img" loading="lazy" width="800" height="600">
+                                                </picture>
                                             </div>
                                             <div class="slide fade">
-                                                <img src="images/rapport3.jpg" alt="Rapport technique 3">
+                                                <picture>
+                                                    <source srcset="images/rapport3.webp" type="image/webp">
+                                                    <img src="images/rapport3.jpg" alt="Rapport technique 3" class="rapport-img" loading="lazy" width="800" height="600">
+                                                </picture>
                                             </div>
                                         </div>
                                         
@@ -445,7 +643,12 @@
             <div class="section-container">
                 <div class="footer-content">
                     <div class="footer-brand">
-                        <img src="images/Logo-H.png" alt="AutoTech Logo" class="footer-logo">
+                        <img src="images/Logo-H.png" 
+                             alt="AutoTech Logo" 
+                             class="footer-logo"
+                             loading="lazy"
+                             width="200"
+                             height="80">
                         <p class="footer-tagline subtitle">Autotech reprogrammation & optimisation moteur</p>
                         <p class="footer-tagline">Une PASSION Qui BAT</p>
                         <div class="footer-social">
@@ -516,9 +719,16 @@
             let slideIndex = 0;
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
             const slideInterval = 5000; // Changement toutes les 5 secondes
+            let slideTimer;
 
-            function showSlides() {
+            function showSlides(n) {
+                // Réinitialiser l'index si nécessaire
+                if (n >= slides.length) { slideIndex = 0; }
+                if (n < 0) { slideIndex = slides.length - 1; }
+                
                 // Cacher toutes les slides
                 slides.forEach(slide => {
                     slide.style.display = 'none';
@@ -529,26 +739,47 @@
                     dot.classList.remove('active');
                 });
 
-                // Incrémenter l'index
-                slideIndex++;
-                if (slideIndex > slides.length) {
-                    slideIndex = 1;
-                }
-
                 // Afficher la slide courante
-                slides[slideIndex - 1].style.display = 'block';
-                dots[slideIndex - 1].classList.add('active');
+                slides[slideIndex].style.display = 'block';
+                dots[slideIndex].classList.add('active');
+            }
+
+            function nextSlide() {
+                slideIndex++;
+                showSlides(slideIndex);
+            }
+
+            function prevSlide() {
+                slideIndex--;
+                showSlides(slideIndex);
+            }
+
+            function resetTimer() {
+                clearInterval(slideTimer);
+                slideTimer = setInterval(nextSlide, slideInterval);
             }
 
             // Initialiser le diaporama
-            showSlides();
-            setInterval(showSlides, slideInterval);
+            showSlides(slideIndex);
+            slideTimer = setInterval(nextSlide, slideInterval);
 
-            // Ajouter les événements click sur les points
+            // Événements pour les boutons
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetTimer();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetTimer();
+            });
+
+            // Événements pour les points
             dots.forEach((dot, index) => {
                 dot.addEventListener('click', () => {
                     slideIndex = index;
-                    showSlides();
+                    showSlides(slideIndex);
+                    resetTimer();
                 });
             });
         });

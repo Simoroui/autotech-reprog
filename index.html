@@ -3,23 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site Auto</title>
+    <meta name="description" content="AUTOTECH - Reprogrammation & Optimisation Moteur en Tunisie">
+    
+    <!-- Préchargement des ressources critiques -->
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="css/header.css" as="style">
+    <link rel="preload" href="images/Logo-H.png" as="image">
+    
+    <!-- Styles CSS combinés et minifiés -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/contact.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" 
-            src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" 
-            nonce="your-nonce">
+    
+    <!-- Font Awesome chargé de manière asynchrone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    
+    <!-- Facebook SDK chargé de manière différée -->
+    <script defer src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" nonce="your-nonce"></script>
+    
+    <!-- Cache Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
     </script>
 
     <script async src="//www.instagram.com/embed.js"></script>
     <link rel="stylesheet" href="css/results.css">
     <!-- Précharger les ressources critiques -->
     <link rel="preload" href="data/marques.csv" as="fetch" crossorigin>
-    <link rel="preload" href="css/style.css" as="style">
     <link rel="preload" href="js/vehicle-selector.js" as="script">
     <style>
         .boost-section {
@@ -204,7 +219,7 @@
             <nav class="nav-main">
                 <div class="logo">
                     <a href="https://simoroui.github.io/autotech-reprog/">
-                        <img src="images/logo.png" alt="Logo" class="logo-img">
+                        <img src="images/logo.png" alt="Logo" class="logo-img" loading="eager" width="150" height="50">
                     </a>
                 </div>
                 <div class="nav-container">
@@ -238,7 +253,9 @@
     <main class="main-content">
             <div class="hero-wrapper">
         <section class="hero">
-            <div class="hero-background"></div>
+            <div class="hero-background">
+                <img src="images-optimized/hero-bg.jpg" alt="Background" loading="eager">
+            </div>
             <div class="hero-content">
                 <h1>
                             <img src="images/Logo-H.png" alt="AUTOTECH" class="hero-logo">
@@ -739,7 +756,12 @@
             <div class="section-container">
                 <div class="footer-content">
                     <div class="footer-brand">
-                        <img src="images/Logo-H.png" alt="AutoTech Logo" class="footer-logo">
+                        <img src="images/Logo-H.png" 
+                             alt="AutoTech Logo" 
+                             class="footer-logo"
+                             loading="lazy"
+                             width="200"
+                             height="80">
                         <p class="footer-tagline subtitle">Autotech reprogrammation & optimisation moteur</p>
                         <p class="footer-tagline">Une PASSION Qui BAT</p>
                         <div class="footer-social">
