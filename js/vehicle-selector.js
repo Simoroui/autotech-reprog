@@ -205,6 +205,12 @@ let currentSelection = {
 // Renommons la fonction pour refléter son nouveau comportement
 function scrollToStepCenter(stepElement) {
     if (!stepElement) return;
+    
+    // Vérifier si on est sur mobile (largeur d'écran <= 768px)
+    const isMobile = window.innerWidth <= 768;
+    
+    // Ne pas faire de défilement sur PC
+    if (!isMobile) return;
 
     // Attendre que le DOM soit mis à jour
     setTimeout(() => {
