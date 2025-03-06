@@ -1069,16 +1069,27 @@ function initializeSlideshow() {
 
 // Fonction séparée pour gérer le retour
 function handleBack() {
-    // Rediriger vers la section #boost de la page d'accueil
-    window.location.href = '/autotech-reprog/#boost';
+    // Rediriger vers la section de sélection du véhicule
+    const currentPath = window.location.pathname;
+    
+    // Extraire le type de véhicule de l'URL (cars, motorcycles, etc.)
+    const match = currentPath.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//);
+    
+    if (match && match[1]) {
+        // Rediriger vers la page d'accueil avec le type de véhicule sélectionné
+        window.location.href = `/autotech-reprog/#${match[1]}`;
+    } else {
+        // Fallback: rediriger vers la section #boost si le pattern ne correspond pas
+        window.location.href = '/autotech-reprog/#boost';
+    }
 }
 
 // Modifier l'écouteur popstate
 window.addEventListener('popstate', (event) => {
     // Vérifier si on est sur une page de résultats (URL contient /reprogrammation/ suivi du type)
     if (window.location.pathname.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//)) {
-        // Rediriger vers la section #boost de la page d'accueil
-        window.location.href = '/autotech-reprog/#boost';
+        // Utiliser la même logique que handleBack
+        handleBack();
     }
 });
 
