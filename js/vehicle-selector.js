@@ -397,7 +397,9 @@ function handleModelSelection(brand, type, model) {
     scrollToStepCenter(versionStep);
 
     // Mettre à jour l'URL et le breadcrumb
-    const url = `/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog' : '';
+    const url = `${basePath}/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
     window.history.pushState({ type, brand, model }, '', url);
     updateBreadcrumb({ type, brand, model });
 }
@@ -415,7 +417,9 @@ function handleVersionSelection(brand, type, model, version) {
     });
 
     // Revenir à l'ancienne version de l'URL
-    const url = `/autotech-reprog/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog' : '';
+    const url = `${basePath}/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
     
     window.history.pushState({ type, brand, model, version }, '', url);
     updateBreadcrumb({ type, brand, model, version });
@@ -589,14 +593,15 @@ function checkImageExists(url) {
 
 // Fonction pour obtenir le chemin des images selon l'environnement
 function getImagePath(brand, model, version) {
-    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
-    const cleanBrand = cleanFolderName(brand.toLowerCase());
-    const cleanModel = cleanFolderName(model.toLowerCase());
-    const cleanVersion = cleanFolderName(version.toLowerCase());
+    const cleanBrand = cleanFolderName(brand);
+    const cleanModel = cleanFolderName(model);
+    const cleanVersion = cleanFolderName(version);
     
-    return isGitHubPages 
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    
+    return isGitHubPages
         ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
-        : `/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+        : `images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
 }
 
 // Fonction pour vérifier les images
@@ -629,13 +634,12 @@ async function checkForImages(brand, model, version) {
 
 // Fonction pour créer le diaporama
 async function createSlideshow(brand, model, version) {
-    // Nettoyer les noms pour les chemins
-    const cleanBrand = cleanFolderName(brand.toLowerCase());
-    const cleanModel = cleanFolderName(model.toLowerCase());
-    const cleanVersion = cleanFolderName(version.toLowerCase());
-
-    // Construire le chemin de base
-    const basePath = window.location.hostname === 'simoroui.github.io'
+    const cleanBrand = cleanFolderName(brand);
+    const cleanModel = cleanFolderName(model);
+    const cleanVersion = cleanFolderName(version);
+    
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages 
         ? `/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
         : `images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
 
@@ -1070,8 +1074,15 @@ function initializeSlideshow() {
 
 // Fonction séparée pour gérer le retour
 function handleBack() {
-    // Rediriger vers la section #boost de la page d'accueil
-    window.location.href = '/autotech-reprog/#boost';
+    // Vérifier si on est sur une page de résultats (URL contient /reprogrammation/ suivi du type)
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog' : '';
+    
+    if (window.location.pathname.includes('/reprogrammation/')) {
+        window.location.href = `${basePath}/#boost`;
+    } else {
+        window.location.href = `${basePath}/#boost`;
+    }
 }
 
 // Modifier l'écouteur popstate
@@ -1200,14 +1211,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function displayVehicleResults(brand, model, version) {
-    // ... code existant ...
-
-    // Chercher cette partie et la corriger
-    const vehicleImages = {
-        path: `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog' : '';
+    
+    return {
+        brand,
+        model,
+        version,
+        path: `${basePath}/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
     };
-
-    // ... reste du code ...
 }
 
 // Fonction pour gérer le scroll vers la section boost
@@ -1243,14 +1255,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Ajouter cette nouvelle fonction
 function handleReservation(brand, model, version, engineType) {
-    const prefilledMessage = `Demande de reprogrammation pour :
-Marque : ${brand}
-Modèle : ${model}
-Version : ${version}
-Motorisation : ${engineType}`;
-
-    localStorage.setItem('prefilledMessage', prefilledMessage);
-    window.location.href = '/autotech-reprog/#contact';
+    // Stocker les informations du véhicule dans localStorage
+    localStorage.setItem('reservation', JSON.stringify({
+        brand,
+        model,
+        version,
+        engineType
+    }));
+    
+    // Rediriger vers la section contact
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog' : '';
+    window.location.href = `${basePath}/#contact`;
 }
 
 // Ajouter cette fonction à la fin du fichier
