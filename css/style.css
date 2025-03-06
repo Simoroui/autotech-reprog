@@ -70,6 +70,40 @@ body {
     padding-top: 60px;
 }
 
+/* Ajout de la bande noire transparente derrière le contenu */
+.hero-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    z-index: -1;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid transparent;
+    animation: laser-border 3s infinite;
+}
+
+/* Animation du cadre laser */
+@keyframes laser-border {
+    0% {
+        border-color: rgba(227, 6, 19, 0.4);
+        box-shadow: 0 0 5px rgba(227, 6, 19, 0.4), inset 0 0 5px rgba(227, 6, 19, 0.4);
+    }
+    50% {
+        border-color: rgba(227, 6, 19, 0.8);
+        box-shadow: 0 0 15px rgba(227, 6, 19, 0.8), inset 0 0 10px rgba(227, 6, 19, 0.8);
+    }
+    100% {
+        border-color: rgba(227, 6, 19, 0.4);
+        box-shadow: 0 0 5px rgba(227, 6, 19, 0.4), inset 0 0 5px rgba(227, 6, 19, 0.4);
+    }
+}
+
 .main-content {
     position: relative;
     z-index: 2;
@@ -403,96 +437,66 @@ body {
     .hero h1 {
         font-size: 2.5rem;
     }
-
+    
     .boost-button {
-        padding: 0.8rem 1.6rem;
         font-size: 1rem;
-        margin-left: 120px;
+        padding: 10px 20px;
     }
     
     .hero-content {
-        padding: 1rem;
-        text-align: center;
-        width: 100%;
+        padding-top: 80px;
     }
-
+    
+    /* Ajustement de la bande noire pour mobile */
+    .hero-content::before {
+        width: 95%;
+        height: 280px;
+        animation: laser-border 2.5s infinite; /* Animation légèrement plus rapide sur mobile */
+    }
+    
     .hero {
-        min-height: 100vh;
-        padding: 60px 1rem;
+        height: 100vh;
     }
-
+    
     .hero-logo {
-        width: 80%;
-        max-width: 250px;
-        height: auto;
-        margin-bottom: 1rem;
+        max-width: 200px;
     }
-
+    
     .text-red {
-        font-size: 1.5rem;
-        margin-top: 1rem;
+        font-size: 1.2rem;
     }
-
+    
     .boost-button {
-        padding: 0.8rem 1.6rem;
-        font-size: 0.9rem;
-        margin: 1rem auto;
-        display: inline-block;
+        margin-top: 20px;
     }
-
+    
     .construction-message {
-        padding: 1rem;
-        width: 100%;
+        padding: 15px;
     }
-
+    
     .construction-message p {
-        font-size: 1rem;
-        margin: 0.5rem 0;
+        font-size: 0.9rem;
     }
-
+    
     .tab-button {
-        padding: 0.6rem 1rem;
+        padding: 10px;
     }
     
     .tab-button span {
-        font-size: 12px;
+        font-size: 0.8rem;
     }
     
     .tab-icon {
-        width: 20px;
-        height: 20px;
-    }
-
-    .brands-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-    }
-
-    .nav-container {
-        position: fixed;
-        top: 80px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 80px);
-        background: rgba(0, 0, 0, 0.95);
-        transition: left 0.3s ease;
-    }
-
-    .nav-links {
-        flex-direction: column;
-        padding: 2rem;
-    }
-
-    .hamburger-menu {
-        display: block;
-    }
-
-    .hero-logo {
-        height: 80px;
+        width: 30px;
+        height: 30px;
     }
     
-    .text-red {
-        font-size: 1.5rem;
+    .brands-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nav-container {
+        padding: 0 15px;
     }
 }
 
@@ -500,12 +504,27 @@ body {
     .hero h1 {
         font-size: 2rem;
     }
-
+    
     .hero {
-        min-height: 80vh;
-        padding-bottom: 4rem;
+        height: 100vh;
     }
-
+    
+    /* Ajustement de la bande noire pour petit mobile */
+    .hero-content::before {
+        width: 95%;
+        height: 250px;
+        border-width: 1px; /* Bordure plus fine sur petit mobile */
+    }
+    
+    .hero-content {
+        padding-top: 60px;
+    }
+    
+    .boost-button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    
     .hero-content {
         padding: 1rem;
         margin-bottom: 1rem;
