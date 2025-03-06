@@ -1078,8 +1078,32 @@ function initializeSlideshow() {
 
 // Remplacer la fonction handleBack existante par celle-ci
 function handleBack() {
-    // Solution simple : utiliser l'historique du navigateur pour revenir en arrière
-    window.history.back();
+    // Récupérer l'élément de la section boost
+    const boostSection = document.getElementById('boost');
+    
+    // Vérifier si nous sommes sur la page d'accueil
+    if (boostSection) {
+        // Nous sommes sur la page d'accueil, faire défiler jusqu'à la section boost
+        boostSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Afficher à nouveau les onglets de sélection de véhicule
+        document.querySelector('.vehicle-tabs').style.display = 'flex';
+        
+        // Supprimer le conteneur de résultats s'il existe
+        const resultsContainer = document.querySelector('.results-container');
+        if (resultsContainer) {
+            resultsContainer.remove();
+        }
+        
+        // Afficher à nouveau la grille de marques active
+        const activeGrid = document.querySelector('.brands-grid.active');
+        if (activeGrid) {
+            activeGrid.style.display = 'grid';
+        }
+    } else {
+        // Nous ne sommes pas sur la page d'accueil, rediriger
+        window.location.href = '/autotech-reprog/index.html#boost';
+    }
 }
 
 // Modifier l'écouteur popstate
