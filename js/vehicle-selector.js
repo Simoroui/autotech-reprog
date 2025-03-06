@@ -769,7 +769,7 @@ function showResultPage(vehicleData) {
     // Ajouter le contenu HTML
     container.innerHTML = `
         <div class="results-container">
-            <button class="back-button" onclick="handleBack()">Retour</button>
+            <a href="/autotech-reprog/index.html#boost" class="back-button">Retour</a>
             
             <h1 class="vehicle-title">${brand} ${model} ${version}</h1>
             <h2 class="engine-type">${engineType}</h2>
