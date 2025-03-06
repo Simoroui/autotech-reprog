@@ -1349,14 +1349,18 @@ td:last-child::before {
     height: 100px;
     width: auto;
     margin: 0;
+    object-fit: contain;
 }
 
 /* Ajuster la taille sur mobile */
 @media screen and (max-width: 768px) {
     .hero-logo {
-        height: 80px;
+        height: 64px;
+        width: auto;
+        max-width: 100%;
         display: block;
         margin: 0 auto 15px;
+        object-fit: contain;
     }
     
     .hero-content {
