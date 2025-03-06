@@ -1076,34 +1076,10 @@ function initializeSlideshow() {
     updateSlides(0);
 }
 
-// Fonction séparée pour gérer le retour
+// Remplacer la fonction handleBack existante par celle-ci
 function handleBack() {
-    // Récupérer les informations de l'URL actuelle
-    const currentPath = window.location.pathname;
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Récupérer les paramètres de l'URL
-    const brand = urlParams.get('brand');
-    const model = urlParams.get('model');
-    const version = urlParams.get('version');
-    
-    // Extraire le type de véhicule de l'URL (cars, motorcycles, etc.)
-    const match = currentPath.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//);
-    const type = match && match[1] ? match[1] : null;
-    
-    if (type) {
-        // Stocker les sélections dans sessionStorage pour les restaurer
-        if (brand) sessionStorage.setItem('selectedBrand', brand);
-        if (type) sessionStorage.setItem('selectedType', type);
-        if (model) sessionStorage.setItem('selectedModel', model);
-        if (version) sessionStorage.setItem('selectedVersion', version);
-        
-        // Rediriger vers la page d'accueil avec le type de véhicule sélectionné
-        window.location.href = `/autotech-reprog/index.html#boost`;
-    } else {
-        // Fallback: rediriger vers la section #boost si le pattern ne correspond pas
-        window.location.href = '/autotech-reprog/index.html#boost';
-    }
+    // Solution simple : utiliser l'historique du navigateur pour revenir en arrière
+    window.history.back();
 }
 
 // Modifier l'écouteur popstate
