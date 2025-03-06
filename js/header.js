@@ -21,10 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour vérifier si nous sommes sur la page d'accueil
     const isHomePage = () => {
         const path = window.location.pathname;
+        const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+        const basePath = isGitHubPages ? '/autotech-reprog' : '';
+        
         return path.endsWith('index.html') || 
                path.endsWith('/') || 
-               path.endsWith('/autotech-reprog/') || 
-               path.endsWith('/autotech-reprog/index.html');
+               path.endsWith(`${basePath}/`) || 
+               path.endsWith(`${basePath}/index.html`);
     };
 
     // Fonction pour gérer le scroll vers une ancre
@@ -114,8 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoLink = document.querySelector('.logo a');
     if (logoLink) {
         const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+        const basePath = isGitHubPages ? '/autotech-reprog' : '';
         logoLink.href = isGitHubPages 
-            ? 'https://simoroui.github.io/autotech-reprog/'
+            ? `https://simoroui.github.io${basePath}/`
             : '/';
     }
 

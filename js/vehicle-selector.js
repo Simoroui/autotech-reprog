@@ -1090,7 +1090,9 @@ window.addEventListener('popstate', (event) => {
     // Vérifier si on est sur une page de résultats (URL contient /reprogrammation/ suivi du type)
     if (window.location.pathname.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//)) {
         // Rediriger vers la section #boost de la page d'accueil
-        window.location.href = '/autotech-reprog/#boost';
+        const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+        const basePath = isGitHubPages ? '/autotech-reprog' : '';
+        window.location.href = `${basePath}/#boost`;
     }
 });
 
