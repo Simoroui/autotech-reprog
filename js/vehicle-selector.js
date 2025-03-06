@@ -351,6 +351,11 @@ function handleModelSelection(brand, type, model) {
         }
     });
 
+    // Utiliser un hash dans l'URL au lieu de modifier le chemin
+    const url = `#reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
+    window.history.pushState({ type, brand, model }, '', url);
+    updateBreadcrumb({ type, brand, model });
+
     // Récupérer toutes les années/versions pour ce modèle
     const versions = new Set();
     const lines = parseCSV(csvContent);
@@ -395,11 +400,6 @@ function handleModelSelection(brand, type, model) {
 
     // Scroll vers le version step
     scrollToStepCenter(versionStep);
-
-    // Mettre à jour l'URL et le breadcrumb
-    const url = `/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
-    window.history.pushState({ type, brand, model }, '', url);
-    updateBreadcrumb({ type, brand, model });
 }
 
 // Modifier handleVersionSelection pour centrer la sélection de motorisation
@@ -414,9 +414,8 @@ function handleVersionSelection(brand, type, model, version) {
         }
     });
 
-    // Revenir à l'ancienne version de l'URL
-    const url = `/autotech-reprog/reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
-    
+    // Utiliser un hash dans l'URL au lieu de modifier le chemin
+    const url = `#reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
     window.history.pushState({ type, brand, model, version }, '', url);
     updateBreadcrumb({ type, brand, model, version });
 
@@ -1385,4 +1384,80 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error('Erreur lors du chargement des marques:', error);
         });
+});
+
+// Fonction pour gérer les URL avec hash
+function handleHashChange() {
+    const hash = window.location.hash.substring(1); // Enlever le # du début
+    if (!hash) return;
+
+    const parts = hash.split('/').filter(part => part);
+    
+    // Format attendu: reprogrammation/type/marque/modele/version
+    if (parts.length >= 2 && parts[0] === 'reprogrammation') {
+        const type = parts[1];
+        const brand = parts[2] ? decodeURIComponent(parts[2].replace(/-/g, ' ')) : null;
+        const model = parts[3] ? decodeURIComponent(parts[3].replace(/-/g, ' ')) : null;
+        const version = parts[4] ? decodeURIComponent(parts[4].replace(/-/g, ' ')) : null;
+        
+        console.log('URL hash détecté:', { type, brand, model, version });
+        
+        // Si nous avons au moins le type et la marque, simuler la sélection
+        if (type && brand) {
+            // Attendre que les données soient chargées
+            setTimeout(() => {
+                // Simuler le clic sur l'onglet du type
+                const tabButton = document.querySelector(`.tab-button[data-type="${type}"]`);
+                if (tabButton) {
+                    tabButton.click();
+                    
+                    // Simuler le clic sur la marque
+                    setTimeout(() => {
+                        const brandItems = document.querySelectorAll('.brand-item');
+                        for (const item of brandItems) {
+                            if (item.querySelector('.brand-name').textContent.trim().toLowerCase() === brand.toLowerCase()) {
+                                item.click();
+                                
+                                // Si nous avons un modèle, simuler sa sélection
+                                if (model) {
+                                    setTimeout(() => {
+                                        const modelItems = document.querySelectorAll('.selection-item[data-model]');
+                                        for (const item of modelItems) {
+                                            if (item.dataset.model.toLowerCase() === model.toLowerCase()) {
+                                                item.click();
+                                                
+                                                // Si nous avons une version, simuler sa sélection
+                                                if (version) {
+                                                    setTimeout(() => {
+                                                        const versionItems = document.querySelectorAll('.selection-item[data-version]');
+                                                        for (const item of versionItems) {
+                                                            if (item.dataset.version.toLowerCase() === version.toLowerCase()) {
+                                                                item.click();
+                                                                break;
+                                                            }
+                                                        }
+                                                    }, 500);
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }, 500);
+                                }
+                                break;
+                            }
+                        }
+                    }, 500);
+                }
+            }, 1000);
+        }
+    }
+}
+
+// Écouter les changements de hash
+window.addEventListener('hashchange', handleHashChange);
+
+// Vérifier le hash au chargement initial
+document.addEventListener('DOMContentLoaded', () => {
+    // Attendre que tout soit initialisé
+    setTimeout(handleHashChange, 1500);
 });

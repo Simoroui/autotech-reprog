@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirection - AUTOTECH</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #e30613;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            max-width: 600px;
+        }
+        .loader {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #e30613;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <img src="images/Logo-H.png" alt="AUTOTECH" class="logo">
+    <h1>Redirection en cours...</h1>
+    <div class="loader"></div>
+    <p>Nous vous redirigeons vers la page d'accueil avec vos paramètres de sélection.</p>
+
+    <script>
+        // Fonction pour obtenir le chemin actuel sans le domaine
+        function getPathWithoutDomain() {
+            const fullPath = window.location.pathname;
+            // Si nous sommes sur GitHub Pages, enlever le préfixe du repo
+            if (window.location.hostname === 'simoroui.github.io') {
+                return fullPath.replace(/^\/autotech-reprog/, '');
+            }
+            return fullPath;
+        }
+
+        // Fonction pour extraire les paramètres de l'URL
+        function extractParamsFromPath() {
+            const path = getPathWithoutDomain();
+            
+            // Vérifier si c'est une URL de reprogrammation
+            if (path.includes('/reprogrammation/')) {
+                const parts = path.split('/').filter(part => part);
+                
+                // Format attendu: reprogrammation/type/marque/modele/version
+                if (parts.length >= 2) {
+                    const params = {
+                        section: parts[0] || '',
+                        type: parts[1] || '',
+                        brand: parts[2] || '',
+                        model: parts[3] || '',
+                        version: parts[4] || ''
+                    };
+                    
+                    return params;
+                }
+            }
+            
+            return null;
+        }
+
+        // Fonction pour rediriger avec les paramètres
+        function redirectToHome() {
+            const params = extractParamsFromPath();
+            let redirectUrl = '/';
+            
+            // Ajuster pour GitHub Pages si nécessaire
+            if (window.location.hostname === 'simoroui.github.io') {
+                redirectUrl = '/autotech-reprog/';
+            }
+            
+            // Si nous avons des paramètres, les ajouter comme hash
+            if (params) {
+                redirectUrl += `#${params.section}/${params.type}/${params.brand}/${params.model}/${params.version}`;
+            }
+            
+            // Rediriger après un court délai
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 1500);
+        }
+
+        // Exécuter la redirection
+        redirectToHome();
+    </script>
+</body>
+</html> 
