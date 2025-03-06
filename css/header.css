@@ -105,9 +105,11 @@
 }
 
 .logo-img {
-    height: 43px;
+    height: auto;
     width: auto;
-    max-height: 50px;
+    max-height: 43px;
+    max-width: 150px;
+    object-fit: contain;
     margin-left: 1rem;
 }
 
