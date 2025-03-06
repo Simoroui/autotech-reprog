@@ -1093,60 +1093,16 @@ function handleBack() {
         return;
     }
     
-    // Cacher le conteneur de résultats
-    const resultsContainer = document.querySelector('.results-container');
-    if (resultsContainer) {
-        resultsContainer.style.display = 'none';
-    }
+    // Construire l'URL de retour avec le hash et les paramètres
+    const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
+    const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
+    const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
     
-    // Afficher la section de sélection
-    const boostSection = document.getElementById('boost');
-    if (boostSection) {
-        boostSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Construire l'URL complète
+    const returnUrl = `/autotech-reprog/index.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}#reprogrammation/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}`;
     
-    // Afficher les onglets de sélection
-    const vehicleTabs = document.querySelector('.vehicle-tabs');
-    if (vehicleTabs) {
-        vehicleTabs.style.display = 'flex';
-    }
-    
-    // Simuler les sélections précédentes
-    // 1. Cliquer sur l'onglet du type de véhicule
-    const tabButton = document.querySelector(`.tab-button[data-type="${type}"]`);
-    if (tabButton) {
-        tabButton.click();
-        
-        // 2. Attendre que la grille des marques soit chargée
-        setTimeout(() => {
-            // Cliquer sur la marque
-            const brandElement = document.querySelector(`#${type}-grid .brand-item[data-brand="${brand}"]`);
-            if (brandElement) {
-                brandElement.click();
-                
-                // 3. Attendre que la liste des modèles soit chargée
-                setTimeout(() => {
-                    // Cliquer sur le modèle
-                    const modelElement = document.querySelector(`.model-item[data-model="${model}"]`);
-                    if (modelElement) {
-                        modelElement.click();
-                        
-                        // 4. Attendre que la liste des versions soit chargée
-                        setTimeout(() => {
-                            // Cliquer sur la version
-                            const versionElement = document.querySelector(`.version-item[data-version="${version}"]`);
-                            if (versionElement) {
-                                versionElement.click();
-                            }
-                        }, 300);
-                    }
-                }, 300);
-            }
-        }, 300);
-    } else {
-        // Si on ne trouve pas l'onglet, rediriger vers la page d'accueil
-        window.location.href = '/autotech-reprog/index.html#boost';
-    }
+    // Rediriger vers l'URL de sélection
+    window.location.href = returnUrl;
 }
 
 // Modifier l'écouteur popstate
