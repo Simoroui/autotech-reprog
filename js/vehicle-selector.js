@@ -757,6 +757,15 @@ function showResultPage(vehicleData) {
     const container = document.createElement('div');
     container.className = 'results-container';
     
+    // Ajouter les paramètres à l'URL pour pouvoir les récupérer lors du retour
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('brand', brand);
+    currentUrl.searchParams.set('model', model);
+    currentUrl.searchParams.set('version', version);
+    
+    // Mettre à jour l'URL sans recharger la page
+    window.history.replaceState({}, '', currentUrl);
+    
     // Ajouter le contenu HTML
     container.innerHTML = `
         <div class="results-container">
@@ -1069,18 +1078,31 @@ function initializeSlideshow() {
 
 // Fonction séparée pour gérer le retour
 function handleBack() {
-    // Rediriger vers la section de sélection du véhicule
+    // Récupérer les informations de l'URL actuelle
     const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Récupérer les paramètres de l'URL
+    const brand = urlParams.get('brand');
+    const model = urlParams.get('model');
+    const version = urlParams.get('version');
     
     // Extraire le type de véhicule de l'URL (cars, motorcycles, etc.)
     const match = currentPath.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//);
+    const type = match && match[1] ? match[1] : null;
     
-    if (match && match[1]) {
+    if (type) {
+        // Stocker les sélections dans sessionStorage pour les restaurer
+        if (brand) sessionStorage.setItem('selectedBrand', brand);
+        if (type) sessionStorage.setItem('selectedType', type);
+        if (model) sessionStorage.setItem('selectedModel', model);
+        if (version) sessionStorage.setItem('selectedVersion', version);
+        
         // Rediriger vers la page d'accueil avec le type de véhicule sélectionné
-        window.location.href = `/autotech-reprog/#${match[1]}`;
+        window.location.href = `/autotech-reprog/index.html#boost`;
     } else {
         // Fallback: rediriger vers la section #boost si le pattern ne correspond pas
-        window.location.href = '/autotech-reprog/#boost';
+        window.location.href = '/autotech-reprog/index.html#boost';
     }
 }
 
@@ -1139,6 +1161,54 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
         
+        // Vérifier s'il y a des sélections précédentes à restaurer
+        const savedType = sessionStorage.getItem('selectedType');
+        const savedBrand = sessionStorage.getItem('selectedBrand');
+        const savedModel = sessionStorage.getItem('selectedModel');
+        const savedVersion = sessionStorage.getItem('selectedVersion');
+        
+        if (savedType && savedBrand) {
+            // Simuler un clic sur l'onglet correspondant au type
+            const tabButton = document.querySelector(`.tab-button[data-type="${savedType}"]`);
+            if (tabButton) {
+                tabButton.click();
+                
+                // Attendre un peu pour que les marques se chargent
+                setTimeout(() => {
+                    // Trouver et cliquer sur la marque sauvegardée
+                    const brandElement = document.querySelector(`#${savedType}-grid .brand-item[data-brand="${savedBrand}"]`);
+                    if (brandElement) {
+                        brandElement.click();
+                        
+                        // Si un modèle était sélectionné, attendre et cliquer dessus
+                        if (savedModel) {
+                            setTimeout(() => {
+                                const modelElement = document.querySelector(`.model-item[data-model="${savedModel}"]`);
+                                if (modelElement) {
+                                    modelElement.click();
+                                    
+                                    // Si une version était sélectionnée, attendre et cliquer dessus
+                                    if (savedVersion) {
+                                        setTimeout(() => {
+                                            const versionElement = document.querySelector(`.version-item[data-version="${savedVersion}"]`);
+                                            if (versionElement) {
+                                                versionElement.click();
+                                            }
+                                        }, 300);
+                                    }
+                                }
+                            }, 300);
+                        }
+                    }
+                }, 300);
+            }
+            
+            // Nettoyer le sessionStorage après restauration
+            sessionStorage.removeItem('selectedType');
+            sessionStorage.removeItem('selectedBrand');
+            sessionStorage.removeItem('selectedModel');
+            sessionStorage.removeItem('selectedVersion');
+        }
     } catch (error) {
         // Gérer l'erreur silencieusement
     }
