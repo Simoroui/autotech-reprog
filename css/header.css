@@ -585,6 +585,23 @@
     .header::after {
         display: none;
     }
+
+    /* Ajout de styles spécifiques pour le logo en version mobile */
+    .logo-img {
+        height: auto !important;
+        width: auto !important;
+        max-height: 40px !important;
+        max-width: 120px !important;
+        object-fit: contain !important;
+        margin-left: 0.5rem !important;
+    }
+    
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 0;
+    }
 }
 
 /* Styles de base du hamburger */
