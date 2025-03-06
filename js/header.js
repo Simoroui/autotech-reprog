@@ -120,4 +120,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     console.log('[Menu] Initialisation terminée');
-}); 
+});
+
+// Fonction pour corriger les liens du header avec les hash URL
+function fixHeaderLinks() {
+    // Obtenir le domaine de base
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const basePath = isGitHubPages ? '/autotech-reprog/' : '/';
+    
+    // Sélectionner tous les liens de la page
+    const allLinks = document.querySelectorAll('a');
+    
+    allLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        
+        // Ne modifier que les liens relatifs simples (sans / au début)
+        if (href && !href.startsWith('/') && !href.startsWith('http') && !href.startsWith('#')) {
+            // Vérifier si c'est un lien vers une page HTML
+            if (href.endsWith('.html')) {
+                // Convertir les liens relatifs en liens absolus
+                const absoluteHref = basePath + href;
+                link.setAttribute('href', absoluteHref);
+                
+                // Ajouter un gestionnaire d'événements pour effacer le hash lors du clic
+                link.addEventListener('click', function(e) {
+                    // Si nous avons un hash dans l'URL actuelle, le supprimer avant de naviguer
+                    if (window.location.hash) {
+                        // Empêcher la navigation par défaut
+                        e.preventDefault();
+                        
+                        // Naviguer vers le lien absolu sans le hash
+                        window.location.href = absoluteHref;
+                    }
+                });
+            }
+        }
+    });
+    
+    // Ajouter un gestionnaire spécial pour le logo qui doit toujours revenir à la page d'accueil
+    const logoLinks = document.querySelectorAll('.logo a, .footer-logo a');
+    logoLinks.forEach(link => {
+        const homeHref = basePath;
+        link.setAttribute('href', homeHref);
+        
+        // S'assurer que le clic sur le logo efface toujours le hash
+        link.addEventListener('click', function(e) {
+            if (window.location.hash) {
+                e.preventDefault();
+                window.location.href = homeHref;
+            }
+        });
+    });
+}
+
+// Exécuter la fonction lorsque le DOM est chargé
+document.addEventListener('DOMContentLoaded', fixHeaderLinks);
+
+// Réappliquer la correction après un changement de hash
+window.addEventListener('hashchange', fixHeaderLinks); 
