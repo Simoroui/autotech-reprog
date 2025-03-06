@@ -753,6 +753,17 @@ function showResultPage(vehicleData) {
         torqueStage1: parseInt(torqueStage1)
     };
 
+    // Stocker les sélections dans localStorage pour pouvoir y revenir
+    localStorage.setItem('selectedBrand', brand);
+    localStorage.setItem('selectedModel', model);
+    localStorage.setItem('selectedVersion', version);
+    localStorage.setItem('selectedEngineType', engineType);
+    
+    // Récupérer le type de véhicule depuis currentSelection
+    if (currentSelection && currentSelection.type) {
+        localStorage.setItem('selectedType', currentSelection.type);
+    }
+
     // Créer le conteneur
     const container = document.createElement('div');
     container.className = 'results-container';
@@ -769,7 +780,7 @@ function showResultPage(vehicleData) {
     // Ajouter le contenu HTML
     container.innerHTML = `
         <div class="results-container">
-            <a href="/autotech-reprog/index.html#boost" class="back-button">Retour</a>
+            <button class="back-button" onclick="handleBack()">Retour</button>
             
             <h1 class="vehicle-title">${brand} ${model} ${version}</h1>
             <h2 class="engine-type">${engineType}</h2>
@@ -1078,16 +1089,18 @@ function initializeSlideshow() {
 
 // Remplacer la fonction handleBack existante par celle-ci
 function handleBack() {
-    // Récupérer l'élément de la section boost
-    const boostSection = document.getElementById('boost');
+    // Récupérer les sélections stockées
+    const savedType = localStorage.getItem('selectedType');
+    const savedBrand = localStorage.getItem('selectedBrand');
+    const savedModel = localStorage.getItem('selectedModel');
+    const savedVersion = localStorage.getItem('selectedVersion');
     
     // Vérifier si nous sommes sur la page d'accueil
-    if (boostSection) {
+    const boostSection = document.getElementById('boost');
+    
+    if (boostSection && savedType && savedBrand) {
         // Nous sommes sur la page d'accueil, faire défiler jusqu'à la section boost
         boostSection.scrollIntoView({ behavior: 'smooth' });
-        
-        // Afficher à nouveau les onglets de sélection de véhicule
-        document.querySelector('.vehicle-tabs').style.display = 'flex';
         
         // Supprimer le conteneur de résultats s'il existe
         const resultsContainer = document.querySelector('.results-container');
@@ -1095,13 +1108,49 @@ function handleBack() {
             resultsContainer.remove();
         }
         
-        // Afficher à nouveau la grille de marques active
-        const activeGrid = document.querySelector('.brands-grid.active');
-        if (activeGrid) {
-            activeGrid.style.display = 'grid';
+        // Afficher à nouveau les onglets de sélection de véhicule
+        const vehicleTabs = document.querySelector('.vehicle-tabs');
+        if (vehicleTabs) {
+            vehicleTabs.style.display = 'flex';
+            
+            // Simuler un clic sur l'onglet correspondant au type
+            const tabButton = document.querySelector(`.tab-button[data-type="${savedType}"]`);
+            if (tabButton) {
+                tabButton.click();
+                
+                // Attendre un peu pour que les marques se chargent
+                setTimeout(() => {
+                    // Trouver et cliquer sur la marque sauvegardée
+                    const brandElement = document.querySelector(`#${savedType}-grid .brand-item[data-brand="${savedBrand}"]`);
+                    if (brandElement) {
+                        brandElement.click();
+                        
+                        // Si un modèle était sélectionné, attendre et cliquer dessus
+                        if (savedModel) {
+                            setTimeout(() => {
+                                const modelElement = document.querySelector(`.model-item[data-model="${savedModel}"]`);
+                                if (modelElement) {
+                                    modelElement.click();
+                                    
+                                    // Si une version était sélectionnée, attendre et cliquer dessus
+                                    if (savedVersion) {
+                                        setTimeout(() => {
+                                            const versionElement = document.querySelector(`.version-item[data-version="${savedVersion}"]`);
+                                            if (versionElement) {
+                                                versionElement.click();
+                                            }
+                                        }, 300);
+                                    }
+                                }
+                            }, 300);
+                        }
+                    }
+                }, 300);
+            }
         }
     } else {
-        // Nous ne sommes pas sur la page d'accueil, rediriger
+        // Nous ne sommes pas sur la page d'accueil ou pas de sélections sauvegardées
+        // Rediriger vers la page d'accueil avec l'ancre boost
         window.location.href = '/autotech-reprog/index.html#boost';
     }
 }
