@@ -209,9 +209,6 @@ function scrollToStepCenter(stepElement) {
     // Vérifier si on est sur mobile (largeur d'écran <= 768px)
     const isMobile = window.innerWidth <= 768;
     
-    // Ne pas faire de défilement sur PC
-    if (!isMobile) return;
-
     // Attendre que le DOM soit mis à jour
     setTimeout(() => {
         const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
@@ -220,13 +217,27 @@ function scrollToStepCenter(stepElement) {
         
         // Calculer la position pour centrer l'élément
         const elementTop = stepElement.getBoundingClientRect().top + window.scrollY;
-        const targetScroll = elementTop - (windowHeight - elementHeight) / 2;
-
-        // Scroll avec animation
-        window.scrollTo({
-            top: Math.max(0, targetScroll - headerHeight),
-            behavior: 'smooth'
-        });
+        
+        // Sur PC, on fait un scroll plus doux et moins prononcé
+        if (!isMobile) {
+            // Calculer une position qui place l'élément dans le premier tiers de l'écran
+            const targetScroll = elementTop - headerHeight - 20;
+            
+            // Scroll avec animation
+            window.scrollTo({
+                top: Math.max(0, targetScroll),
+                behavior: 'smooth'
+            });
+        } else {
+            // Sur mobile, on centre l'élément dans la fenêtre
+            const targetScroll = elementTop - (windowHeight - elementHeight) / 2;
+            
+            // Scroll avec animation
+            window.scrollTo({
+                top: Math.max(0, targetScroll - headerHeight),
+                behavior: 'smooth'
+            });
+        }
     }, 100);
 }
 

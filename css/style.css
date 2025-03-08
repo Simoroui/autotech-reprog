@@ -3848,3 +3848,349 @@ input.error, textarea.error, select.error {
 input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-border {
     background-color: #ff3333;
 }
+
+/* Styles pour la section À propos */
+.about-wrapper {
+    position: relative;
+    width: 100%;
+    background-color: #000;
+    padding: 60px 0;
+    overflow: hidden;
+}
+
+/* Fond avec effet de fumée rouge intensifié */
+.about-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(227, 6, 19, 0.3) 0%, transparent 70%),
+        radial-gradient(circle at 80% 70%, rgba(227, 6, 19, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(227, 6, 19, 0.15) 0%, transparent 80%),
+        linear-gradient(135deg, rgba(20, 0, 0, 1) 0%, #000000 100%);
+    z-index: -1;
+    animation: smokePulse 15s ease-in-out infinite alternate;
+}
+
+/* Effet de fumée supplémentaire avec plus de visibilité */
+.about-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(45deg, transparent 0%, rgba(227, 6, 19, 0.05) 25%, transparent 50%),
+        linear-gradient(135deg, transparent 0%, rgba(227, 6, 19, 0.05) 25%, transparent 50%),
+        url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxmaWx0ZXIgaWQ9Im5vaXNlIj4KICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjA1IiBudW1PY3RhdmVzPSIyIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJzYXR1cmF0ZSIgdmFsdWVzPSIwIi8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wMyIvPgo8L3N2Zz4=');
+    opacity: 0.6;
+    z-index: 0;
+    animation: smokeMove 20s ease-in-out infinite alternate;
+}
+
+/* Ajout d'un élément pour renforcer l'effet de fumée */
+.about-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 30% 40%, rgba(227, 6, 19, 0.2) 0%, transparent 70%),
+        radial-gradient(ellipse at 70% 60%, rgba(227, 6, 19, 0.2) 0%, transparent 70%);
+    z-index: 0;
+    animation: smokeFlicker 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+/* Ligne laser horizontale qui se déplace */
+.about-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(227, 6, 19, 0.2) 20%, 
+        rgba(227, 6, 19, 0.5) 50%,
+        rgba(227, 6, 19, 0.2) 80%,
+        transparent 100%
+    );
+    box-shadow: 0 0 8px rgba(227, 6, 19, 0.5);
+    z-index: 2;
+    animation: laserScanHorizontal 8s linear infinite;
+}
+
+/* Ligne laser verticale qui se déplace */
+.about-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(0deg, 
+        transparent 0%, 
+        rgba(227, 6, 19, 0.2) 20%, 
+        rgba(227, 6, 19, 0.5) 50%,
+        rgba(227, 6, 19, 0.2) 80%,
+        transparent 100%
+    );
+    box-shadow: 0 0 8px rgba(227, 6, 19, 0.5);
+    z-index: 2;
+    animation: laserScanVertical 12s linear infinite;
+}
+
+/* Animation pour l'effet de fumée qui pulse */
+@keyframes smokePulse {
+    0% {
+        background-position: 0% 0%;
+        opacity: 0.8;
+    }
+    50% {
+        background-position: 10% 10%;
+        opacity: 1;
+    }
+    100% {
+        background-position: 0% 0%;
+        opacity: 0.8;
+    }
+}
+
+/* Animation pour l'effet de fumée qui se déplace */
+@keyframes smokeMove {
+    0% {
+        background-position: 0% 0%;
+        opacity: 0.5;
+    }
+    50% {
+        background-position: 5% 10%;
+        opacity: 0.7;
+    }
+    100% {
+        background-position: 10% 5%;
+        opacity: 0.5;
+    }
+}
+
+/* Animation pour l'effet de fumée qui scintille */
+@keyframes smokeFlicker {
+    0% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    33% {
+        opacity: 0.5;
+    }
+    66% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0.5;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes laserScanHorizontal {
+    0% {
+        top: 0;
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    45% {
+        opacity: 1;
+    }
+    50% {
+        top: 100%;
+        opacity: 0;
+    }
+    100% {
+        top: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes laserScanVertical {
+    0% {
+        left: 0;
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    45% {
+        opacity: 1;
+    }
+    50% {
+        left: 100%;
+        opacity: 0;
+    }
+    100% {
+        left: 0;
+        opacity: 0;
+    }
+}
+
+.about-section {
+    position: relative;
+    z-index: 3;
+}
+
+.about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.about-image-container {
+    flex: 0 0 45%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid transparent;
+    animation: laser-border 3s infinite;
+}
+
+.about-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.about-image:hover {
+    transform: scale(1.02);
+}
+
+.about-text-container {
+    flex: 0 0 50%;
+    padding: 20px;
+    color: #fff;
+}
+
+.about-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.about-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(227, 6, 19, 0.8),
+        transparent
+    );
+}
+
+.about-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.2px;
+}
+
+@media screen and (max-width: 768px) {
+    .about-description {
+        font-size: 0.9rem;
+        text-align: center;
+        font-weight: 300;
+    }
+}
+
+/* Séparateur laser */
+.laser-separator {
+    height: 3px;
+    width: 100%;
+    margin: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(227, 6, 19, 0.3) 20%, 
+        rgba(227, 6, 19, 0.8) 50%,
+        rgba(227, 6, 19, 0.3) 80%,
+        transparent 100%
+    );
+    box-shadow: 
+        0 0 10px rgba(227, 6, 19, 0.5),
+        0 0 20px rgba(227, 6, 19, 0.3);
+    position: relative;
+    z-index: 2;
+    animation: laser-pulse 3s infinite;
+}
+
+@keyframes laser-pulse {
+    0%, 100% {
+        opacity: 0.3;
+        box-shadow: 0 0 5px rgba(227, 6, 19, 0.3);
+    }
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 15px rgba(227, 6, 19, 0.7);
+    }
+}
+
+/* Responsive styles for About section */
+@media (max-width: 768px) {
+    .about-container {
+        flex-direction: column;
+    }
+    
+    .about-image-container,
+    .about-text-container {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+    
+    .about-image-container {
+        margin-bottom: 30px;
+    }
+    
+    .about-title {
+        font-size: 2rem;
+        text-align: center;
+        display: block;
+    }
+    
+    .about-description {
+        font-size: 1rem;
+        text-align: center;
+    }
+}
+
+@keyframes laserGrid {
+    0% {
+        opacity: 0.3;
+    }
+    25% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    75% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0.3;
+    }
+}
