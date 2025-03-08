@@ -1,27 +1,70 @@
 // Validation du formulaire de contact
 document.addEventListener('DOMContentLoaded', () => {
-    const contactForm = document.querySelector('.contact-form form');
+    const contactForm = document.querySelector('.contact-form');
     
     if (contactForm) {
+        // Ajouter des écouteurs d'événements pour les champs du formulaire
+        const nameInput = contactForm.querySelector('input[name="name"]');
+        const emailInput = contactForm.querySelector('input[name="email"]');
+        const phoneInput = contactForm.querySelector('input[name="phone"]');
+        const subjectSelect = contactForm.querySelector('select[name="subject"]');
+        const messageTextarea = contactForm.querySelector('textarea[name="message"]');
+        
+        // Validation en temps réel pour le nom
+        nameInput.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                showError(this, 'Veuillez entrer votre nom');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        // Validation en temps réel pour l'email
+        emailInput.addEventListener('blur', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!this.value.trim() || !emailRegex.test(this.value.trim())) {
+                showError(this, 'Veuillez entrer une adresse email valide');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        // Validation en temps réel pour le téléphone
+        phoneInput.addEventListener('blur', function() {
+            if (this.value.trim() && !/^[0-9+\s-]{8,15}$/.test(this.value.trim())) {
+                showError(this, 'Veuillez entrer un numéro de téléphone valide');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        // Validation en temps réel pour le sujet
+        subjectSelect.addEventListener('change', function() {
+            if (this.value === '') {
+                showError(this, 'Veuillez sélectionner un sujet');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        // Validation en temps réel pour le message
+        messageTextarea.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                showError(this, 'Veuillez entrer votre message');
+            } else {
+                clearError(this);
+            }
+        });
+        
+        // Validation finale avant soumission
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Récupérer les champs du formulaire
-            const nameInput = this.querySelector('input[name="name"]');
-            const emailInput = this.querySelector('input[name="email"]');
-            const phoneInput = this.querySelector('input[name="phone"]');
-            const subjectSelect = this.querySelector('select[name="subject"]');
-            const messageTextarea = this.querySelector('textarea[name="message"]');
-            
-            // Valider les champs
+            // Vérifier tous les champs avant soumission
             let isValid = true;
             
             // Validation du nom
             if (!nameInput.value.trim()) {
                 showError(nameInput, 'Veuillez entrer votre nom');
                 isValid = false;
-            } else {
-                clearError(nameInput);
             }
             
             // Validation de l'email
@@ -29,63 +72,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
                 showError(emailInput, 'Veuillez entrer une adresse email valide');
                 isValid = false;
-            } else {
-                clearError(emailInput);
             }
             
-            // Validation du téléphone (optionnel)
+            // Validation du téléphone
             if (phoneInput.value.trim() && !/^[0-9+\s-]{8,15}$/.test(phoneInput.value.trim())) {
                 showError(phoneInput, 'Veuillez entrer un numéro de téléphone valide');
                 isValid = false;
-            } else {
-                clearError(phoneInput);
             }
             
             // Validation du sujet
             if (subjectSelect.value === '') {
                 showError(subjectSelect, 'Veuillez sélectionner un sujet');
                 isValid = false;
-            } else {
-                clearError(subjectSelect);
             }
             
             // Validation du message
             if (!messageTextarea.value.trim()) {
                 showError(messageTextarea, 'Veuillez entrer votre message');
                 isValid = false;
-            } else {
-                clearError(messageTextarea);
             }
             
-            // Si le formulaire est valide, simuler l'envoi
-            if (isValid) {
-                // Désactiver le bouton d'envoi
+            // Si le formulaire n'est pas valide, empêcher la soumission
+            if (!isValid) {
+                e.preventDefault();
+            } else {
+                // Afficher un indicateur de chargement
                 const submitButton = this.querySelector('.submit-button');
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
                 submitButton.disabled = true;
-                submitButton.textContent = 'Envoi en cours...';
                 
-                // Simuler un délai d'envoi
-                setTimeout(() => {
-                    // Réinitialiser le formulaire
-                    this.reset();
-                    
-                    // Afficher un message de succès
-                    const successMessage = document.createElement('div');
-                    successMessage.className = 'success-message';
-                    successMessage.textContent = 'Votre message a été envoyé avec succès !';
-                    
-                    // Insérer le message après le formulaire
-                    this.parentNode.insertBefore(successMessage, this.nextSibling);
-                    
-                    // Réactiver le bouton d'envoi
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Envoyer';
-                    
-                    // Supprimer le message après 5 secondes
-                    setTimeout(() => {
-                        successMessage.remove();
-                    }, 5000);
-                }, 1500);
+                // Le formulaire sera soumis normalement via FormSubmit
             }
         });
         

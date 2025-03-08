@@ -1795,7 +1795,7 @@ html {
 
 .form-group {
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 1.8rem;
 }
 
 .form-group input,
@@ -3830,4 +3830,21 @@ html {
 .youtube-channel-link:hover .youtube-button {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+}
+
+.error-message {
+    color: #ff3333;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    position: absolute;
+    left: 1rem;
+    bottom: -1.2rem;
+}
+
+input.error, textarea.error, select.error {
+    border-color: #ff3333;
+}
+
+input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-border {
+    background-color: #ff3333;
 }
