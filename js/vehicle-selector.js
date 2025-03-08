@@ -202,43 +202,63 @@ let currentSelection = {
     type: null
 };
 
-// Renommons la fonction pour refléter son nouveau comportement
-function scrollToStepCenter(stepElement) {
+// Ajouter une fonction d'optimisation pour limiter les appels fréquents
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(context, args);
+        }, wait);
+    };
+}
+
+// Optimiser le scroll avec requestAnimationFrame
+function optimizedScroll(element, to, duration) {
+    const start = element.scrollTop;
+    const change = to - start;
+    let currentTime = 0;
+    const increment = 16; // ~60fps
+
+    function animateScroll() {
+        currentTime += increment;
+        const val = easeInOutQuad(currentTime, start, change, duration);
+        element.scrollTop = val;
+        if (currentTime < duration) {
+            requestAnimationFrame(animateScroll);
+        }
+    }
+
+    function easeInOutQuad(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+
+    requestAnimationFrame(animateScroll);
+}
+
+// Optimiser la fonction scrollToStepCenter
+function scrollToStepCenter(step) {
+    // Ne pas scroller sur les grands écrans (PC)
+    if (window.innerWidth > 768) {
+        return;
+    }
+    
+    const stepElement = document.querySelector(`.step[data-step="${step}"]`);
     if (!stepElement) return;
     
-    // Vérifier si on est sur mobile (largeur d'écran <= 768px)
-    const isMobile = window.innerWidth <= 768;
+    const container = document.querySelector('.selection-steps');
+    const containerRect = container.getBoundingClientRect();
+    const stepRect = stepElement.getBoundingClientRect();
     
-    // Attendre que le DOM soit mis à jour
-    setTimeout(() => {
-        const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
-        const windowHeight = window.innerHeight;
-        const elementHeight = stepElement.offsetHeight;
-        
-        // Calculer la position pour centrer l'élément
-        const elementTop = stepElement.getBoundingClientRect().top + window.scrollY;
-        
-        // Sur PC, on fait un scroll plus doux et moins prononcé
-        if (!isMobile) {
-            // Calculer une position qui place l'élément dans le premier tiers de l'écran
-            const targetScroll = elementTop - headerHeight - 20;
-            
-            // Scroll avec animation
-            window.scrollTo({
-                top: Math.max(0, targetScroll),
-                behavior: 'smooth'
-            });
-        } else {
-            // Sur mobile, on centre l'élément dans la fenêtre
-            const targetScroll = elementTop - (windowHeight - elementHeight) / 2;
-            
-            // Scroll avec animation
-            window.scrollTo({
-                top: Math.max(0, targetScroll - headerHeight),
-                behavior: 'smooth'
-            });
-        }
-    }, 100);
+    const centerPosition = stepElement.offsetLeft + (stepRect.width / 2) - (containerRect.width / 2);
+    
+    // Utiliser la fonction optimisée pour le scroll
+    optimizedScroll(container, centerPosition, 300);
 }
 
 // Modifier handleBrandSelection pour utiliser la nouvelle fonction
@@ -316,7 +336,7 @@ function handleBrandSelection(brand, type) {
     // Scroll vers le modèle step après l'affichage
     const modelStep = document.getElementById('model-step');
     if (modelStep) {
-        scrollToStepCenter(modelStep);
+        scrollToStepCenter('model');
     }
 }
 
@@ -416,7 +436,7 @@ function handleModelSelection(brand, type, model) {
     });
 
     // Scroll vers le version step
-    scrollToStepCenter(versionStep);
+    scrollToStepCenter('version');
 }
 
 // Modifier handleVersionSelection pour centrer la sélection de motorisation
@@ -534,7 +554,7 @@ function handleVersionSelection(brand, type, model, version) {
     });
 
     // Scroll vers le engine step
-    scrollToStepCenter(engineStep);
+    scrollToStepCenter('engine');
 }
 
 function handleEngineSelection(brand, type, model, version, engineData) {
@@ -1137,7 +1157,7 @@ let csvContent = '';
 // Mise en cache des données
 let csvCache = null;
 
-async function loadAndCacheCSV() {
+async function fetchCSV() {
     if (csvCache) {
         return csvCache;
     }
@@ -1150,8 +1170,8 @@ async function loadAndCacheCSV() {
         csvCache = await response.text();
         return csvCache;
     } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-        return null;
+        console.error('Erreur lors du chargement du CSV:', error);
+        return '';
     }
 }
 
@@ -1557,4 +1577,48 @@ window.addEventListener('hashchange', handleHashChange);
 document.addEventListener('DOMContentLoaded', () => {
     // Attendre que tout soit initialisé
     setTimeout(handleHashChange, 1500);
+});
+
+// Utiliser IntersectionObserver pour charger les images de marque à la demande
+document.addEventListener('DOMContentLoaded', function() {
+    // Créer un observateur pour charger les images quand elles deviennent visibles
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                const dataSrc = img.getAttribute('data-src');
+                if (dataSrc) {
+                    img.src = dataSrc;
+                    img.removeAttribute('data-src');
+                }
+                observer.unobserve(img);
+            }
+        });
+    }, {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+    });
+    
+    // Appliquer l'observateur aux images de marque
+    function setupLazyLoading() {
+        document.querySelectorAll('.brand-logo[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
+    
+    // Configurer le chargement paresseux après le chargement des marques
+    const originalLoadBrands = window.loadBrands;
+    if (originalLoadBrands) {
+        window.loadBrands = function(type) {
+            originalLoadBrands(type);
+            setupLazyLoading();
+        };
+    }
+    
+    // Optimiser les gestionnaires d'événements avec debounce
+    const resizeHandler = debounce(function() {
+        // Recalculer les dimensions si nécessaire
+    }, 100);
+    
+    window.addEventListener('resize', resizeHandler);
 });

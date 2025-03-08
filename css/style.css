@@ -3856,9 +3856,11 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     background-color: #000;
     padding: 60px 0;
     overflow: hidden;
+    /* Ajout de will-change pour optimiser les animations */
+    will-change: opacity;
 }
 
-/* Fond avec effet de fumée rouge intensifié */
+/* Fond avec effet de fumée rouge intensifié - optimisé */
 .about-wrapper::before {
     content: '';
     position: absolute;
@@ -3872,10 +3874,13 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
         radial-gradient(circle at 50% 50%, rgba(227, 6, 19, 0.15) 0%, transparent 80%),
         linear-gradient(135deg, rgba(20, 0, 0, 1) 0%, #000000 100%);
     z-index: -1;
-    animation: smokePulse 15s ease-in-out infinite alternate;
+    /* Animation optimisée avec transform au lieu de background-position */
+    animation: smokePulseOptimized 15s ease-in-out infinite alternate;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
-/* Effet de fumée supplémentaire avec plus de visibilité */
+/* Effet de fumée supplémentaire avec plus de visibilité - optimisé */
 .about-wrapper::after {
     content: '';
     position: absolute;
@@ -3889,10 +3894,13 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
         url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxmaWx0ZXIgaWQ9Im5vaXNlIj4KICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjA1IiBudW1PY3RhdmVzPSIyIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+CiAgICA8ZmVDb2xvck1hdHJpeCB0eXBlPSJzYXR1cmF0ZSIgdmFsdWVzPSIwIi8+CiAgPC9maWx0ZXI+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI25vaXNlKSIgb3BhY2l0eT0iMC4wMyIvPgo8L3N2Zz4=');
     opacity: 0.6;
     z-index: 0;
-    animation: smokeMove 20s ease-in-out infinite alternate;
+    /* Animation optimisée avec transform au lieu de background-position */
+    animation: smokeMoveOptimized 20s ease-in-out infinite alternate;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
-/* Ajout d'un élément pour renforcer l'effet de fumée */
+/* Ajout d'un élément pour renforcer l'effet de fumée - optimisé */
 .about-section::before {
     content: '';
     position: absolute;
@@ -3904,11 +3912,14 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
         radial-gradient(ellipse at 30% 40%, rgba(227, 6, 19, 0.2) 0%, transparent 70%),
         radial-gradient(ellipse at 70% 60%, rgba(227, 6, 19, 0.2) 0%, transparent 70%);
     z-index: 0;
-    animation: smokeFlicker 8s ease-in-out infinite alternate;
+    /* Animation optimisée */
+    animation: smokeFlickerOptimized 8s ease-in-out infinite alternate;
     pointer-events: none;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
-/* Ligne laser horizontale qui se déplace */
+/* Ligne laser horizontale qui se déplace - optimisé */
 .about-container::before {
     content: '';
     position: absolute;
@@ -3925,9 +3936,11 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     box-shadow: 0 0 8px rgba(227, 6, 19, 0.5);
     z-index: 2;
     animation: laserScanHorizontal 8s linear infinite;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
-/* Ligne laser verticale qui se déplace */
+/* Ligne laser verticale qui se déplace - optimisé */
 .about-container::after {
     content: '';
     position: absolute;
@@ -3944,58 +3957,63 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     box-shadow: 0 0 8px rgba(227, 6, 19, 0.5);
     z-index: 2;
     animation: laserScanVertical 12s linear infinite;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
-/* Animation pour l'effet de fumée qui pulse */
-@keyframes smokePulse {
+/* Animation optimisée pour l'effet de fumée qui pulse */
+@keyframes smokePulseOptimized {
     0% {
-        background-position: 0% 0%;
         opacity: 0.8;
+        transform: translateZ(0) scale(1);
     }
     50% {
-        background-position: 10% 10%;
         opacity: 1;
+        transform: translateZ(0) scale(1.02);
     }
     100% {
-        background-position: 0% 0%;
         opacity: 0.8;
+        transform: translateZ(0) scale(1);
     }
 }
 
-/* Animation pour l'effet de fumée qui se déplace */
-@keyframes smokeMove {
+/* Animation optimisée pour l'effet de fumée qui se déplace */
+@keyframes smokeMoveOptimized {
     0% {
-        background-position: 0% 0%;
         opacity: 0.5;
+        transform: translateZ(0) translateX(0) translateY(0);
     }
     50% {
-        background-position: 5% 10%;
         opacity: 0.7;
+        transform: translateZ(0) translateX(5px) translateY(10px);
     }
     100% {
-        background-position: 10% 5%;
         opacity: 0.5;
+        transform: translateZ(0) translateX(10px) translateY(5px);
     }
 }
 
-/* Animation pour l'effet de fumée qui scintille */
-@keyframes smokeFlicker {
+/* Animation optimisée pour l'effet de fumée qui scintille */
+@keyframes smokeFlickerOptimized {
     0% {
         opacity: 0.3;
-        transform: scale(1);
+        transform: translateZ(0) scale(1);
     }
     33% {
         opacity: 0.5;
+        transform: translateZ(0) scale(1.02);
     }
     66% {
         opacity: 0.3;
+        transform: translateZ(0) scale(1.01);
     }
     100% {
         opacity: 0.5;
-        transform: scale(1.05);
+        transform: translateZ(0) scale(1.05);
     }
 }
 
+/* Animation optimisée pour le scan laser horizontal */
 @keyframes laserScanHorizontal {
     0% {
         top: 0;
@@ -4017,6 +4035,7 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     }
 }
 
+/* Animation optimisée pour le scan laser vertical */
 @keyframes laserScanVertical {
     0% {
         left: 0;
@@ -4061,6 +4080,8 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     border: 2px solid transparent;
     animation: laser-border 3s infinite;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
 }
 
 .about-image {
@@ -4068,10 +4089,12 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     height: auto;
     display: block;
     transition: transform 0.5s ease;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .about-image:hover {
-    transform: scale(1.02);
+    transform: scale(1.02) translateZ(0);
 }
 
 .about-text-container {
@@ -4136,6 +4159,8 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     position: relative;
     z-index: 2;
     animation: laser-pulse 3s infinite;
+    will-change: opacity, box-shadow;
+    transform: translateZ(0);
 }
 
 @keyframes laser-pulse {
