@@ -374,17 +374,35 @@ function handleBrandSelection(brand, type) {
 function addEventListeners(detailsSection, brand, type, models) {
     // Écouteur pour le scroll sur mobile lorsqu'on clique sur la marque sélectionnée
     const selectedBrand = detailsSection.querySelector('.selection-item.selected');
-    selectedBrand.addEventListener('click', () => {
-        // Uniquement sur mobile
-        if (window.innerWidth <= 768) {
-            // Trouver l'élément de l'étape "modèle"
-            const modelStep = document.getElementById('model-step');
-            if (modelStep) {
-                // Déclencher le défilement vers l'étape "modèle"
-                scrollToStepCenter('model');
+    if (selectedBrand) {
+        selectedBrand.addEventListener('click', () => {
+            // Uniquement sur mobile
+            if (window.innerWidth <= 768) {
+                // Trouver l'élément de l'étape "modèle"
+                const modelStep = document.getElementById('model-step');
+                if (modelStep) {
+                    // Déclencher le défilement vers l'étape "modèle"
+                    // Utiliser setTimeout pour s'assurer que le DOM est prêt
+                    setTimeout(() => {
+                        // Calculer la position pour centrer l'étape dans la fenêtre
+                        const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+                        const windowHeight = window.innerHeight;
+                        const modelStepHeight = modelStep.offsetHeight;
+                        const modelStepTop = modelStep.getBoundingClientRect().top + window.scrollY;
+                        
+                        // Position pour centrer l'élément dans la fenêtre
+                        const targetScroll = modelStepTop - headerHeight - (windowHeight - modelStepHeight) / 2;
+                        
+                        // Utiliser une animation douce pour le défilement
+                        window.scrollTo({
+                            top: Math.max(0, targetScroll),
+                            behavior: 'smooth'
+                        });
+                    }, 50);
+                }
             }
-        }
-    });
+        });
+    }
 
     // Écouteur pour le bouton retour
     detailsSection.querySelector('.back-button').addEventListener('click', () => {
