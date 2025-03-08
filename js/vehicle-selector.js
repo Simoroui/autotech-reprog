@@ -243,22 +243,39 @@ function optimizedScroll(element, to, duration) {
 
 // Optimiser la fonction scrollToStepCenter
 function scrollToStepCenter(step) {
-    // Ne pas scroller sur les grands écrans (PC)
-    if (window.innerWidth > 768) {
-        return;
-    }
-    
+    // Récupérer l'élément de l'étape
     const stepElement = document.querySelector(`.step[data-step="${step}"]`);
     if (!stepElement) return;
     
-    const container = document.querySelector('.selection-steps');
-    const containerRect = container.getBoundingClientRect();
-    const stepRect = stepElement.getBoundingClientRect();
+    // Sur PC (écrans larges), centrer la vue sur la section de sélection
+    if (window.innerWidth > 768) {
+        const vehicleDetails = document.querySelector('.vehicle-details');
+        if (vehicleDetails) {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+            const offset = vehicleDetails.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+            
+            // Utiliser une animation douce pour le défilement
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        }
+        return;
+    }
     
-    const centerPosition = stepElement.offsetLeft + (stepRect.width / 2) - (containerRect.width / 2);
+    // Sur mobile, faire un défilement vertical pour centrer l'étape dans la fenêtre
+    const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+    const windowHeight = window.innerHeight;
+    const stepHeight = stepElement.offsetHeight;
     
-    // Utiliser la fonction optimisée pour le scroll
-    optimizedScroll(container, centerPosition, 300);
+    // Calculer la position pour centrer l'étape dans la fenêtre
+    const targetScroll = stepElement.getBoundingClientRect().top + window.scrollY - headerHeight - (windowHeight - stepHeight) / 2;
+    
+    // Utiliser une animation douce pour le défilement
+    window.scrollTo({
+        top: Math.max(0, targetScroll),
+        behavior: 'smooth'
+    });
 }
 
 // Modifier handleBrandSelection pour utiliser la nouvelle fonction
@@ -333,31 +350,40 @@ function handleBrandSelection(brand, type) {
     // Ajouter les écouteurs d'événements
     addEventListeners(detailsSection, brand, type, models);
 
-    // Scroll vers le modèle step après l'affichage
-    const modelStep = document.getElementById('model-step');
-    if (modelStep) {
-        scrollToStepCenter('model');
-    }
+    // Centrer la section de sélection immédiatement après la sélection d'une marque
+    // Pour assurer que la section soit visible dans le DOM avant de faire défiler
+    setTimeout(() => {
+        // Sur PC (écrans larges), centrer la vue sur la section de sélection
+        if (window.innerWidth > 768) {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+            const offset = detailsSection.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+            
+            // Utiliser une animation douce pour le défilement
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        } else {
+            // Sur mobile, utiliser la fonction existante pour le défilement horizontal
+            scrollToStepCenter('model');
+        }
+    }, 100);
 }
 
 // Fonction séparée pour ajouter les écouteurs d'événements
 function addEventListeners(detailsSection, brand, type, models) {
-    // Écouteur pour le scroll
+    // Écouteur pour le scroll sur mobile lorsqu'on clique sur la marque sélectionnée
     const selectedBrand = detailsSection.querySelector('.selection-item.selected');
     selectedBrand.addEventListener('click', () => {
-        const modelStep = document.getElementById('model-step');
-        const headerHeight = document.querySelector('.header').offsetHeight;
-        
-        const windowHeight = window.innerHeight;
-        const modelStepHeight = modelStep.offsetHeight;
-        const modelStepTop = modelStep.getBoundingClientRect().top + window.pageOffset;
-        
-        const scrollPosition = modelStepTop - (windowHeight - modelStepHeight) / 2;
-        
-        window.scrollTo({
-            top: scrollPosition,
-            behavior: 'smooth'
-        });
+        // Uniquement sur mobile
+        if (window.innerWidth <= 768) {
+            // Trouver l'élément de l'étape "modèle"
+            const modelStep = document.getElementById('model-step');
+            if (modelStep) {
+                // Déclencher le défilement vers l'étape "modèle"
+                scrollToStepCenter('model');
+            }
+        }
     });
 
     // Écouteur pour le bouton retour
