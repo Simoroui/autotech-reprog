@@ -246,7 +246,7 @@ function scrollToStepCenter(step) {
     // Récupérer l'élément de l'étape
     const stepElement = document.querySelector(`.step[data-step="${step}"]`);
     if (!stepElement) return;
-    
+
     // Sur PC (écrans larges), centrer la vue sur la section de sélection
     if (window.innerWidth > 768) {
         const vehicleDetails = document.querySelector('.vehicle-details');
@@ -263,7 +263,30 @@ function scrollToStepCenter(step) {
         return;
     }
     
-    // Sur mobile, faire un défilement vertical pour centrer l'étape dans la fenêtre
+    // Sur mobile, faire un défilement horizontal pour centrer l'étape dans la fenêtre
+    const selectionSteps = document.querySelector('.selection-steps');
+    if (selectionSteps) {
+        // Si on demande de centrer sur "model", d'abord s'assurer que la première colonne est visible
+        if (step === 'model') {
+            // Attendre un court instant pour que le DOM soit prêt
+            setTimeout(() => {
+                // Trouver la position de l'élément dans le conteneur
+                const stepRect = stepElement.getBoundingClientRect();
+                const containerRect = selectionSteps.getBoundingClientRect();
+                
+                // Calculer la position pour centrer l'élément
+                const scrollLeft = stepElement.offsetLeft - (window.innerWidth / 2) + (stepRect.width / 2);
+                
+                // Utiliser une animation douce pour le défilement
+                selectionSteps.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+    }
+    
+    // Faire aussi un défilement vertical pour s'assurer que la section est visible
     const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
     const windowHeight = window.innerHeight;
     const stepHeight = stepElement.offsetHeight;
@@ -350,24 +373,60 @@ function handleBrandSelection(brand, type) {
     // Ajouter les écouteurs d'événements
     addEventListeners(detailsSection, brand, type, models);
 
-    // Centrer la section de sélection immédiatement après la sélection d'une marque
-    // Pour assurer que la section soit visible dans le DOM avant de faire défiler
+    // Faire défiler jusqu'au titre "CHOISISSEZ VOTRE VÉHICULE"
     setTimeout(() => {
-        // Sur PC (écrans larges), centrer la vue sur la section de sélection
-        if (window.innerWidth > 768) {
+        // Trouver spécifiquement le titre "CHOISISSEZ VOTRE VÉHICULE"
+        const sectionTitles = document.querySelectorAll('.section-title');
+        let targetTitle = null;
+        
+        // Parcourir tous les titres pour trouver celui qui contient "CHOISISSEZ VOTRE VÉHICULE"
+        for (const title of sectionTitles) {
+            if (title.textContent.includes('CHOISISSEZ VOTRE VÉHICULE')) {
+                targetTitle = title;
+                break;
+            }
+        }
+        
+        if (targetTitle) {
             const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
-            const offset = detailsSection.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+            
+            // Calculer la position pour placer le titre en haut de l'écran
+            const offset = targetTitle.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
             
             // Utiliser une animation douce pour le défilement
             window.scrollTo({
                 top: offset,
                 behavior: 'smooth'
             });
-        } else {
-            // Sur mobile, utiliser la fonction existante pour le défilement horizontal
-            scrollToStepCenter('model');
+            
+            // Sur mobile, après avoir défilé verticalement, centrer horizontalement
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    scrollToStepCenter('model');
+                }, 300);
+            }
         }
     }, 100);
+}
+
+// Fonction pour récupérer les modèles pour une marque donnée
+function getModelsForBrand(brand, type) {
+    // Vérifier si nous avons des données CSV
+    if (!csvContent) return [];
+    
+    // Analyser le contenu CSV
+    const lines = parseCSV(csvContent);
+    const models = new Set();
+    
+    // Parcourir les lignes pour trouver les modèles correspondant à la marque
+    for (let i = 1; i < lines.length; i++) {
+        const columns = lines[i].split(',');
+        if (columns[0].trim() === brand) {
+            models.add(columns[1].trim());
+        }
+    }
+    
+    return Array.from(models);
 }
 
 // Fonction séparée pour ajouter les écouteurs d'événements
@@ -1202,12 +1261,12 @@ let csvContent = '';
 let csvCache = null;
 
 async function fetchCSV() {
-    if (csvCache) {
-        return csvCache;
-    }
-    
     try {
-        const response = await fetch('data/marques.csv');
+        if (csvCache) {
+            return csvCache;
+        }
+        
+        const response = await fetch('data/vehicles.csv');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
@@ -1403,15 +1462,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Ajouter cette nouvelle fonction
 function handleReservation(brand, model, version, engineType) {
+    // Créer un message préformaté avec les détails du véhicule
     const prefilledMessage = `Demande de reprogrammation pour :
-Marque : ${brand}
-Modèle : ${model}
-Version : ${version}
-Motorisation : ${engineType}`;
+- Marque : ${brand}
+- Modèle : ${model}
+- Version : ${version}
+- Motorisation : ${engineType}`;
 
+    // Stocker le message dans le localStorage
     localStorage.setItem('prefilledMessage', prefilledMessage);
-    window.location.href = '/autotech-reprog/#contact';
+    
+    // Rediriger vers la section contact
+    window.location.href = 'index.html#contact';
+    
+    // Ajouter un événement pour remplir le formulaire une fois la page chargée
+    window.addEventListener('load', fillContactForm);
 }
+
+// Fonction pour remplir le formulaire de contact avec les données stockées
+function fillContactForm() {
+    // Vérifier si nous sommes sur la page avec le formulaire de contact
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) return;
+    
+    // Vérifier si nous avons un message préformaté dans le localStorage
+    const prefilledMessage = localStorage.getItem('prefilledMessage');
+    if (!prefilledMessage) return;
+    
+    // Remplir le champ message
+    const messageField = document.getElementById('message');
+    if (messageField) {
+        messageField.value = prefilledMessage;
+        
+        // Sélectionner "Reprogrammation" dans le menu déroulant
+        const subjectField = document.getElementById('subject');
+        if (subjectField) {
+            subjectField.value = 'reprog';
+        }
+        
+        // Supprimer le message du localStorage après utilisation
+        localStorage.removeItem('prefilledMessage');
+    }
+}
+
+// Ajouter l'événement au chargement de la page
+document.addEventListener('DOMContentLoaded', fillContactForm);
 
 // Ajouter cette fonction à la fin du fichier
 function updatePerformanceData(isStage2) {
@@ -1665,4 +1760,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
     
     window.addEventListener('resize', resizeHandler);
-});
+})();
