@@ -74,31 +74,27 @@
             margin: 40px 0;
         }
 
+        /* Style direct pour les cartes d'options */
         .option-card {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            border: 1px solid rgba(255, 0, 0, 0.1);
+            border: 3px solid red !important;
+            box-shadow: 0 0 15px red !important;
+            position: relative !important;
+            z-index: 100 !important;
+            overflow: visible !important;
+            margin-bottom: 30px !important;
+            transform: none !important;
+            transition: transform 0.3s ease !important;
         }
-
+        
         .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(227, 6, 19, 0.2);
+            transform: translateY(-5px) !important;
+            border-color: #ff5555 !important;
+            box-shadow: 0 0 25px red !important;
         }
-
+        
+        /* Désactiver les styles qui pourraient interférer */
         .option-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 10px;
-            pointer-events: none;
-            background: linear-gradient(135deg, rgba(227, 6, 19, 0.1), transparent);
-            z-index: 1;
+            display: none !important;
         }
 
         .option-image {
@@ -203,21 +199,7 @@
 
         /* Animation laser pour les cartes */
         .option-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
-            transform: skewX(-25deg);
-            transition: 0.5s;
-            z-index: 2;
-        }
-
-        .option-card:hover::after {
-            left: 150%;
-            transition: 0.7s ease-in-out;
+            display: none !important;
         }
 
         /* Style pour la section CTA et le bouton */
@@ -233,14 +215,7 @@
         }
 
         .contact-cta::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(227, 6, 19, 0.1), transparent);
-            z-index: 0;
+            display: none !important;
         }
 
         .contact-cta h2 {
@@ -282,19 +257,7 @@
         }
 
         .cta-button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-            z-index: -1;
-        }
-
-        .cta-button:hover::after {
-            left: 100%;
+            display: none !important;
         }
 
         @media screen and (max-width: 768px) {
@@ -357,57 +320,14 @@
             }
         }
 
+        /* Supprimer les styles des faisceaux laser */
         .laser-beam {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.7), transparent);
-            height: 3px;
-            width: 100%;
-            transform-origin: left;
-            animation: laserScan 8s infinite;
-            opacity: 0;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-        }
-
-        .laser-beam-1 {
-            top: 20%;
-            animation-delay: 0s;
-        }
-
-        .laser-beam-2 {
-            top: 40%;
-            animation-delay: 2s;
-        }
-
-        .laser-beam-3 {
-            top: 60%;
-            animation-delay: 4s;
-        }
-
-        .laser-beam-4 {
-            top: 80%;
-            animation-delay: 6s;
+            display: none !important;
         }
 
         @keyframes laserScan {
-            0% {
-                transform: translateX(-100%) scaleY(1);
-                opacity: 0;
-            }
-            5% {
-                opacity: 1;
-            }
-            10% {
-                transform: translateX(0%) scaleY(1);
-                opacity: 0.5;
-            }
-            15% {
-                transform: translateX(100%) scaleY(1);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(100%) scaleY(1);
-                opacity: 0;
-            }
+            0% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
         /* Ajustement pour que le contenu reste au-dessus du fond laser */
@@ -621,18 +541,110 @@
                 opacity: 0.3;
             }
         }
+
+        /* Style extrêmement prioritaire pour les cadres rouges */
+        .option-box {
+            border: 3px solid #ff0000 !important;
+            box-shadow: 0 0 15px #ff0000 !important;
+            position: relative !important;
+            z-index: 10 !important;
+            animation: pulseBorder 2s infinite alternate !important;
+        }
+        
+        @keyframes pulseBorder {
+            0% {
+                border-color: #ff0000;
+                box-shadow: 0 0 10px #ff0000;
+            }
+            100% {
+                border-color: #ff5555;
+                box-shadow: 0 0 20px #ff0000;
+            }
+        }
+        
+        .option-box:hover {
+            border: 3px solid #ff3333 !important;
+            box-shadow: 0 0 25px #ff0000 !important;
+            transform: translateY(-5px) !important;
+        }
+
+        /* Styles pour la ligne laser sous le header */
+        .laser-separator {
+            height: 2px !important;
+            width: 100% !important;
+            margin: 0 !important;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(227, 6, 19, 0.3) 20%, 
+                rgba(227, 6, 19, 0.8) 50%,
+                rgba(227, 6, 19, 0.3) 80%,
+                transparent 100%
+            ) !important;
+            box-shadow: 
+                0 0 8px rgba(227, 6, 19, 0.5),
+                0 0 15px rgba(227, 6, 19, 0.3) !important;
+            position: relative !important;
+            z-index: 10 !important;
+            margin-bottom: 20px !important;
+            margin-top: 0 !important;
+            display: block !important;
+            opacity: 1 !important;
+        }
+
+        .laser-line {
+            display: none;
+        }
+
+        @keyframes laser-pulse {
+            0% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Style pour s'assurer que le header est au-dessus de la ligne laser */
+        .header {
+            position: relative !important;
+            z-index: 9999 !important; /* z-index très élevé pour s'assurer qu'il est au-dessus de tout */
+        }
     </style>
+    
+    <!-- Script immédiat pour appliquer les cadres rouges -->
+    <script>
+        // Fonction pour appliquer les cadres rouges
+        function applyCadresRouges() {
+            // Sélectionner toutes les cartes d'options
+            var cards = document.querySelectorAll('.option-card');
+            
+            // Si aucune carte n'est trouvée, réessayer plus tard
+            if (cards.length === 0) {
+                setTimeout(applyCadresRouges, 100);
+                return;
+            }
+            
+            // Appliquer les styles à chaque carte
+            for (var i = 0; i < cards.length; i++) {
+                var card = cards[i];
+                card.setAttribute('style', 'border: 3px solid red !important; box-shadow: 0 0 15px red !important; position: relative !important; z-index: 100 !important; overflow: visible !important;');
+            }
+            
+            console.log('Cadres rouges appliqués à', cards.length, 'cartes d\'options (script immédiat)');
+        }
+        
+        // Exécuter immédiatement
+        applyCadresRouges();
+        
+        // Exécuter également après le chargement du DOM
+        document.addEventListener('DOMContentLoaded', applyCadresRouges);
+        
+        // Et après le chargement complet de la page
+        window.addEventListener('load', applyCadresRouges);
+    </script>
 </head>
 <body>
     <div class="page-wrapper">
         <!-- Fond dynamique avec effet laser -->
         <div class="laser-background">
             <div class="laser-grid"></div>
-            <div class="laser-beam laser-beam-1"></div>
-            <div class="laser-beam laser-beam-2"></div>
-            <div class="laser-beam laser-beam-3"></div>
-            <div class="laser-beam laser-beam-4"></div>
-            <!-- Particules flottantes -->
+            <!-- Suppression des faisceaux laser horizontaux -->
             <div class="particles">
                 <div class="particle particle-1"></div>
                 <div class="particle particle-2"></div>
@@ -687,6 +699,8 @@
                 </nav>
             </div>
         </header>
+
+        <div class="laser-separator" style="height: 2px !important; width: 100% !important; background: linear-gradient(90deg, transparent 0%, rgba(227, 6, 19, 0.3) 20%, rgba(227, 6, 19, 0.8) 50%, rgba(227, 6, 19, 0.3) 80%, transparent 100%) !important; box-shadow: 0 0 8px rgba(227, 6, 19, 0.5), 0 0 15px rgba(227, 6, 19, 0.3) !important; position: relative !important; z-index: 10 !important; margin-bottom: 20px !important; margin-top: 0 !important; display: block !important; opacity: 1 !important;"></div>
 
         <main class="main-content">
             <div class="options-hero">
@@ -1024,9 +1038,88 @@
     <script src="js/header.js" defer></script>
     <script src="js/scroll-to-top.js" defer></script>
     
+    <!-- Script pour appliquer les cadres rouges -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cibler les cartes d'options au lieu des option-box
+            const optionCards = document.querySelectorAll('.option-card');
+            
+            // Appliquer un style très visible
+            optionCards.forEach(card => {
+                // Créer une bordure visible
+                card.style.border = '3px solid red';
+                card.style.boxShadow = '0 0 15px red';
+                card.style.position = 'relative';
+                card.style.zIndex = '100';
+                card.style.overflow = 'visible';
+                
+                // Créer un effet d'animation
+                card.style.animation = 'none'; // Supprimer les animations existantes
+                
+                // Ajouter une bordure animée
+                const borderElement = document.createElement('div');
+                borderElement.style.position = 'absolute';
+                borderElement.style.top = '-3px';
+                borderElement.style.left = '-3px';
+                borderElement.style.right = '-3px';
+                borderElement.style.bottom = '-3px';
+                borderElement.style.border = '3px solid red';
+                borderElement.style.boxShadow = '0 0 15px red';
+                borderElement.style.zIndex = '99';
+                borderElement.style.pointerEvents = 'none';
+                borderElement.style.borderRadius = 'inherit';
+                borderElement.style.animation = 'pulseBorder 2s infinite alternate';
+                
+                // Insérer la bordure
+                card.style.position = 'relative';
+                card.insertBefore(borderElement, card.firstChild);
+                
+                // Ajouter l'animation au document
+                if (!document.getElementById('pulse-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'pulse-animation';
+                    style.textContent = `
+                        @keyframes pulseBorder {
+                            0% {
+                                border-color: #ff0000;
+                                box-shadow: 0 0 10px #ff0000;
+                            }
+                            100% {
+                                border-color: #ff5555;
+                                box-shadow: 0 0 20px #ff0000;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            });
+            
+            // Afficher un message de confirmation dans la console
+            console.log('Cadres rouges appliqués à', optionCards.length, 'cartes d\'options');
+        });
+    </script>
+    
     <!-- Script pour l'effet laser dynamique -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // S'assurer que la ligne laser sous le header est visible
+            const laserSeparator = document.querySelector('.laser-separator');
+            if (laserSeparator) {
+                // Forcer les styles pour s'assurer que la ligne est visible
+                laserSeparator.style.height = '2px';
+                laserSeparator.style.width = '100%';
+                laserSeparator.style.background = 'linear-gradient(90deg, transparent 0%, rgba(227, 6, 19, 0.3) 20%, rgba(227, 6, 19, 0.8) 50%, rgba(227, 6, 19, 0.3) 80%, transparent 100%)';
+                laserSeparator.style.boxShadow = '0 0 8px rgba(227, 6, 19, 0.5), 0 0 15px rgba(227, 6, 19, 0.3)';
+                laserSeparator.style.position = 'relative';
+                laserSeparator.style.zIndex = '10';
+                laserSeparator.style.marginBottom = '20px';
+                laserSeparator.style.marginTop = '0';
+                laserSeparator.style.display = 'block';
+                laserSeparator.style.opacity = '1';
+                
+                console.log('Ligne laser sous le header forcée à être visible');
+            }
+            
             // Référence au fond laser
             const laserBackground = document.querySelector('.laser-background');
             const particles = document.querySelectorAll('.particle');
@@ -1057,135 +1150,6 @@
                     particle.style.opacity = opacity;
                 });
             });
-            
-            // Ajouter un effet de clic pour générer un faisceau laser plus spectaculaire
-            document.addEventListener('click', function(e) {
-                // Créer un nouveau faisceau laser à l'endroit du clic
-                const beam = document.createElement('div');
-                beam.className = 'laser-beam-click';
-                beam.style.top = `${e.clientY}px`;
-                beam.style.left = '0';
-                beam.style.width = '100%';
-                beam.style.height = '3px';
-                beam.style.position = 'fixed';
-                beam.style.background = 'linear-gradient(90deg, transparent, rgba(255, 0, 0, 1), transparent)';
-                beam.style.zIndex = '-1';
-                beam.style.opacity = '1';
-                beam.style.transform = 'scaleY(1)';
-                beam.style.transition = 'transform 0.3s, opacity 0.7s';
-                beam.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
-                
-                // Ajouter le faisceau au DOM
-                document.body.appendChild(beam);
-                
-                // Animation du faisceau
-                setTimeout(() => {
-                    beam.style.transform = 'scaleY(5)';
-                    beam.style.opacity = '0';
-                }, 50);
-                
-                // Supprimer le faisceau après l'animation
-                setTimeout(() => {
-                    document.body.removeChild(beam);
-                }, 700);
-                
-                // Ajouter un effet d'explosion de particules au point de clic
-                createExplosion(e.clientX, e.clientY);
-            });
-            
-            // Fonction pour créer une explosion de particules
-            function createExplosion(x, y) {
-                const explosionContainer = document.createElement('div');
-                explosionContainer.style.position = 'fixed';
-                explosionContainer.style.left = `${x}px`;
-                explosionContainer.style.top = `${y}px`;
-                explosionContainer.style.width = '0';
-                explosionContainer.style.height = '0';
-                explosionContainer.style.zIndex = '-1';
-                explosionContainer.style.pointerEvents = 'none';
-                
-                document.body.appendChild(explosionContainer);
-                
-                // Créer plusieurs particules d'explosion
-                for (let i = 0; i < 15; i++) {
-                    const particle = document.createElement('div');
-                    particle.style.position = 'absolute';
-                    particle.style.width = '4px';
-                    particle.style.height = '4px';
-                    particle.style.background = 'rgba(255, 0, 0, 1)';
-                    particle.style.borderRadius = '50%';
-                    particle.style.boxShadow = '0 0 10px rgba(255, 0, 0, 1)';
-                    particle.style.transform = 'translate(-50%, -50%)';
-                    particle.style.transition = 'all 1s cubic-bezier(0.1, 0.8, 0.2, 1)';
-                    
-                    explosionContainer.appendChild(particle);
-                    
-                    // Animation de la particule
-                    setTimeout(() => {
-                        const angle = Math.random() * Math.PI * 2;
-                        const distance = 50 + Math.random() * 100;
-                        const posX = Math.cos(angle) * distance;
-                        const posY = Math.sin(angle) * distance;
-                        
-                        particle.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px))`;
-                        particle.style.opacity = '0';
-                    }, 10);
-                }
-                
-                // Supprimer le conteneur d'explosion après l'animation
-                setTimeout(() => {
-                    document.body.removeChild(explosionContainer);
-                }, 1000);
-            }
-            
-            // Créer des particules supplémentaires aléatoirement
-            setInterval(() => {
-                if (document.querySelectorAll('.particle-random').length < 8) {
-                    createRandomParticle();
-                }
-            }, 1000);
-            
-            function createRandomParticle() {
-                const particle = document.createElement('div');
-                particle.className = 'particle particle-random';
-                
-                // Position aléatoire
-                const top = Math.random() * 100;
-                const left = Math.random() * 100;
-                
-                particle.style.top = `${top}%`;
-                particle.style.left = `${left}%`;
-                particle.style.width = '5px';
-                particle.style.height = '5px';
-                particle.style.opacity = '0';
-                particle.style.background = 'radial-gradient(circle at center, rgba(255, 0, 0, 1), transparent 70%)';
-                particle.style.borderRadius = '50%';
-                particle.style.position = 'absolute';
-                particle.style.zIndex = '0';
-                particle.style.boxShadow = '0 0 15px rgba(255, 0, 0, 0.8)';
-                
-                // Ajouter la particule au conteneur
-                document.querySelector('.particles').appendChild(particle);
-                
-                // Animation de la particule
-                setTimeout(() => {
-                    particle.style.transition = 'all 5s cubic-bezier(0.1, 0.8, 0.2, 1)';
-                    particle.style.opacity = '0.8';
-                    
-                    // Déplacement aléatoire
-                    const moveX = (Math.random() - 0.5) * 300;
-                    const moveY = (Math.random() - 0.5) * 300;
-                    const scale = 0.8 + Math.random() * 1.5;
-                    particle.style.transform = `translate(${moveX}px, ${moveY}px) scale(${scale})`;
-                }, 100);
-                
-                // Supprimer la particule après l'animation
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 5000);
-            }
         });
     </script>
 </body>
