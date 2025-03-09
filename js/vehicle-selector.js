@@ -902,6 +902,13 @@ function showResultPage(vehicleData) {
     currentUrl.searchParams.set('brand', brand);
     currentUrl.searchParams.set('model', model);
     currentUrl.searchParams.set('version', version);
+    currentUrl.searchParams.set('engine', engineType);
+    
+    // Supprimer les paramètres techniques qui ne devraient pas être dans l'URL
+    currentUrl.searchParams.delete('powerOrig');
+    currentUrl.searchParams.delete('powerStage1');
+    currentUrl.searchParams.delete('torqueOrig');
+    currentUrl.searchParams.delete('torqueStage1');
     
     // Construire le hash correct pour la page de résultats
     const type = currentSelection.type || 'cars'; // Utiliser 'cars' par défaut si non défini
@@ -926,7 +933,7 @@ function showResultPage(vehicleData) {
                 <button class="stage-btn active" data-stage="1">Stage 1</button>
                 <button class="stage-btn" data-stage="2">Stage 2</button>
             </div>
-
+            
             <div class="stage-info" style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
                 <div class="stage1-info" style="display: block;">
                     <span style="color: #fff; font-size: 0.9rem;">
@@ -950,31 +957,31 @@ function showResultPage(vehicleData) {
                 <div class="table-content">
                     <div class="table-row">
                         <div class="label">Puissance</div>
-                        <div class="value">${powerOriginal}</div>
-                        <div class="value stage-value">${powerStage1}</div>
+                        <div class="value">${powerOriginal} Hp</div>
+                        <div class="value stage-value">${powerStage1} Hp</div>
                         <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
                     </div>
                     <div class="table-row">
                         <div class="label">Couple</div>
-                        <div class="value">${torqueOriginal}</div>
-                        <div class="value stage-value">${torqueStage1}</div>
+                        <div class="value">${torqueOriginal} Nm</div>
+                        <div class="value stage-value">${torqueStage1} Nm</div>
                         <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
                     </div>
                 </div>
             </div>
-
+            
             <div class="performance-graph">
                 <canvas id="performanceChart"></canvas>
             </div>
-
+            
             <!-- Autres sections de la page de résultats -->
             <div class="advantages-list">
                 <div class="advantage-item">
                     Reprog sur banc de puissance (dyno)
-                    </div>
+                </div>
                 <div class="advantage-item">
                     Reprog sur fichier d'origine
-                    </div>
+                </div>
                 <div class="advantage-item">
                     Log des valeurs (avant et après reprog)
                 </div>
@@ -1019,7 +1026,7 @@ function showResultPage(vehicleData) {
             </div>
         </div>
     `;
-
+    
     // Ajouter au DOM
     document.querySelector('.section-container').appendChild(container);
 
@@ -1148,7 +1155,7 @@ function showResultPage(vehicleData) {
             initializeSlideshow();
         });
     }
-
+    
     // Ajouter les écouteurs d'événements pour les boutons de stage
     const stageButtons = container.querySelectorAll('.stage-btn');
     const stage1Info = container.querySelector('.stage1-info');
@@ -1159,7 +1166,7 @@ function showResultPage(vehicleData) {
             // Mettre à jour les classes actives
             stageButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-
+            
             // Afficher/masquer les infos correspondantes
             if (button.dataset.stage === '1') {
                 stage1Info.style.display = 'block';
@@ -1174,7 +1181,7 @@ function showResultPage(vehicleData) {
             updatePerformanceData(isStage2);
         });
     });
-
+    
     return container;
 }
 
@@ -1385,138 +1392,7 @@ async function cacheData(key, data) {
     }
 }
 
-// Ajouter après la table de performances
-function addPerformanceGraph(data) {
-    return `
-        <div class="performance-graph">
-            <canvas id="powerGraph"></canvas>
-            <div class="graph-legend">
-                <div class="legend-item original">
-                    <span class="line"></span>
-                    <span>Origine</span>
-                </div>
-                <div class="legend-item stage1">
-                    <span class="line"></span>
-                    <span>Stage 1</span>
-                </div>
-            </div>
-        </div>
-    `
-}
-
-// Modifier les styles CSS
-const styles = `
-.performance-graph {
-    background: linear-gradient(145deg, #222, #111);
-    border-radius: 12px;
-    padding: 2rem;
-    margin: 2rem 0;
-    min-height: 300px;
-    position: relative;
-}
-`;
-
-// Ajouter au début du fichier ou dans un fichier séparé
-document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.querySelector('.hamburger-menu');
-    const navContainer = document.querySelector('.nav-container');
-    
-    hamburger.addEventListener('click', () => {
-        navContainer.classList.toggle('active');
-    });
-});
-
-function displayVehicleResults(brand, model, version) {
-    // ... code existant ...
-
-    // Chercher cette partie et la corriger
-    const vehicleImages = {
-        path: `/autotech-reprog/images/slideshow/${brand.toLowerCase()}/${model.toLowerCase()}/${version.toLowerCase()}`
-    };
-
-    // ... reste du code ...
-}
-
-// Fonction pour gérer le scroll vers la section boost
-function scrollToBoost() {
-    const isMobile = window.innerWidth <= 768;
-    const vehicleTabs = document.querySelector('.vehicle-tabs');
-    const headerHeight = document.querySelector('.header').offsetHeight;
-    const boostTitle = document.querySelector('#boost h2'); // Sélectionne le titre
-    
-    if (isMobile) {
-        // Position du titre par rapport au haut de la page
-        const targetPosition = boostTitle.offsetTop - headerHeight - 20; // 20px de marge
-        
-        setTimeout(() => {
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
-        }, 100);
-    } else {
-        // Comportement desktop inchangé
-        document.querySelector('#boost').scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-// Ajouter l'écouteur d'événement au bouton
-document.addEventListener('DOMContentLoaded', () => {
-    const boostButton = document.querySelector('.boost-button');
-    if (boostButton) {
-        boostButton.addEventListener('click', scrollToBoost);
-    }
-});
-
-// Ajouter cette nouvelle fonction
-function handleReservation(brand, model, version, engineType) {
-    // Créer un message préformaté avec les détails du véhicule
-    const prefilledMessage = `Demande de reprogrammation pour :
-- Marque : ${brand}
-- Modèle : ${model}
-- Version : ${version}
-- Motorisation : ${engineType}`;
-
-    // Stocker le message dans le localStorage
-    localStorage.setItem('prefilledMessage', prefilledMessage);
-    
-    // Rediriger vers la section contact
-    window.location.href = 'index.html#contact';
-    
-    // Ajouter un événement pour remplir le formulaire une fois la page chargée
-    window.addEventListener('load', fillContactForm);
-}
-
-// Fonction pour remplir le formulaire de contact avec les données stockées
-function fillContactForm() {
-    // Vérifier si nous sommes sur la page avec le formulaire de contact
-    const contactForm = document.getElementById('contactForm');
-    if (!contactForm) return;
-    
-    // Vérifier si nous avons un message préformaté dans le localStorage
-    const prefilledMessage = localStorage.getItem('prefilledMessage');
-    if (!prefilledMessage) return;
-    
-    // Remplir le champ message
-    const messageField = document.getElementById('message');
-    if (messageField) {
-        messageField.value = prefilledMessage;
-        
-        // Sélectionner "Reprogrammation" dans le menu déroulant
-        const subjectField = document.getElementById('subject');
-        if (subjectField) {
-            subjectField.value = 'reprog';
-        }
-        
-        // Supprimer le message du localStorage après utilisation
-        localStorage.removeItem('prefilledMessage');
-    }
-}
-
-// Ajouter l'événement au chargement de la page
-document.addEventListener('DOMContentLoaded', fillContactForm);
-
-// Ajouter cette fonction à la fin du fichier
+// Fonction pour mettre à jour les données de performance en fonction du stage sélectionné
 function updatePerformanceData(isStage2) {
     // Récupérer les éléments
     const powerStageCell = document.querySelector('.table-row:first-child .stage-value');
@@ -1524,21 +1400,21 @@ function updatePerformanceData(isStage2) {
     const powerDiffCell = document.querySelector('.power-diff span');
     const torqueDiffCell = document.querySelector('.torque-diff span');
     const stageColumn = document.querySelector('.stage-column:nth-child(3)');
-
+    
     if (isStage2) {
         // Calculer les valeurs Stage 2
-        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp
-        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm
+        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp par rapport au Stage 1
+        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm par rapport au Stage 1
 
         // Mettre à jour le titre
         stageColumn.textContent = 'STAGE2';
-
+        
         // Mettre à jour les valeurs
         powerStageCell.textContent = `${powerStage2} Hp`;
         torqueStageCell.textContent = `${torqueStage2} Nm`;
         powerDiffCell.textContent = `+${powerStage2 - initialValues.powerOriginal} Hp`;
         torqueDiffCell.textContent = `+${torqueStage2 - initialValues.torqueOriginal} Nm`;
-
+        
         // Mettre à jour le graphique
         const chart = Chart.getChart('performanceChart');
         if (chart) {
@@ -1565,90 +1441,64 @@ function updatePerformanceData(isStage2) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const vehicleTabs = document.querySelectorAll('.vehicle-tabs button');
-    const brandsGrids = document.querySelectorAll('.brands-grid');
-
-    // Gestion des onglets
-    vehicleTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            vehicleTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            brandsGrids.forEach(grid => grid.classList.remove('active'));
-            const targetGrid = document.getElementById(`${tab.dataset.type}-grid`);
-            if (targetGrid) {
-                targetGrid.classList.add('active');
-            }
-        });
-    });
-
-    // Charger et traiter les données CSV
-    fetch('data/marques.csv')
-        .then(response => response.text())
-        .then(data => {
-            const lines = data.split('\n');
-            const cars = new Set();
-            const motorcycles = new Set();
-            const jetski = new Set();
-            const quad = new Set();
-            const trucks = new Set();
-            const agricultural = new Set();
-
-            lines.forEach(line => {
-                const [marque, type] = line.split(',').map(item => item.trim());
-                if (!marque || !type) return;
-
-                switch (type.toLowerCase()) {
-                    case 'voiture': cars.add(marque); break;
-                    case 'moto': motorcycles.add(marque); break;
-                    case 'jetski': jetski.add(marque); break;
-                    case 'quad': quad.add(marque); break;
-                    case 'camion': trucks.add(marque); break;
-                    case 'agricole': agricultural.add(marque); break;
-                }
-            });
-
-            const createBrandElements = (brands, gridId) => {
-                const grid = document.getElementById(gridId);
-                if (!grid) return;
-
-                Array.from(brands).sort().forEach(brand => {
-                    const brandElement = document.createElement('div');
-                    brandElement.className = 'brand-item';
-                    
-                    const link = document.createElement('a');
-                    link.href = 'enconstruction.html';
-                    link.className = 'brand-link';
-                    
-                    const logo = document.createElement('div');
-                    logo.className = 'brand-logo';
-                    const img = document.createElement('img');
-                    img.src = `images/logos/${brand.toLowerCase().replace(/\s+/g, '-')}.png`;
-                    img.alt = `${brand} logo`;
-                    img.loading = 'lazy';
-                    
-                    const name = document.createElement('div');
-                    name.className = 'brand-name';
-                    name.textContent = brand;
-                    
-                    logo.appendChild(img);
-                    link.appendChild(logo);
-                    link.appendChild(name);
-                    brandElement.appendChild(link);
-                    grid.appendChild(brandElement);
-                });
-            };
-
-            createBrandElements(cars, 'cars-grid');
-            createBrandElements(motorcycles, 'motorcycles-grid');
-            createBrandElements(jetski, 'jetski-grid');
-            createBrandElements(quad, 'quad-grid');
-            createBrandElements(trucks, 'trucks-grid');
-            createBrandElements(agricultural, 'agricultural-grid');
-        })
-        .catch(error => {
-            console.error('Erreur lors du chargement des marques:', error);
-        });
+    console.log('DOM chargé, vérification des paramètres d\'URL...');
+    
+    // Vérifier d'abord les paramètres d'URL
+    const paramsProcessed = checkURLParamsAndShowResults();
+    
+    // Si les paramètres n'ont pas été traités, vérifier le hash
+    if (!paramsProcessed) {
+        // Attendre que tout soit initialisé
+        setTimeout(handleHashChange, 1000);
+    }
 });
+
+// Fonction pour récupérer les données du moteur à partir d'une base de données simulée
+function getEngineData(brand, model, version, engineType) {
+    // Simuler une base de données de moteurs
+    const engineDatabase = {
+        'BMW': {
+            '1 Serie Sedan': {
+                'F52 - 2018 ->': {
+                    '118i 136hp': { powerOriginal: 136, powerStage1: 170, torqueOriginal: 220, torqueStage1: 300 },
+                    '120i 192hp': { powerOriginal: 192, powerStage1: 230, torqueOriginal: 280, torqueStage1: 350 }
+                }
+            },
+            '1 serie': {
+                'E87 - 2007 - 2011': {
+                    '116i 122hp': { powerOriginal: 122, powerStage1: 145, torqueOriginal: 185, torqueStage1: 230 },
+                    '118i 143hp': { powerOriginal: 143, powerStage1: 175, torqueOriginal: 190, torqueStage1: 240 },
+                    '120i 170hp': { powerOriginal: 170, powerStage1: 200, torqueOriginal: 210, torqueStage1: 260 }
+                }
+            }
+        },
+        'Audi': {
+            'A3': {
+                '8V - 2012 - 2020': {
+                    '1.4 TFSI 122hp': { powerOriginal: 122, powerStage1: 150, torqueOriginal: 200, torqueStage1: 250 },
+                    '1.8 TFSI 180hp': { powerOriginal: 180, powerStage1: 210, torqueOriginal: 250, torqueStage1: 320 }
+                }
+            }
+        },
+        // Ajouter d'autres marques et modèles selon vos besoins
+    };
+    
+    // Essayer de récupérer les données du moteur
+    try {
+        if (engineDatabase[brand] && 
+            engineDatabase[brand][model] && 
+            engineDatabase[brand][model][version] && 
+            engineDatabase[brand][model][version][engineType]) {
+            return engineDatabase[brand][model][version][engineType];
+        }
+        
+        // Si le moteur spécifique n'est pas trouvé, retourner des valeurs par défaut
+        return { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 };
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données du moteur:', error);
+        return { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 };
+    }
+}
 
 // Fonction pour gérer les URL avec hash
 function handleHashChange() {
@@ -1777,138 +1627,56 @@ function checkURLParamsAndShowResults() {
     const brand = urlParams.get('brand');
     const model = urlParams.get('model');
     const version = urlParams.get('version');
+    const engineType = urlParams.get('engine');
     
     // Récupérer le hash pour déterminer le type de véhicule
     const hash = window.location.hash.substring(1);
     const parts = hash.split('/').filter(part => part);
     
     // Vérifier si nous avons tous les paramètres nécessaires
-    if (brand && model && version && parts.length >= 2 && parts[0] === 'reprogrammation') {
+    if (brand && model && version && engineType && parts.length >= 2 && parts[0] === 'reprogrammation') {
         const type = parts[1]; // cars, motorcycles, etc.
         
-        console.log('Paramètres d\'URL détectés:', { brand, model, version, type });
+        console.log('Paramètres d\'URL détectés:', { brand, model, version, type, engineType });
         
-        // Simuler le chargement des données du moteur
-        // Nous devons d'abord attendre que les données CSV soient chargées
-        setTimeout(async () => {
+        // Attendre que le DOM soit complètement chargé
+        setTimeout(() => {
             try {
-                // Charger les données du moteur
-                const engineData = await fetchEngineData(brand, type, model, version);
+                // Récupérer les données du moteur
+                const engineData = getEngineData(brand, model, version, engineType);
                 
-                if (engineData && engineData.length > 0) {
-                    // Utiliser le premier moteur disponible
-                    const firstEngine = engineData[0];
-                    
-                    // Mettre à jour la sélection courante
-                    currentSelection = {
-                        brand: brand,
-                        model: model,
-                        version: version,
-                        type: type,
-                        engine: firstEngine.type,
-                        powerOriginal: firstEngine.powerOriginal,
-                        powerStage1: firstEngine.powerStage1,
-                        torqueOriginal: firstEngine.torqueOriginal,
-                        torqueStage1: firstEngine.torqueStage1
-                    };
-                    
-                    // Créer et afficher la page de résultats
-                    const container = showResultPage({
-                        brand,
-                        model,
-                        version,
-                        engineType: firstEngine.type,
-                        powerOriginal: firstEngine.powerOriginal,
-                        powerStage1: firstEngine.powerStage1,
-                        torqueOriginal: firstEngine.torqueOriginal,
-                        torqueStage1: firstEngine.torqueStage1
-                    });
-                    
-                    // Remplacer le contenu existant
-                    const mainContent = document.querySelector('.section-container');
-                    if (mainContent) {
-                        mainContent.innerHTML = '';
-                        mainContent.appendChild(container);
-                        
-                        // Masquer le sélecteur de véhicule
-                        const vehicleSelector = document.querySelector('.vehicle-selector');
-                        if (vehicleSelector) {
-                            vehicleSelector.style.display = 'none';
-                        }
-                        
-                        console.log('Page de résultats affichée directement depuis l\'URL');
-                    }
-                } else {
-                    console.error('Aucune donnée de moteur trouvée pour ce véhicule');
-                }
+                // Mettre à jour la sélection courante
+                currentSelection = {
+                    brand: brand,
+                    model: model,
+                    version: version,
+                    type: type,
+                    engine: engineType,
+                    powerOriginal: engineData.powerOriginal,
+                    powerStage1: engineData.powerStage1,
+                    torqueOriginal: engineData.torqueOriginal,
+                    torqueStage1: engineData.torqueStage1
+                };
+                
+                // Simuler la sélection du moteur pour afficher la page de résultats
+                handleEngineSelection(brand, type, model, version, {
+                    type: engineType,
+                    powerOriginal: engineData.powerOriginal,
+                    powerStage1: engineData.powerStage1,
+                    torqueOriginal: engineData.torqueOriginal,
+                    torqueStage1: engineData.torqueStage1
+                });
+                
+                console.log('Page de résultats affichée directement depuis l\'URL');
+                
+                return true; // Indiquer que nous avons traité les paramètres d'URL
             } catch (error) {
-                console.error('Erreur lors du chargement des données du moteur:', error);
+                console.error('Erreur lors de l\'affichage de la page de résultats:', error);
             }
-        }, 1500); // Attendre que les données CSV soient chargées
+        }, 500);
         
         return true; // Indiquer que nous avons traité les paramètres d'URL
     }
     
     return false; // Indiquer que nous n'avons pas traité les paramètres d'URL
-}
-
-// Ajouter un appel à la fonction au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-    // Vérifier d'abord les paramètres d'URL
-    const paramsProcessed = checkURLParamsAndShowResults();
-    
-    // Si les paramètres n'ont pas été traités, vérifier le hash
-    if (!paramsProcessed) {
-        // Attendre que tout soit initialisé
-        setTimeout(handleHashChange, 1500);
-    }
-});
-
-// Fonction pour récupérer les données du moteur
-async function fetchEngineData(brand, type, model, version) {
-    try {
-        // Construire le chemin du fichier CSV
-        const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
-        const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
-        const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
-        
-        // Déterminer le chemin de base en fonction de l'environnement
-        const isGitHubPages = window.location.hostname === 'simoroui.github.io';
-        const basePath = isGitHubPages ? '/autotech-reprog' : '';
-        
-        // Construire le chemin complet du fichier
-        const filePath = `${basePath}/data/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}.csv`;
-        
-        console.log('Chargement des données du moteur depuis:', filePath);
-        
-        // Charger le fichier CSV
-        const response = await fetch(filePath);
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        // Lire le contenu du fichier
-        const csvContent = await response.text();
-        const lines = csvContent.split('\n').filter(line => line.trim());
-        
-        // Analyser les données
-        const engines = [];
-        for (let i = 1; i < lines.length; i++) { // Ignorer l'en-tête
-            const parts = lines[i].split(',');
-            if (parts.length >= 5) {
-                engines.push({
-                    type: parts[0].trim(),
-                    powerOriginal: parseInt(parts[1].trim()),
-                    powerStage1: parseInt(parts[2].trim()),
-                    torqueOriginal: parseInt(parts[3].trim()),
-                    torqueStage1: parseInt(parts[4].trim())
-                });
-            }
-        }
-        
-        return engines;
-    } catch (error) {
-        console.error('Erreur lors du chargement des données du moteur:', error);
-        return [];
-    }
 }
