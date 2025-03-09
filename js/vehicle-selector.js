@@ -929,6 +929,30 @@ function showResultPage(vehicleData) {
             <h1 class="vehicle-title">${brand} ${model} ${version}</h1>
             <h2 class="engine-type">${engineType}</h2>
 
+            <style>
+                /* Styles pour supprimer le symbole ✔️ */
+                .advantage-item.no-check::before {
+                    content: none !important;
+                }
+                
+                /* Si le symbole est ajouté via content */
+                .advantage-item.no-check::before {
+                    display: none !important;
+                }
+                
+                /* Si le symbole est ajouté via background-image */
+                .advantage-item.no-check {
+                    background-image: none !important;
+                    padding-left: 0 !important;
+                }
+                
+                /* Si le symbole est ajouté via text-indent et un pseudo-élément */
+                .advantage-item.no-check {
+                    text-indent: 0 !important;
+                    padding-left: 10px !important;
+                }
+            </style>
+
             <div class="stage-selector">
                 <button class="stage-btn active" data-stage="1">Stage 1</button>
                 <button class="stage-btn" data-stage="2">Stage 2</button>
@@ -976,34 +1000,34 @@ function showResultPage(vehicleData) {
             
             <!-- Autres sections de la page de résultats -->
             <div class="advantages-list">
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Reprog sur banc de puissance (dyno)
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Reprog sur fichier d'origine
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Log des valeurs (avant et après reprog)
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Diagnostic détaillé (avant et après reprog)
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Garantie Logiciel 5ans
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Reprogrammation en respectant les tolérances du constructeur
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Normes Antipollution respectées
                 </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Possibilité de réinstaller le programme d'origine à tout moment
             </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Reprogrammation par la prise OBD, sans ouverture du calculateur
                     </div>
-                <div class="advantage-item">
+                <div class="advantage-item no-check">
                     Aucun code défaut ni témoins allumés
                 </div>
             </div>
