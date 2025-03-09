@@ -620,15 +620,15 @@ function handleVersionSelection(brand, type, model, version) {
                             <div class="engine-details">
                                 <div class="detail-item">
                                 <span class="detail-label">Puissance:</span>
-                                <span class="detail-value">${engine.powerOriginal}</span>
+                                <span class="detail-value">${engine.powerOriginal.toString().includes('Hp') ? engine.powerOriginal : `${engine.powerOriginal} Hp`}</span>
                                 </div>
                                 <div class="detail-item">
                                 <span class="detail-label">Cylindrée:</span>
-                                    <span class="detail-value">${engine.displacement}</span>
+                                    <span class="detail-value">${engine.displacement.toString().includes('L') ? engine.displacement : `${engine.displacement} L`}</span>
                                 </div>
                             <div class="detail-item">
                                 <span class="detail-label">Energie:</span>
-                                <span class="detail-value">${engine.energy}</span>
+                                <span class="detail-value">${engine.energy.toString().includes('E') ? engine.energy : `${engine.energy} E`}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Code moteur:</span>
@@ -957,14 +957,14 @@ function showResultPage(vehicleData) {
                 <div class="table-content">
                     <div class="table-row">
                         <div class="label">Puissance</div>
-                        <div class="value">${powerOriginal} Hp</div>
-                        <div class="value stage-value">${powerStage1} Hp</div>
+                        <div class="value">${powerOriginal.toString().includes('Hp') ? powerOriginal : `${powerOriginal} Hp`}</div>
+                        <div class="value stage-value">${powerStage1.toString().includes('Hp') ? powerStage1 : `${powerStage1} Hp`}</div>
                         <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
                     </div>
                     <div class="table-row">
                         <div class="label">Couple</div>
-                        <div class="value">${torqueOriginal} Nm</div>
-                        <div class="value stage-value">${torqueStage1} Nm</div>
+                        <div class="value">${torqueOriginal.toString().includes('Nm') ? torqueOriginal : `${torqueOriginal} Nm`}</div>
+                        <div class="value stage-value">${torqueStage1.toString().includes('Nm') ? torqueStage1 : `${torqueStage1} Nm`}</div>
                         <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
                     </div>
                 </div>
@@ -1401,10 +1401,16 @@ function updatePerformanceData(isStage2) {
     const torqueDiffCell = document.querySelector('.torque-diff span');
     const stageColumn = document.querySelector('.stage-column:nth-child(3)');
     
+    // Extraire les valeurs numériques des initialValues
+    const powerOriginal = parseInt(initialValues.powerOriginal);
+    const torqueOriginal = parseInt(initialValues.torqueOriginal);
+    const powerStage1 = parseInt(initialValues.powerStage1);
+    const torqueStage1 = parseInt(initialValues.torqueStage1);
+    
     if (isStage2) {
         // Calculer les valeurs Stage 2
-        const powerStage2 = initialValues.powerStage1 + 10;  // +10 Hp par rapport au Stage 1
-        const torqueStage2 = initialValues.torqueStage1 + 20;  // +20 Nm par rapport au Stage 1
+        const powerStage2 = powerStage1 + 10;  // +10 Hp par rapport au Stage 1
+        const torqueStage2 = torqueStage1 + 20;  // +20 Nm par rapport au Stage 1
 
         // Mettre à jour le titre
         stageColumn.textContent = 'STAGE2';
@@ -1412,8 +1418,8 @@ function updatePerformanceData(isStage2) {
         // Mettre à jour les valeurs
         powerStageCell.textContent = `${powerStage2} Hp`;
         torqueStageCell.textContent = `${torqueStage2} Nm`;
-        powerDiffCell.textContent = `+${powerStage2 - initialValues.powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${torqueStage2 - initialValues.torqueOriginal} Nm`;
+        powerDiffCell.textContent = `+${powerStage2 - powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${torqueStage2 - torqueOriginal} Nm`;
         
         // Mettre à jour le graphique
         const chart = Chart.getChart('performanceChart');
@@ -1425,15 +1431,15 @@ function updatePerformanceData(isStage2) {
     } else {
         // Restaurer Stage 1
         stageColumn.textContent = 'STAGE1';
-        powerStageCell.textContent = `${initialValues.powerStage1} Hp`;
-        torqueStageCell.textContent = `${initialValues.torqueStage1} Nm`;
-        powerDiffCell.textContent = `+${initialValues.powerStage1 - initialValues.powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${initialValues.torqueStage1 - initialValues.torqueOriginal} Nm`;
+        powerStageCell.textContent = `${powerStage1} Hp`;
+        torqueStageCell.textContent = `${torqueStage1} Nm`;
+        powerDiffCell.textContent = `+${powerStage1 - powerOriginal} Hp`;
+        torqueDiffCell.textContent = `+${torqueStage1 - torqueOriginal} Nm`;
 
         // Restaurer le graphique
         const chart = Chart.getChart('performanceChart');
         if (chart) {
-            chart.data.datasets[1].data = [initialValues.powerStage1, initialValues.torqueStage1];
+            chart.data.datasets[1].data = [powerStage1, torqueStage1];
             chart.data.datasets[1].label = 'Stage 1';
             chart.update();
         }
@@ -1468,7 +1474,10 @@ function getEngineData(brand, model, version, engineType) {
                 'E87 - 2007 - 2011': {
                     '116i 122hp': { powerOriginal: 122, powerStage1: 145, torqueOriginal: 185, torqueStage1: 230 },
                     '118i 143hp': { powerOriginal: 143, powerStage1: 175, torqueOriginal: 190, torqueStage1: 240 },
-                    '120i 170hp': { powerOriginal: 170, powerStage1: 200, torqueOriginal: 210, torqueStage1: 260 }
+                    '120i 170hp': { powerOriginal: 170, powerStage1: 200, torqueOriginal: 210, torqueStage1: 260 },
+                    'F20 - 2015 - 2018': {
+                        '114D 95hp (1496cc)': { powerOriginal: 95, powerStage1: 140, torqueOriginal: 235, torqueStage1: 335 }
+                    }
                 }
             }
         },
@@ -1489,7 +1498,17 @@ function getEngineData(brand, model, version, engineType) {
             engineDatabase[brand][model] && 
             engineDatabase[brand][model][version] && 
             engineDatabase[brand][model][version][engineType]) {
-            return engineDatabase[brand][model][version][engineType];
+            
+            // Récupérer les données du moteur
+            const engineData = engineDatabase[brand][model][version][engineType];
+            
+            // S'assurer que les valeurs sont des nombres
+            return {
+                powerOriginal: parseInt(engineData.powerOriginal),
+                powerStage1: parseInt(engineData.powerStage1),
+                torqueOriginal: parseInt(engineData.torqueOriginal),
+                torqueStage1: parseInt(engineData.torqueStage1)
+            };
         }
         
         // Si le moteur spécifique n'est pas trouvé, retourner des valeurs par défaut
