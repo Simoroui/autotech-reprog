@@ -903,7 +903,15 @@ function showResultPage(vehicleData) {
     currentUrl.searchParams.set('model', model);
     currentUrl.searchParams.set('version', version);
     
+    // Construire le hash correct pour la page de résultats
+    const type = currentSelection.type || 'cars'; // Utiliser 'cars' par défaut si non défini
+    const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
+    const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
+    const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
+    const newHash = `reprogrammation/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+    
     // Mettre à jour l'URL sans recharger la page
+    currentUrl.hash = newHash;
     window.history.replaceState({}, '', currentUrl);
     
     // Ajouter le contenu HTML
@@ -1761,3 +1769,146 @@ document.addEventListener('DOMContentLoaded', function() {
     
     window.addEventListener('resize', resizeHandler);
 })();
+
+// Fonction pour vérifier les paramètres d'URL et afficher directement les résultats si nécessaire
+function checkURLParamsAndShowResults() {
+    // Récupérer les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const brand = urlParams.get('brand');
+    const model = urlParams.get('model');
+    const version = urlParams.get('version');
+    
+    // Récupérer le hash pour déterminer le type de véhicule
+    const hash = window.location.hash.substring(1);
+    const parts = hash.split('/').filter(part => part);
+    
+    // Vérifier si nous avons tous les paramètres nécessaires
+    if (brand && model && version && parts.length >= 2 && parts[0] === 'reprogrammation') {
+        const type = parts[1]; // cars, motorcycles, etc.
+        
+        console.log('Paramètres d\'URL détectés:', { brand, model, version, type });
+        
+        // Simuler le chargement des données du moteur
+        // Nous devons d'abord attendre que les données CSV soient chargées
+        setTimeout(async () => {
+            try {
+                // Charger les données du moteur
+                const engineData = await fetchEngineData(brand, type, model, version);
+                
+                if (engineData && engineData.length > 0) {
+                    // Utiliser le premier moteur disponible
+                    const firstEngine = engineData[0];
+                    
+                    // Mettre à jour la sélection courante
+                    currentSelection = {
+                        brand: brand,
+                        model: model,
+                        version: version,
+                        type: type,
+                        engine: firstEngine.type,
+                        powerOriginal: firstEngine.powerOriginal,
+                        powerStage1: firstEngine.powerStage1,
+                        torqueOriginal: firstEngine.torqueOriginal,
+                        torqueStage1: firstEngine.torqueStage1
+                    };
+                    
+                    // Créer et afficher la page de résultats
+                    const container = showResultPage({
+                        brand,
+                        model,
+                        version,
+                        engineType: firstEngine.type,
+                        powerOriginal: firstEngine.powerOriginal,
+                        powerStage1: firstEngine.powerStage1,
+                        torqueOriginal: firstEngine.torqueOriginal,
+                        torqueStage1: firstEngine.torqueStage1
+                    });
+                    
+                    // Remplacer le contenu existant
+                    const mainContent = document.querySelector('.section-container');
+                    if (mainContent) {
+                        mainContent.innerHTML = '';
+                        mainContent.appendChild(container);
+                        
+                        // Masquer le sélecteur de véhicule
+                        const vehicleSelector = document.querySelector('.vehicle-selector');
+                        if (vehicleSelector) {
+                            vehicleSelector.style.display = 'none';
+                        }
+                        
+                        console.log('Page de résultats affichée directement depuis l\'URL');
+                    }
+                } else {
+                    console.error('Aucune donnée de moteur trouvée pour ce véhicule');
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des données du moteur:', error);
+            }
+        }, 1500); // Attendre que les données CSV soient chargées
+        
+        return true; // Indiquer que nous avons traité les paramètres d'URL
+    }
+    
+    return false; // Indiquer que nous n'avons pas traité les paramètres d'URL
+}
+
+// Ajouter un appel à la fonction au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    // Vérifier d'abord les paramètres d'URL
+    const paramsProcessed = checkURLParamsAndShowResults();
+    
+    // Si les paramètres n'ont pas été traités, vérifier le hash
+    if (!paramsProcessed) {
+        // Attendre que tout soit initialisé
+        setTimeout(handleHashChange, 1500);
+    }
+});
+
+// Fonction pour récupérer les données du moteur
+async function fetchEngineData(brand, type, model, version) {
+    try {
+        // Construire le chemin du fichier CSV
+        const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
+        const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
+        const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
+        
+        // Déterminer le chemin de base en fonction de l'environnement
+        const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+        const basePath = isGitHubPages ? '/autotech-reprog' : '';
+        
+        // Construire le chemin complet du fichier
+        const filePath = `${basePath}/data/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}.csv`;
+        
+        console.log('Chargement des données du moteur depuis:', filePath);
+        
+        // Charger le fichier CSV
+        const response = await fetch(filePath);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        // Lire le contenu du fichier
+        const csvContent = await response.text();
+        const lines = csvContent.split('\n').filter(line => line.trim());
+        
+        // Analyser les données
+        const engines = [];
+        for (let i = 1; i < lines.length; i++) { // Ignorer l'en-tête
+            const parts = lines[i].split(',');
+            if (parts.length >= 5) {
+                engines.push({
+                    type: parts[0].trim(),
+                    powerOriginal: parseInt(parts[1].trim()),
+                    powerStage1: parseInt(parts[2].trim()),
+                    torqueOriginal: parseInt(parts[3].trim()),
+                    torqueStage1: parseInt(parts[4].trim())
+                });
+            }
+        }
+        
+        return engines;
+    } catch (error) {
+        console.error('Erreur lors du chargement des données du moteur:', error);
+        return [];
+    }
+}
