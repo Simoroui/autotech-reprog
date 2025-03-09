@@ -121,6 +121,70 @@
             z-index: 1000;
             background-color: rgba(0, 0, 0, 0.8);
         }
+
+        /* Style spécifique pour les grilles d'options sur la page index */
+        .tuning-options .option-box {
+            height: 126px !important; /* Réduction de 30% de la hauteur originale */
+            border: 1px solid rgba(227, 6, 19, 0.8) !important; /* Cadre rouge de 1px */
+            box-shadow: 0 0 10px rgba(227, 6, 19, 0.5) !important;
+        }
+        
+        .tuning-options .option-box:hover {
+            transform: translateY(-5px) !important;
+            border-color: rgba(227, 6, 19, 1) !important;
+            box-shadow: 0 0 15px rgba(227, 6, 19, 0.7) !important;
+        }
+        
+        /* Ajustements pour le contenu des grilles réduites */
+        .tuning-options .option-front {
+            padding: 15px !important;
+        }
+        
+        .tuning-options .option-front h3 {
+            font-size: 1.1rem !important;
+            margin-bottom: 5px !important;
+        }
+        
+        .tuning-options .option-front i {
+            font-size: 1.8rem !important;
+            margin-bottom: 5px !important;
+        }
+        
+        /* Ajustements pour les icônes spéciales */
+        .tuning-options .fap-icon,
+        .tuning-options .egr-icon,
+        .tuning-options .decata-icon,
+        .tuning-options .gpf-icon,
+        .tuning-options .popbang-icon,
+        .tuning-options .hardcut-icon,
+        .tuning-options .startstop-icon,
+        .tuning-options .clone-icon {
+            transform: scale(0.7) !important;
+            margin-bottom: 5px !important;
+        }
+        
+        /* Ajustements pour l'animation au survol */
+        .tuning-options .option-box:hover .option-front {
+            transform: translateY(-100%) !important;
+        }
+        
+        .tuning-options .option-box:hover .option-back {
+            transform: translateY(0) !important;
+        }
+        
+        .tuning-options .option-back {
+            padding: 10px !important;
+        }
+        
+        .tuning-options .option-back p {
+            font-size: 0.85rem !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .tuning-options .learn-more-btn {
+            padding: 6px 12px !important;
+            font-size: 0.85rem !important;
+        }
     </style>
     
     <!-- Polices -->
