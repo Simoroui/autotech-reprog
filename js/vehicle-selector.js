@@ -1637,7 +1637,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
     
     window.addEventListener('resize', resizeHandler);
-})();
+});
 
 // Fonction pour vérifier les paramètres d'URL et afficher directement les résultats si nécessaire
 function checkURLParamsAndShowResults() {
@@ -1699,3 +1699,118 @@ function checkURLParamsAndShowResults() {
     
     return false; // Indiquer que nous n'avons pas traité les paramètres d'URL
 }
+
+// Fonction pour gérer le clic sur le bouton "Réserver maintenant"
+function handleReservation(brand, model, version, engineType) {
+    console.log("handleReservation appelée avec:", brand, model, version, engineType);
+    
+    // Récupérer les valeurs de puissance et de couple depuis initialValues
+    // Vérifier si initialValues est défini correctement
+    console.log("initialValues:", initialValues);
+    
+    let powerOriginal = 0;
+    let powerStage1 = 0;
+    let torqueOriginal = 0;
+    let torqueStage1 = 0;
+    
+    // Utiliser les valeurs de initialValues si elles sont définies
+    if (initialValues && typeof initialValues === 'object') {
+        powerOriginal = initialValues.powerOriginal || 0;
+        powerStage1 = initialValues.powerStage1 || 0;
+        torqueOriginal = initialValues.torqueOriginal || 0;
+        torqueStage1 = initialValues.torqueStage1 || 0;
+    }
+    
+    // Calculer les gains
+    const powerGain = powerStage1 - powerOriginal;
+    const torqueGain = torqueStage1 - torqueOriginal;
+    
+    // Créer un message préformaté avec les détails du véhicule et les performances
+    const prefilledMessage = `Demande de reprogrammation pour :
+- Marque : ${brand}
+- Modèle : ${model}
+- Version : ${version}
+- Motorisation : ${engineType}
+
+Performances :
+- Puissance d'origine : ${powerOriginal} Hp
+- Puissance après reprog Stage 1 : ${powerStage1} Hp (Gain : +${powerGain} Hp)
+- Couple d'origine : ${torqueOriginal} Nm
+- Couple après reprog Stage 1 : ${torqueStage1} Nm (Gain : +${torqueGain} Nm)
+
+Merci de me contacter pour plus d'informations.`;
+
+    console.log("Message préformaté:", prefilledMessage);
+    
+    // Stocker le message dans le localStorage
+    localStorage.setItem('prefilledMessage', prefilledMessage);
+    
+    // Rediriger vers la section contact
+    window.location.href = 'index.html#contact';
+}
+
+// Fonction pour remplir le formulaire de contact avec les données stockées
+function fillContactForm() {
+    console.log("fillContactForm appelée");
+    
+    // Vérifier si nous sommes sur la page avec le formulaire de contact
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) {
+        console.log("Formulaire de contact non trouvé");
+        return;
+    }
+    
+    // Vérifier si nous avons un message préformaté dans le localStorage
+    const prefilledMessage = localStorage.getItem('prefilledMessage');
+    if (!prefilledMessage) {
+        console.log("Pas de message préformaté trouvé dans localStorage");
+        return;
+    }
+    
+    console.log("Message préformaté trouvé:", prefilledMessage);
+    
+    // Remplir le champ message
+    const messageField = document.getElementById('message');
+    if (messageField) {
+        console.log("Champ message trouvé, remplissage en cours...");
+        messageField.value = prefilledMessage;
+        
+        // Sélectionner "Reprogrammation" dans le menu déroulant
+        const subjectField = document.getElementById('subject');
+        if (subjectField) {
+            console.log("Champ sujet trouvé, sélection de 'reprog'");
+            subjectField.value = 'reprog';
+        } else {
+            console.log("Champ sujet non trouvé");
+        }
+        
+        // Supprimer le message du localStorage après utilisation
+        console.log("Suppression du message du localStorage");
+        localStorage.removeItem('prefilledMessage');
+    } else {
+        console.log("Champ message non trouvé");
+    }
+}
+
+// Ajouter l'événement au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOMContentLoaded - Appel de fillContactForm");
+    fillContactForm();
+    
+    // Vérifier si l'URL contient l'ancre #contact
+    if (window.location.hash === '#contact') {
+        console.log("Ancre #contact détectée, appel de fillContactForm");
+        // Attendre un peu que la page se charge complètement
+        setTimeout(fillContactForm, 500);
+    }
+});
+
+// Ajouter un écouteur pour les changements de hash dans l'URL
+window.addEventListener('hashchange', function() {
+    console.log("Changement de hash détecté:", window.location.hash);
+    if (window.location.hash === '#contact') {
+        console.log("Ancre #contact détectée après changement de hash, appel de fillContactForm");
+        // Attendre un peu que la section se charge
+        setTimeout(fillContactForm, 500);
+    }
+});
