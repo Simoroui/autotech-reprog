@@ -96,7 +96,8 @@ function getLogoPath(brand) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('-');
     
-    return `${basePath}/${cleanBrand}.png`;
+    // Ajouter le suffixe "-min" pour utiliser les images optimisées
+    return `${basePath}/${cleanBrand}-min.png`;
 }
 
 // Fonction pour afficher les marques
