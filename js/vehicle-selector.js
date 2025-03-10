@@ -269,7 +269,7 @@ function scrollToStepCenter(step) {
         // Si on demande de centrer sur "model", d'abord s'assurer que la première colonne est visible
         if (step === 'model') {
             // Attendre un court instant pour que le DOM soit prêt
-            setTimeout(() => {
+    setTimeout(() => {
                 // Trouver la position de l'élément dans le conteneur
                 const stepRect = stepElement.getBoundingClientRect();
                 const containerRect = selectionSteps.getBoundingClientRect();
@@ -287,18 +287,18 @@ function scrollToStepCenter(step) {
     }
     
     // Faire aussi un défilement vertical pour s'assurer que la section est visible
-    const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
-    const windowHeight = window.innerHeight;
+        const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+        const windowHeight = window.innerHeight;
     const stepHeight = stepElement.offsetHeight;
-    
+        
     // Calculer la position pour centrer l'étape dans la fenêtre
     const targetScroll = stepElement.getBoundingClientRect().top + window.scrollY - headerHeight - (windowHeight - stepHeight) / 2;
-    
+
     // Utiliser une animation douce pour le défilement
-    window.scrollTo({
+        window.scrollTo({
         top: Math.max(0, targetScroll),
-        behavior: 'smooth'
-    });
+            behavior: 'smooth'
+        });
 }
 
 // Modifier handleBrandSelection pour utiliser la nouvelle fonction
@@ -434,33 +434,33 @@ function addEventListeners(detailsSection, brand, type, models) {
     // Écouteur pour le scroll sur mobile lorsqu'on clique sur la marque sélectionnée
     const selectedBrand = detailsSection.querySelector('.selection-item.selected');
     if (selectedBrand) {
-        selectedBrand.addEventListener('click', () => {
+    selectedBrand.addEventListener('click', () => {
             // Uniquement sur mobile
             if (window.innerWidth <= 768) {
                 // Trouver l'élément de l'étape "modèle"
-                const modelStep = document.getElementById('model-step');
+        const modelStep = document.getElementById('model-step');
                 if (modelStep) {
                     // Déclencher le défilement vers l'étape "modèle"
                     // Utiliser setTimeout pour s'assurer que le DOM est prêt
                     setTimeout(() => {
                         // Calculer la position pour centrer l'étape dans la fenêtre
                         const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
-                        const windowHeight = window.innerHeight;
-                        const modelStepHeight = modelStep.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const modelStepHeight = modelStep.offsetHeight;
                         const modelStepTop = modelStep.getBoundingClientRect().top + window.scrollY;
-                        
+        
                         // Position pour centrer l'élément dans la fenêtre
                         const targetScroll = modelStepTop - headerHeight - (windowHeight - modelStepHeight) / 2;
-                        
+        
                         // Utiliser une animation douce pour le défilement
-                        window.scrollTo({
+        window.scrollTo({
                             top: Math.max(0, targetScroll),
-                            behavior: 'smooth'
-                        });
+            behavior: 'smooth'
+        });
                     }, 50);
                 }
             }
-        });
+    });
     }
 
     // Écouteur pour le bouton retour
@@ -957,7 +957,7 @@ function showResultPage(vehicleData) {
                 <button class="stage-btn active" data-stage="1">Stage 1</button>
                 <button class="stage-btn" data-stage="2">Stage 2</button>
             </div>
-            
+
             <div class="stage-info" style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
                 <div class="stage1-info" style="display: block;">
                     <span style="color: #fff; font-size: 0.9rem;">
@@ -993,19 +993,19 @@ function showResultPage(vehicleData) {
                     </div>
                 </div>
             </div>
-            
+
             <div class="performance-graph">
                 <canvas id="performanceChart"></canvas>
             </div>
-            
+
             <!-- Autres sections de la page de résultats -->
             <div class="advantages-list">
                 <div class="advantage-item no-check">
                     Reprog sur banc de puissance (dyno)
-                </div>
+                    </div>
                 <div class="advantage-item no-check">
                     Reprog sur fichier d'origine
-                </div>
+                    </div>
                 <div class="advantage-item no-check">
                     Log des valeurs (avant et après reprog)
                 </div>
@@ -1050,7 +1050,7 @@ function showResultPage(vehicleData) {
             </div>
         </div>
     `;
-    
+
     // Ajouter au DOM
     document.querySelector('.section-container').appendChild(container);
 
@@ -1179,7 +1179,7 @@ function showResultPage(vehicleData) {
             initializeSlideshow();
         });
     }
-    
+
     // Ajouter les écouteurs d'événements pour les boutons de stage
     const stageButtons = container.querySelectorAll('.stage-btn');
     const stage1Info = container.querySelector('.stage1-info');
@@ -1190,7 +1190,7 @@ function showResultPage(vehicleData) {
             // Mettre à jour les classes actives
             stageButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
+
             // Afficher/masquer les infos correspondantes
             if (button.dataset.stage === '1') {
                 stage1Info.style.display = 'block';
@@ -1205,7 +1205,7 @@ function showResultPage(vehicleData) {
             updatePerformanceData(isStage2);
         });
     });
-    
+
     return container;
 }
 
@@ -1301,10 +1301,10 @@ let csvCache = null;
 
 async function fetchCSV() {
     try {
-        if (csvCache) {
-            return csvCache;
-        }
-        
+    if (csvCache) {
+        return csvCache;
+    }
+    
         const response = await fetch('data/vehicles.csv');
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
@@ -1562,7 +1562,7 @@ function handleHashChange() {
         // Si nous avons au moins le type et la marque, simuler la sélection
         if (type && brand) {
             // Attendre que les données soient chargées
-            setTimeout(() => {
+        setTimeout(() => {
                 // Simuler le clic sur l'onglet du type
                 const tabButton = document.querySelector(`.tab-button[data-type="${type}"]`);
                 if (tabButton) {
@@ -1804,7 +1804,7 @@ function fillContactForm() {
         if (subjectField) {
             console.log("Champ sujet trouvé, sélection de 'reprog'");
             subjectField.value = 'reprog';
-        } else {
+    } else {
             console.log("Champ sujet non trouvé");
         }
         

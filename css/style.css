@@ -2329,17 +2329,13 @@ html {
 
 .option-box {
     position: relative;
-    width: 100%;
-    height: 280px;
-    perspective: 1000px;
-    margin-bottom: 30px;
+    height: 126px; /* Réduction de 30% de la hauteur originale de 180px */
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.4s ease;
-    border: 8px solid #ff0000;
-    box-shadow: 0 0 30px #ff0000;
-    z-index: 10;
-    animation: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #222, #111);
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3); /* Réduction de l'épaisseur du cadre à 1px */
 }
 
 .option-box::before, 
@@ -2354,13 +2350,18 @@ html {
 }
 
 .options-reprog .option-box {
-    border: 8px solid #ff0000 !important;
-    box-shadow: 0 0 30px #ff0000 !important;
+    border: 3px solid #ff0000 !important;
+    box-shadow: 0 0 15px #ff0000 !important;
+    position: relative !important;
+    z-index: 10 !important;
+    animation: pulseBorder 2s infinite alternate !important;
+    height: 280px !important; /* Maintien de la hauteur originale pour options-reprog.html */
 }
 
 .options-reprog .option-box:hover {
-    border: 8px solid #ff3333 !important;
-    box-shadow: 0 0 45px #ff0000 !important;
+    border-color: #ff5555 !important;
+    box-shadow: 0 0 25px #ff0000 !important;
+    transform: translateY(-5px) !important;
 }
 
 .option-content {
