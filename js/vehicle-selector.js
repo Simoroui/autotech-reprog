@@ -1219,6 +1219,7 @@ function initializeSlideshow() {
     const prevBtn = slideshow.querySelector('.prev');
     const nextBtn = slideshow.querySelector('.next');
     let currentIndex = 0;
+    let slideInterval; // Variable pour stocker l'intervalle de défilement automatique
 
     function updateSlides(newIndex) {
         slides.forEach((slide, index) => {
@@ -1233,26 +1234,65 @@ function initializeSlideshow() {
         currentIndex = newIndex;
     }
 
+    // Fonction pour passer à la slide suivante
+    function nextSlide() {
+        const newIndex = (currentIndex + 1) % slides.length;
+        updateSlides(newIndex);
+    }
+
+    // Démarrer le défilement automatique
+    function startAutoSlide() {
+        // Arrêter tout intervalle existant
+        if (slideInterval) {
+            clearInterval(slideInterval);
+        }
+        // Démarrer un nouvel intervalle (toutes les 5 secondes)
+        slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    // Arrêter le défilement automatique (lors d'une interaction utilisateur)
+    function stopAutoSlide() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+        }
+    }
+
+    // Ajouter des gestionnaires d'événements pour les boutons
     if (prevBtn) {
         prevBtn.onclick = () => {
+            stopAutoSlide(); // Arrêter le défilement automatique
             const newIndex = (currentIndex - 1 + slides.length) % slides.length;
             updateSlides(newIndex);
+            startAutoSlide(); // Redémarrer le défilement automatique
         };
     }
 
     if (nextBtn) {
         nextBtn.onclick = () => {
-            const newIndex = (currentIndex + 1) % slides.length;
-            updateSlides(newIndex);
+            stopAutoSlide(); // Arrêter le défilement automatique
+            nextSlide();
+            startAutoSlide(); // Redémarrer le défilement automatique
         };
     }
 
+    // Ajouter des gestionnaires d'événements pour les points
     dots.forEach((dot, index) => {
-        dot.onclick = () => updateSlides(index);
+        dot.onclick = () => {
+            stopAutoSlide(); // Arrêter le défilement automatique
+            updateSlides(index);
+            startAutoSlide(); // Redémarrer le défilement automatique
+        };
     });
+
+    // Ajouter des gestionnaires d'événements pour mettre en pause au survol
+    slideshow.addEventListener('mouseenter', stopAutoSlide);
+    slideshow.addEventListener('mouseleave', startAutoSlide);
 
     // Initialiser avec la première slide
     updateSlides(0);
+    
+    // Démarrer le défilement automatique
+    startAutoSlide();
 }
 
 // Fonction pour gérer le retour à la sélection précédente
