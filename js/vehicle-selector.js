@@ -73,6 +73,18 @@ function extractBrands(lines) {
     return result;
 }
 
+// Fonction pour obtenir le chemin des images selon l'environnement
+function getImagePath(brand, model, version) {
+    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
+    const cleanBrand = cleanFolderName(brand.toLowerCase());
+    const cleanModel = cleanFolderName(model.toLowerCase());
+    const cleanVersion = cleanFolderName(version.toLowerCase());
+    
+    return isGitHubPages 
+        ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
+        : `images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`; // Chemin relatif pour l'environnement local
+}
+
 // Fonction pour obtenir le chemin du logo
 function getLogoPath(brand) {
     const isGitHubPages = window.location.hostname === 'simoroui.github.io';
@@ -724,18 +736,6 @@ function checkImageExists(url) {
         };
         img.src = url;
     });
-}
-
-// Fonction pour obtenir le chemin des images selon l'environnement
-function getImagePath(brand, model, version) {
-    const isGitHubPages = window.location.hostname === 'simoroui.github.io';
-    const cleanBrand = cleanFolderName(brand.toLowerCase());
-    const cleanModel = cleanFolderName(model.toLowerCase());
-    const cleanVersion = cleanFolderName(version.toLowerCase());
-    
-    return isGitHubPages 
-        ? `https://simoroui.github.io/autotech-reprog/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`
-        : `/images/slideshow/${cleanBrand}/${cleanModel}/${cleanVersion}`;
 }
 
 // Fonction pour vérifier les images
