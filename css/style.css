@@ -1817,7 +1817,7 @@ html {
 }
 
 .form-group textarea {
-    min-height: 120px;
+    min-height: 235px; /* Hauteur ajustée pour un alignement parfait des boutons */
     resize: vertical;
 }
 
@@ -2359,9 +2359,11 @@ html {
 }
 
 .options-reprog .option-box:hover {
-    border-color: #ff5555 !important;
-    box-shadow: 0 0 25px #ff0000 !important;
-    transform: translateY(-5px) !important;
+    border: 8px solid #ff3333 !important; /* Rouge légèrement différent */
+    box-shadow: 
+        0 0 15px #ff0000 !important,
+        0 0 30px #ff0000 !important,
+        0 0 45px #ff0000 !important; /* Ombre plus intense au survol */
 }
 
 .option-content {
@@ -4207,4 +4209,10 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
         0 0 15px #ff0000 !important,
         0 0 30px #ff0000 !important,
         0 0 45px #ff0000 !important; /* Ombre plus intense au survol */
+}
+
+/* Augmentation de la hauteur du champ de message pour aligner les boutons */
+.form-group textarea {
+    min-height: 238px; /* Hauteur ajustée pour un alignement parfait des boutons */
+    resize: vertical;
 }
