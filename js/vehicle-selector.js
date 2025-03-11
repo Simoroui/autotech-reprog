@@ -674,13 +674,28 @@ function handleVersionSelection(brand, type, model, version) {
 }
 
 function handleEngineSelection(brand, type, model, version, engineData) {
+    // S'assurer que toutes les données sont présentes
+    if (!engineData || typeof engineData !== 'object') {
+        console.error('Données moteur invalides dans handleEngineSelection:', engineData);
+        engineData = {
+            type: 'Moteur non spécifié',
+            powerOriginal: 150,
+            powerStage1: 180,
+            torqueOriginal: 250,
+            torqueStage1: 300
+        };
+    }
+    
+    // S'assurer que le type de moteur est défini
+    const engineType = engineData.engineType || engineData.type || 'Moteur non spécifié';
+    
     // Mettre à jour la sélection courante
     currentSelection = {
                 brand: brand,
                 model: model,
                 version: version,
         type: type,
-        engine: engineData.type,
+        engine: engineType,
         powerOriginal: engineData.powerOriginal,
         powerStage1: engineData.powerStage1,
         torqueOriginal: engineData.torqueOriginal,
@@ -695,7 +710,7 @@ function handleEngineSelection(brand, type, model, version, engineData) {
         brand,
         model,
         version,
-        engineType: engineData.type,
+        engineType: engineType,
         powerOriginal: engineData.powerOriginal,
         powerStage1: engineData.powerStage1,
         torqueOriginal: engineData.torqueOriginal,
@@ -884,15 +899,56 @@ let initialValues = {
 
 // Dans showResultPage, stockons les valeurs
 function showResultPage(vehicleData) {
-    const { brand, model, version, engineType, powerOriginal, powerStage1, torqueOriginal, torqueStage1 } = vehicleData;
+    // S'assurer que toutes les données nécessaires sont disponibles
+    if (!vehicleData || typeof vehicleData !== 'object') {
+        console.error('Données véhicule invalides:', vehicleData);
+        vehicleData = {
+            brand: 'Marque non spécifiée',
+            model: 'Modèle non spécifié',
+            version: 'Version non spécifiée',
+            engineType: 'Moteur non spécifié',
+            powerOriginal: 150,
+            powerStage1: 180,
+            torqueOriginal: 250,
+            torqueStage1: 300
+        };
+    }
+    
+    // Extraire les données avec valeurs par défaut au cas où
+    const brand = vehicleData.brand || 'Marque non spécifiée';
+    const model = vehicleData.model || 'Modèle non spécifié';
+    const version = vehicleData.version || 'Version non spécifiée';
+    const engineType = vehicleData.engineType || 'Moteur non spécifié';
+    const powerOriginal = vehicleData.powerOriginal || 150;
+    const powerStage1 = vehicleData.powerStage1 || 180;
+    const torqueOriginal = vehicleData.torqueOriginal || 250;
+    const torqueStage1 = vehicleData.torqueStage1 || 300;
+    
+    console.log('Affichage des résultats avec les données:', {
+        brand, model, version, engineType,
+        powerOriginal, powerStage1, torqueOriginal, torqueStage1
+    });
 
     // Stocker les valeurs initiales
     initialValues = {
-        powerOriginal: parseInt(powerOriginal),
-        torqueOriginal: parseInt(torqueOriginal),
-        powerStage1: parseInt(powerStage1),
-        torqueStage1: parseInt(torqueStage1)
+        powerOriginal: parseInt(powerOriginal) || 150,
+        torqueOriginal: parseInt(torqueOriginal) || 250,
+        powerStage1: parseInt(powerStage1) || 180,
+        torqueStage1: parseInt(torqueStage1) || 300
     };
+    
+    // Stocker les données complètes dans localStorage pour les récupérer après actualisation
+    localStorage.setItem('vehicleResultData', JSON.stringify({
+        brand,
+        model,
+        version,
+        engineType,
+        powerOriginal,
+        powerStage1,
+        torqueOriginal,
+        torqueStage1,
+        timestamp: Date.now() // Pour l'expiration éventuelle des données
+    }));
 
     // Créer le conteneur
     const container = document.createElement('div');
@@ -905,6 +961,12 @@ function showResultPage(vehicleData) {
     currentUrl.searchParams.set('version', version);
     currentUrl.searchParams.set('engine', engineType);
     
+    // Ajouter aussi les valeurs de performance dans l'URL pour les liens partagés
+    currentUrl.searchParams.set('po', powerOriginal);
+    currentUrl.searchParams.set('ps', powerStage1);
+    currentUrl.searchParams.set('to', torqueOriginal);
+    currentUrl.searchParams.set('ts', torqueStage1);
+    
     // Supprimer les paramètres techniques qui ne devraient pas être dans l'URL
     currentUrl.searchParams.delete('powerOrig');
     currentUrl.searchParams.delete('powerStage1');
@@ -913,14 +975,18 @@ function showResultPage(vehicleData) {
     
     // Construire le hash correct pour la page de résultats
     const type = currentSelection.type || 'cars'; // Utiliser 'cars' par défaut si non défini
-    const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
-    const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
-    const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
+    const cleanBrand = (brand || '').toLowerCase().replace(/\s+/g, '-');
+    const cleanModel = (model || '').toLowerCase().replace(/\s+/g, '-');
+    const cleanVersion = (version || '').toLowerCase().replace(/\s+/g, '-');
     const newHash = `reprogrammation/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}`;
     
     // Mettre à jour l'URL sans recharger la page
     currentUrl.hash = newHash;
     window.history.replaceState({}, '', currentUrl);
+    
+    // Calculer les différences pour l'affichage
+    const powerDiff = parseInt(powerStage1) - parseInt(powerOriginal);
+    const torqueDiff = parseInt(torqueStage1) - parseInt(torqueOriginal);
     
     // Ajouter le contenu HTML
     container.innerHTML = `
@@ -984,13 +1050,13 @@ function showResultPage(vehicleData) {
                         <div class="label">Puissance</div>
                         <div class="value">${powerOriginal.toString().includes('Hp') ? powerOriginal : `${powerOriginal} Hp`}</div>
                         <div class="value stage-value">${powerStage1.toString().includes('Hp') ? powerStage1 : `${powerStage1} Hp`}</div>
-                        <div class="diff power-diff"><span>+${parseInt(powerStage1) - parseInt(powerOriginal)} Hp</span></div>
+                        <div class="diff power-diff"><span>+${powerDiff} Hp</span></div>
                     </div>
                     <div class="table-row">
                         <div class="label">Couple</div>
                         <div class="value">${torqueOriginal.toString().includes('Nm') ? torqueOriginal : `${torqueOriginal} Nm`}</div>
                         <div class="value stage-value">${torqueStage1.toString().includes('Nm') ? torqueStage1 : `${torqueStage1} Nm`}</div>
-                        <div class="diff torque-diff"><span>+${parseInt(torqueStage1) - parseInt(torqueOriginal)} Nm</span></div>
+                        <div class="diff torque-diff"><span>+${torqueDiff} Nm</span></div>
                     </div>
                 </div>
             </div>
@@ -1298,6 +1364,10 @@ function initializeSlideshow() {
 
 // Fonction pour gérer le retour à la sélection précédente
 function handleBack() {
+    // Nettoyer immédiatement les données du localStorage
+    localStorage.removeItem('vehicleResultData');
+    console.log('Données de résultats supprimées du localStorage lors du retour');
+    
     // Récupérer les informations de l'URL actuelle
     const urlParams = new URLSearchParams(window.location.search);
     const brand = urlParams.get('brand');
@@ -1329,6 +1399,10 @@ function handleBack() {
 
 // Modifier l'écouteur popstate
 window.addEventListener('popstate', (event) => {
+    // Nettoyer immédiatement les données de résultats
+    localStorage.removeItem('vehicleResultData');
+    console.log('Données de résultats supprimées par événement popstate');
+    
     // Vérifier si on est sur une page de résultats (URL contient /reprogrammation/ suivi du type)
     if (window.location.pathname.match(/\/reprogrammation\/(cars|motorcycles|jetski|quad|trucks|agricultural)\//)) {
         // Utiliser la même logique que handleBack
@@ -1524,10 +1598,61 @@ document.addEventListener('DOMContentLoaded', () => {
         // Attendre que tout soit initialisé
         setTimeout(handleHashChange, 1000);
     }
+    
+    // Ajouter des écouteurs d'événements pour tous les liens de navigation
+    // afin de supprimer les données de résultats du localStorage
+    document.querySelectorAll('a:not([href^="#resultat"])').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Supprimer les données du localStorage
+            localStorage.removeItem('vehicleResultData');
+            console.log('Données de résultats supprimées du localStorage');
+            // Laisser l'événement se poursuivre normalement
+        });
+    });
+    
+    // Gérer aussi les clics sur le logo ou les liens de navigation principale
+    document.querySelectorAll('header a, .logo a, nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            localStorage.removeItem('vehicleResultData');
+        });
+    });
+    
+    // Ajouter un écouteur pour la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+            localStorage.removeItem('vehicleResultData');
+            console.log('Données de résultats supprimées par touche Échap');
+            // Rediriger vers la page d'accueil si nous sommes sur une page de résultats
+            if (document.querySelector('.results-container')) {
+                window.location.href = 'index.html';
+            }
+        }
+    });
 });
 
 // Fonction pour récupérer les données du moteur à partir d'une base de données simulée
 function getEngineData(brand, model, version, engineType) {
+    console.log('Recherche des données moteur pour:', brand, model, version, engineType);
+    
+    // S'assurer que tous les paramètres sont définis
+    if (!brand || !model || !version || !engineType) {
+        console.error('Paramètres incomplets pour getEngineData:', { brand, model, version, engineType });
+        // Retourner des valeurs par défaut sécurisées
+        return { 
+            powerOriginal: 150, 
+            powerStage1: 180, 
+            torqueOriginal: 250, 
+            torqueStage1: 300,
+            engineType: engineType || "Moteur non spécifié"
+        };
+    }
+
+    // Nettoyer les paramètres pour éviter les problèmes de casse et d'espaces
+    const cleanBrand = brand.trim();
+    const cleanModel = model.trim();
+    const cleanVersion = version.trim();
+    const cleanEngineType = engineType.trim();
+    
     // Simuler une base de données de moteurs
     const engineDatabase = {
         'BMW': {
@@ -1541,10 +1666,10 @@ function getEngineData(brand, model, version, engineType) {
                 'E87 - 2007 - 2011': {
                     '116i 122hp': { powerOriginal: 122, powerStage1: 145, torqueOriginal: 185, torqueStage1: 230 },
                     '118i 143hp': { powerOriginal: 143, powerStage1: 175, torqueOriginal: 190, torqueStage1: 240 },
-                    '120i 170hp': { powerOriginal: 170, powerStage1: 200, torqueOriginal: 210, torqueStage1: 260 },
-                    'F20 - 2015 - 2018': {
-                        '114D 95hp (1496cc)': { powerOriginal: 95, powerStage1: 140, torqueOriginal: 235, torqueStage1: 335 }
-                    }
+                    '120i 170hp': { powerOriginal: 170, powerStage1: 200, torqueOriginal: 210, torqueStage1: 260 }
+                },
+                'F20 - 2015 - 2018': {
+                    '114D 95hp (1496cc)': { powerOriginal: 95, powerStage1: 140, torqueOriginal: 235, torqueStage1: 335 }
                 }
             }
         },
@@ -1556,33 +1681,55 @@ function getEngineData(brand, model, version, engineType) {
                 }
             }
         },
-        // Ajouter d'autres marques et modèles selon vos besoins
+        // Valeurs par défaut pour tous les autres cas
+        'default': {
+            'default': {
+                'default': {
+                    'default': { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 }
+                }
+            }
+        }
     };
     
     // Essayer de récupérer les données du moteur
     try {
-        if (engineDatabase[brand] && 
-            engineDatabase[brand][model] && 
-            engineDatabase[brand][model][version] && 
-            engineDatabase[brand][model][version][engineType]) {
+        // Rechercher dans la base de données
+        let engineData;
+        
+        if (engineDatabase[cleanBrand] && 
+            engineDatabase[cleanBrand][cleanModel] && 
+            engineDatabase[cleanBrand][cleanModel][cleanVersion] && 
+            engineDatabase[cleanBrand][cleanModel][cleanVersion][cleanEngineType]) {
             
             // Récupérer les données du moteur
-            const engineData = engineDatabase[brand][model][version][engineType];
-            
-            // S'assurer que les valeurs sont des nombres
-            return {
-                powerOriginal: parseInt(engineData.powerOriginal),
-                powerStage1: parseInt(engineData.powerStage1),
-                torqueOriginal: parseInt(engineData.torqueOriginal),
-                torqueStage1: parseInt(engineData.torqueStage1)
-            };
+            engineData = engineDatabase[cleanBrand][cleanModel][cleanVersion][cleanEngineType];
+        } else {
+            // Utiliser des valeurs par défaut
+            console.warn('Données moteur non trouvées, utilisation des valeurs par défaut');
+            engineData = engineDatabase['default']['default']['default']['default'];
         }
         
-        // Si le moteur spécifique n'est pas trouvé, retourner des valeurs par défaut
-        return { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 };
+        // S'assurer que les valeurs sont des nombres valides
+        const result = {
+            powerOriginal: parseInt(engineData.powerOriginal) || 150,
+            powerStage1: parseInt(engineData.powerStage1) || 180,
+            torqueOriginal: parseInt(engineData.torqueOriginal) || 250,
+            torqueStage1: parseInt(engineData.torqueStage1) || 300,
+            engineType: cleanEngineType
+        };
+        
+        console.log('Données moteur trouvées:', result);
+        return result;
     } catch (error) {
         console.error('Erreur lors de la récupération des données du moteur:', error);
-        return { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 };
+        // Retourner des valeurs par défaut en cas d'erreur
+        return { 
+            powerOriginal: 150, 
+            powerStage1: 180, 
+            torqueOriginal: 250, 
+            torqueStage1: 300,
+            engineType: cleanEngineType
+        };
     }
 }
 
@@ -1701,19 +1848,100 @@ document.addEventListener('DOMContentLoaded', function() {
     // Optimiser les gestionnaires d'événements avec debounce
     const resizeHandler = debounce(function() {
         // Recalculer les dimensions si nécessaire
-    }, 100);
+        }, 100);
     
     window.addEventListener('resize', resizeHandler);
 });
 
 // Fonction pour vérifier les paramètres d'URL et afficher directement les résultats si nécessaire
 function checkURLParamsAndShowResults() {
+    // Vérifions d'abord si nous sommes sur une page autre que la page de résultats
+    // Si l'URL contient certains identifiants spécifiques de pages, nous ne traitons pas les résultats
+    const currentPath = window.location.pathname.toLowerCase();
+    if (currentPath.includes('contact.html') || 
+        currentPath.includes('merci.html') || 
+        currentPath.includes('qui-sommes-nous.html') ||
+        currentPath.includes('echapp.html') ||
+        currentPath.includes('dyno.html') ||
+        currentPath.includes('options-reprog.html')) {
+        
+        // On est sur une autre page, donc on nettoie le localStorage et on ne traite pas les résultats
+        localStorage.removeItem('vehicleResultData');
+        return false;
+    }
+    
+    // Vérifier d'abord si nous avons des données dans localStorage
+    try {
+        const storedData = localStorage.getItem('vehicleResultData');
+        if (storedData) {
+            const data = JSON.parse(storedData);
+            // Vérifier si les données ne sont pas trop anciennes (24h max)
+            const now = Date.now();
+            const dataAge = now - (data.timestamp || 0);
+            
+            if (dataAge < 24 * 60 * 60 * 1000) {
+                console.log('Utilisation des données stockées pour afficher les résultats');
+                
+                // Vérifier que toutes les données nécessaires sont présentes
+                if (data.brand && data.model && data.version && data.engineType) {
+                    // Utiliser directement les données stockées
+                    currentSelection = {
+                        brand: data.brand,
+                        model: data.model,
+                        version: data.version,
+                        type: getVehicleTypeFromURL() || 'cars',
+                        engine: data.engineType,
+                        powerOriginal: data.powerOriginal || 150,
+                        powerStage1: data.powerStage1 || 180,
+                        torqueOriginal: data.torqueOriginal || 250,
+                        torqueStage1: data.torqueStage1 || 300
+                    };
+                    
+                    // Simuler la sélection du moteur pour afficher la page de résultats
+                    handleEngineSelection(data.brand, currentSelection.type, data.model, data.version, {
+                        type: data.engineType,
+                        powerOriginal: data.powerOriginal || 150,
+                        powerStage1: data.powerStage1 || 180,
+                        torqueOriginal: data.torqueOriginal || 250,
+                        torqueStage1: data.torqueStage1 || 300,
+                        engineType: data.engineType
+                    });
+                    
+                    return true;
+                } else {
+                    console.error('Données localStorage incomplètes, suppression');
+                    localStorage.removeItem('vehicleResultData');
+                }
+            } else {
+                // Les données sont trop anciennes, les supprimer
+                console.log('Données localStorage expirées, suppression');
+                localStorage.removeItem('vehicleResultData');
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données stockées:', error);
+        localStorage.removeItem('vehicleResultData');
+    }
+    
+    // Si aucune donnée stockée ou si elles sont expirées, continuer avec les paramètres d'URL
     // Récupérer les paramètres de l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const brand = urlParams.get('brand');
     const model = urlParams.get('model');
     const version = urlParams.get('version');
     const engineType = urlParams.get('engine');
+    
+    // Récupérer aussi les valeurs de performance si elles sont disponibles dans l'URL
+    const powerOriginal = urlParams.get('po');
+    const powerStage1 = urlParams.get('ps');
+    const torqueOriginal = urlParams.get('to');
+    const torqueStage1 = urlParams.get('ts');
+    
+    // Vérifier si tous les paramètres nécessaires sont présents
+    if (!brand || !model || !version || !engineType) {
+        console.log('Paramètres URL incomplets:', { brand, model, version, engineType });
+        return false;
+    }
     
     // Récupérer le hash pour déterminer le type de véhicule
     const hash = window.location.hash.substring(1);
@@ -1728,8 +1956,28 @@ function checkURLParamsAndShowResults() {
         // Attendre que le DOM soit complètement chargé
         setTimeout(() => {
             try {
-                // Récupérer les données du moteur
-                const engineData = getEngineData(brand, model, version, engineType);
+                // Vérifier si nous avons les valeurs de performance dans l'URL
+                let engineData;
+                
+                if (powerOriginal && powerStage1 && torqueOriginal && torqueStage1) {
+                    // Si toutes les valeurs sont dans l'URL, les utiliser directement
+                    console.log('Utilisation des valeurs de performance depuis l\'URL');
+                    engineData = {
+                        powerOriginal: parseInt(powerOriginal) || 150,
+                        powerStage1: parseInt(powerStage1) || 180,
+                        torqueOriginal: parseInt(torqueOriginal) || 250,
+                        torqueStage1: parseInt(torqueStage1) || 300,
+                        engineType: engineType
+                    };
+                } else {
+                    // Sinon, récupérer les données du moteur depuis la base de données
+                    engineData = getEngineData(brand, model, version, engineType);
+                }
+                
+                // S'assurer que engineData contient les propriétés nécessaires
+                if (!engineData || typeof engineData !== 'object') {
+                    throw new Error('Données moteur invalides');
+                }
                 
                 // Mettre à jour la sélection courante
                 currentSelection = {
@@ -1743,6 +1991,24 @@ function checkURLParamsAndShowResults() {
                     torqueOriginal: engineData.torqueOriginal,
                     torqueStage1: engineData.torqueStage1
                 };
+                
+                // Stocker ces données dans localStorage pour une meilleure persistance
+                localStorage.setItem('vehicleResultData', JSON.stringify({
+                    brand,
+                    model,
+                    version,
+                    engineType,
+                    powerOriginal: engineData.powerOriginal,
+                    powerStage1: engineData.powerStage1,
+                    torqueOriginal: engineData.torqueOriginal,
+                    torqueStage1: engineData.torqueStage1,
+                    timestamp: Date.now()
+                }));
+                
+                // Pour les URL partagées, s'assurer que l'engineType est toujours défini correctement
+                if (!engineData.engineType) {
+                    engineData.engineType = engineType;
+                }
                 
                 // Simuler la sélection du moteur pour afficher la page de résultats
                 handleEngineSelection(brand, type, model, version, engineData);
@@ -1998,3 +2264,15 @@ window.addEventListener('hashchange', function() {
         initVehicleSelector();
     }
 });
+
+// Fonction pour déterminer le type de véhicule à partir de l'URL
+function getVehicleTypeFromURL() {
+    const hash = window.location.hash.substring(1);
+    const parts = hash.split('/').filter(part => part);
+    
+    if (parts.length >= 2 && parts[0] === 'reprogrammation') {
+        return parts[1]; // cars, motorcycles, etc.
+    }
+    
+    return null;
+}
