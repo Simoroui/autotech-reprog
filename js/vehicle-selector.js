@@ -1003,8 +1003,20 @@ function showResultPage(vehicleData) {
         <div class="results-container">
             <button class="back-button" onclick="handleBack()">Retour</button>
             
-            <h1 class="vehicle-title">${brand} ${model} ${version}</h1>
-            <h2 class="engine-type">${engineType}</h2>
+            <div class="title-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 30px; width: 100%;">
+                <div class="logos-container" style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; width: 100%; max-width: 300px;">
+                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
+                        <img src="${getLogoPath(brand)}" alt="Logo ${brand}" class="brand-logo" style="max-height: 70px; max-width: 100%; width: auto; object-fit: contain;" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/120x70?text=${brand}';">
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
+                        <img src="images/logo-minResult.png" alt="AutoTech Logo" class="company-logo" style="max-height: 70px; max-width: 100%; width: auto; object-fit: contain;"
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/120x70?text=AutoTech';">
+                    </div>
+                </div>
+            <h1 class="vehicle-title" style="text-align: center; width: 100%;">${brand} ${model} ${version}</h1>
+            <h2 class="engine-type" style="text-align: center; width: 100%;">${engineType}</h2>
+            </div>
 
             <style>
                 /* Styles pour supprimer le symbole ✔️ */
