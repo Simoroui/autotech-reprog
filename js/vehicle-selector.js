@@ -1303,26 +1303,31 @@ function handleBack() {
     const brand = urlParams.get('brand');
     const model = urlParams.get('model');
     const version = urlParams.get('version');
+    const engineType = urlParams.get('engineType');
     
-    // Récupérer le type de véhicule depuis currentSelection
-    const type = currentSelection.type;
+    // Récupérer le type de véhicule depuis currentSelection ou l'URL
+    const type = currentSelection.type || urlParams.get('type');
     
     if (!brand || !model || !version || !type) {
         // Si les informations ne sont pas disponibles, rediriger vers la page d'accueil
-        window.location.href = '/autotech-reprog/index.html#boost';
+        window.location.href = 'index.html#boost';
         return;
     }
     
-    // Construire l'URL de retour avec le hash et les paramètres
-    const cleanBrand = brand.toLowerCase().replace(/\s+/g, '-');
-    const cleanModel = model.toLowerCase().replace(/\s+/g, '-');
-    const cleanVersion = version.toLowerCase().replace(/\s+/g, '-');
+    // Au lieu de rediriger vers index.html#boost, nous redirigerons directement vers vehicle-selector.html
+    // avec les paramètres de sélection précédents
     
-    // Construire l'URL complète
-    const returnUrl = `/autotech-reprog/index.html?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&version=${encodeURIComponent(version)}#reprogrammation/${type}/${cleanBrand}/${cleanModel}/${cleanVersion}`;
+    // Stocker les sélections dans localStorage pour les restaurer
+    localStorage.setItem('previousSelection', JSON.stringify({
+        type: type,
+        brand: brand,
+        model: model,
+        version: version,
+        engineType: engineType
+    }));
     
-    // Rediriger vers l'URL de sélection
-    window.location.href = returnUrl;
+    // Rediriger vers vehicle-selector.html
+    window.location.href = 'vehicle-selector.html?restore=true';
 }
 
 // Modifier l'écouteur popstate
@@ -1743,13 +1748,7 @@ function checkURLParamsAndShowResults() {
                 };
                 
                 // Simuler la sélection du moteur pour afficher la page de résultats
-                handleEngineSelection(brand, type, model, version, {
-                    type: engineType,
-                    powerOriginal: engineData.powerOriginal,
-                    powerStage1: engineData.powerStage1,
-                    torqueOriginal: engineData.torqueOriginal,
-                    torqueStage1: engineData.torqueStage1
-                });
+                handleEngineSelection(brand, type, model, version, engineData);
                 
                 console.log('Page de résultats affichée directement depuis l\'URL');
                 
@@ -1879,3 +1878,102 @@ window.addEventListener('hashchange', function() {
         setTimeout(fillContactForm, 500);
     }
 });
+
+// Initialiser le sélecteur de véhicule
+function initVehicleSelector() {
+    // Vérifier si nous devons restaurer une sélection précédente
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRestore = urlParams.get('restore') === 'true';
+    
+    if (shouldRestore && localStorage.getItem('previousSelection')) {
+        try {
+            const previousSelection = JSON.parse(localStorage.getItem('previousSelection'));
+            
+            // Attendre que le DOM soit complètement chargé avant de restaurer la sélection
+            setTimeout(() => {
+                // Sélectionner le type de véhicule
+                if (previousSelection.type) {
+                    const typeSelector = document.querySelector(`[data-vehicle-type="${previousSelection.type}"]`);
+                    if (typeSelector) {
+                        typeSelector.click();
+                        
+                        // Attendre que les marques soient chargées
+                        setTimeout(() => {
+                            // Sélectionner la marque
+                            if (previousSelection.brand) {
+                                const brandElements = document.querySelectorAll('.brand-item');
+                                for (const brandEl of brandElements) {
+                                    if (brandEl.getAttribute('data-brand').trim() === previousSelection.brand.trim()) {
+                                        brandEl.click();
+                                        
+                                        // Attendre que les modèles soient chargés
+                                        setTimeout(() => {
+                                            // Sélectionner le modèle
+                                            if (previousSelection.model) {
+                                                const modelElements = document.querySelectorAll('.model-item');
+                                                for (const modelEl of modelElements) {
+                                                    if (modelEl.getAttribute('data-model').trim() === previousSelection.model.trim()) {
+                                                        modelEl.click();
+                                                        
+                                                        // Attendre que les versions soient chargées
+                                                        setTimeout(() => {
+                                                            // Sélectionner la version
+                                                            if (previousSelection.version) {
+                                                                const versionElements = document.querySelectorAll('.version-item');
+                                                                for (const versionEl of versionElements) {
+                                                                    if (versionEl.getAttribute('data-version').trim() === previousSelection.version.trim()) {
+                                                                        versionEl.click();
+                                                                        
+                                                                        // Si nous avons aussi le type de moteur, attendre et le sélectionner
+                                                                        if (previousSelection.engineType) {
+                                                                            setTimeout(() => {
+                                                                                const engineElements = document.querySelectorAll('.engine-item');
+                                                                                for (const engineEl of engineElements) {
+                                                                                    if (engineEl.getAttribute('data-type').trim() === previousSelection.engineType.trim()) {
+                                                                                        // Ne pas cliquer car cela nous ramènerait aux résultats
+                                                                                        // Mais plutôt mettre en évidence cette option
+                                                                                        engineEl.classList.add('selected');
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                            }, 300);
+                                                                        }
+                                                                        
+                                                                        // Effacer la sélection précédente
+                                                                        localStorage.removeItem('previousSelection');
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }, 300);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }, 300);
+                                        break;
+                                    }
+                                }
+                            }
+                        }, 300);
+                    }
+                }
+            }, 300);
+        } catch (error) {
+            console.error('Erreur lors de la restauration de la sélection:', error);
+            localStorage.removeItem('previousSelection');
+        }
+    }
+    
+    // Vérifie s'il y a une sélection à afficher directement depuis l'URL
+    checkUrlForSelection();
+
+    // Ajouter des écouteurs d'événements pour les interactions
+    addEventListeners();
+
+    // Charger les données depuis le fichier CSV
+    loadCsvData();
+
+    // Charger les explications des options
+    loadOptionExplanations();
+}
