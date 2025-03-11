@@ -21,6 +21,25 @@
     <meta name="twitter:description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances pour voitures, motos, camions et véhicules agricoles.">
     <meta name="twitter:image" content="https://simoroui.github.io/autotech-reprog/images/logo-min.png">
     
+    <!-- Préchargement des ressources critiques -->
+    <link rel="preload" href="images/logo-min.png" as="image">
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="css/header.css" as="style">
+    <link rel="preload" href="css/footer.css" as="style">
+    <link rel="preload" href="js/header.js" as="script">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="images/logoicon.png" type="image/png">
+    
+    <!-- Icônes tactiles pour appareils mobiles -->
+    <link rel="apple-touch-icon" href="images/logoicon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/logoicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/logoicon.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="images/logoicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/logoicon.png">
+    <link rel="manifest" href="manifest.json">
+    <!-- Fin des icônes tactiles -->
+    
     <!-- CSS Critique en ligne pour un chargement rapide -->
     <style>
         /* CSS Critique pour le rendu initial */
@@ -44,6 +63,7 @@
             background-color: #000;
             font-family: 'Roboto', sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .page-wrapper {
@@ -53,81 +73,7 @@
             overflow: hidden;
         }
 
-        .hero-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        .hero {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        .hero-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding-top: 60px;
-        }
-
-        .hero-content::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 800px;
-            height: 300px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            z-index: -1;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 2px solid transparent;
-            animation: laser-border 3s infinite;
-        }
-
-        /* Animation du cadre laser */
-        @keyframes laser-border {
-            0% {
-                border-color: rgba(227, 6, 19, 0.4);
-                box-shadow: 0 0 5px rgba(227, 6, 19, 0.4), inset 0 0 5px rgba(227, 6, 19, 0.4);
-            }
-            50% {
-                border-color: rgba(227, 6, 19, 0.8);
-                box-shadow: 0 0 15px rgba(227, 6, 19, 0.8), inset 0 0 10px rgba(227, 6, 19, 0.8);
-            }
-            100% {
-                border-color: rgba(227, 6, 19, 0.4);
-                box-shadow: 0 0 5px rgba(227, 6, 19, 0.4), inset 0 0 5px rgba(227, 6, 19, 0.4);
-            }
-        }
-
-        /* Styles de base pour le header */
+        /* Styles critiques pour l'en-tête et le titre principal */
         .header {
             position: fixed;
             top: 0;
@@ -135,118 +81,46 @@
             width: 100%;
             z-index: 1000;
             background-color: rgba(0, 0, 0, 0.8);
+            transition: background-color 0.3s ease;
         }
 
-        /* Style spécifique pour les grilles d'options sur la page index */
-        .tuning-options .option-box {
-            height: 126px !important; /* Réduction de 30% de la hauteur originale */
-            border: 1px solid rgba(227, 6, 19, 0.8) !important; /* Cadre rouge de 1px */
-            box-shadow: 0 0 10px rgba(227, 6, 19, 0.5) !important;
+        .logo-img {
+            height: auto;
+            max-width: 150px;
         }
-        
-        .tuning-options .option-box:hover {
-            transform: translateY(-5px) !important;
-            border-color: rgba(227, 6, 19, 1) !important;
-            box-shadow: 0 0 15px rgba(227, 6, 19, 0.7) !important;
+
+        .hero-text h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            font-weight: 700;
         }
-        
-        /* Ajustements pour le contenu des grilles réduites */
-        .tuning-options .option-front {
-            padding: 15px !important;
-        }
-        
-        .tuning-options .option-front h3 {
-            font-size: 1.1rem !important;
-            margin-bottom: 5px !important;
-        }
-        
-        .tuning-options .option-front i {
-            font-size: 1.8rem !important;
-            margin-bottom: 5px !important;
-        }
-        
-        /* Ajustements pour les icônes spéciales */
-        .tuning-options .fap-icon,
-        .tuning-options .egr-icon,
-        .tuning-options .decata-icon,
-        .tuning-options .gpf-icon,
-        .tuning-options .popbang-icon,
-        .tuning-options .hardcut-icon,
-        .tuning-options .startstop-icon,
-        .tuning-options .clone-icon {
-            transform: scale(0.7) !important;
-            margin-bottom: 5px !important;
-        }
-        
-        /* Ajustements pour l'animation au survol */
-        .tuning-options .option-box:hover .option-front {
-            transform: translateY(-100%) !important;
-        }
-        
-        .tuning-options .option-box:hover .option-back {
-            transform: translateY(0) !important;
-        }
-        
-        .tuning-options .option-back {
-            padding: 10px !important;
-        }
-        
-        .tuning-options .option-back p {
-            font-size: 0.85rem !important;
-            margin-bottom: 8px !important;
-        }
-        
-        .tuning-options .learn-more-btn {
-            padding: 6px 12px !important;
-            font-size: 0.85rem !important;
+
+        .text-red {
+            color: var(--primary-color);
         }
     </style>
-    
-    <!-- Polices -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles CSS non critiques chargés de manière asynchrone -->
+
+    <!-- Chargement différé des CSS non critiques -->
     <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/header.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/footer.css" media="print" onload="this.media='all'">
-    
-    <!-- Fallback pour les navigateurs qui ne supportent pas l'attribut onload -->
-    <noscript>
-    <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/header.css">
-        <link rel="stylesheet" href="css/footer.css">
-    </noscript>
-    
-    <!-- Favicon -->
-    <link rel="icon" href="images/logoicon.png" type="image/png">
-    
-    <!-- Icônes tactiles pour appareils mobiles -->
-    <link rel="apple-touch-icon" href="images/logoicon.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="images/logoicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="images/logoicon.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="images/logoicon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="images/logoicon.png">
-    <link rel="manifest" href="manifest.json">
-    <!-- Fin des icônes tactiles -->
-    
-    <!-- Préchargement des ressources critiques -->
-    <link rel="preload" href="css/style.css" as="style">
-    <link rel="preload" href="css/header.css" as="style">
-    <link rel="preload" href="images/Logo-H.png" as="image">
-    
-    <!-- Styles CSS combinés et minifiés -->
-    <link rel="stylesheet" href="css/style.css" media="all">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/contact.css">
-    
-    <!-- Font Awesome chargé de manière asynchrone -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     
-    <!-- Facebook SDK chargé de manière différée -->
-    <script defer src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" nonce="your-nonce"></script>
+    <!-- Fallback pour les navigateurs qui ne supportent pas le onload -->
+    <noscript>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/footer.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </noscript>
+    
+    <!-- Facebook SDK chargé de façon asynchrone -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" 
+            src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" 
+            nonce="your-nonce">
+    </script>
     
     <!-- Cache Service Worker -->
     <script>
