@@ -947,7 +947,8 @@ function showResultPage(vehicleData) {
         powerStage1,
         torqueOriginal,
         torqueStage1,
-        timestamp: Date.now() // Pour l'expiration éventuelle des données
+        timestamp: Date.now(), // Pour l'expiration éventuelle des données
+        url: window.location.href // Stocker l'URL associée à ces données
     }));
 
     // Créer le conteneur
@@ -1870,60 +1871,7 @@ function checkURLParamsAndShowResults() {
         return false;
     }
     
-    // Vérifier d'abord si nous avons des données dans localStorage
-    try {
-        const storedData = localStorage.getItem('vehicleResultData');
-        if (storedData) {
-            const data = JSON.parse(storedData);
-            // Vérifier si les données ne sont pas trop anciennes (24h max)
-            const now = Date.now();
-            const dataAge = now - (data.timestamp || 0);
-            
-            if (dataAge < 24 * 60 * 60 * 1000) {
-                console.log('Utilisation des données stockées pour afficher les résultats');
-                
-                // Vérifier que toutes les données nécessaires sont présentes
-                if (data.brand && data.model && data.version && data.engineType) {
-                    // Utiliser directement les données stockées
-                    currentSelection = {
-                        brand: data.brand,
-                        model: data.model,
-                        version: data.version,
-                        type: getVehicleTypeFromURL() || 'cars',
-                        engine: data.engineType,
-                        powerOriginal: data.powerOriginal || 150,
-                        powerStage1: data.powerStage1 || 180,
-                        torqueOriginal: data.torqueOriginal || 250,
-                        torqueStage1: data.torqueStage1 || 300
-                    };
-                    
-                    // Simuler la sélection du moteur pour afficher la page de résultats
-                    handleEngineSelection(data.brand, currentSelection.type, data.model, data.version, {
-                        type: data.engineType,
-                        powerOriginal: data.powerOriginal || 150,
-                        powerStage1: data.powerStage1 || 180,
-                        torqueOriginal: data.torqueOriginal || 250,
-                        torqueStage1: data.torqueStage1 || 300,
-                        engineType: data.engineType
-                    });
-                    
-                    return true;
-                } else {
-                    console.error('Données localStorage incomplètes, suppression');
-                    localStorage.removeItem('vehicleResultData');
-                }
-            } else {
-                // Les données sont trop anciennes, les supprimer
-                console.log('Données localStorage expirées, suppression');
-                localStorage.removeItem('vehicleResultData');
-            }
-        }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des données stockées:', error);
-        localStorage.removeItem('vehicleResultData');
-    }
-    
-    // Si aucune donnée stockée ou si elles sont expirées, continuer avec les paramètres d'URL
+    // D'abord, vérifions les paramètres dans l'URL actuelle
     // Récupérer les paramètres de l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const brand = urlParams.get('brand');
@@ -1937,21 +1885,21 @@ function checkURLParamsAndShowResults() {
     const torqueOriginal = urlParams.get('to');
     const torqueStage1 = urlParams.get('ts');
     
-    // Vérifier si tous les paramètres nécessaires sont présents
-    if (!brand || !model || !version || !engineType) {
-        console.log('Paramètres URL incomplets:', { brand, model, version, engineType });
-        return false;
-    }
+    // Vérifier si nous avons tous les paramètres de base dans l'URL actuelle
+    const hasCurrentURLParams = brand && model && version && engineType;
     
     // Récupérer le hash pour déterminer le type de véhicule
     const hash = window.location.hash.substring(1);
     const parts = hash.split('/').filter(part => part);
     
-    // Vérifier si nous avons tous les paramètres nécessaires
-    if (brand && model && version && engineType && parts.length >= 2 && parts[0] === 'reprogrammation') {
+    // Si l'URL contient tous les paramètres nécessaires, traiter en priorité cette URL
+    if (hasCurrentURLParams && parts.length >= 2 && parts[0] === 'reprogrammation') {
         const type = parts[1]; // cars, motorcycles, etc.
         
         console.log('Paramètres d\'URL détectés:', { brand, model, version, type, engineType });
+        
+        // Effacer les anciens résultats du localStorage pour éviter les conflits
+        localStorage.removeItem('vehicleResultData');
         
         // Attendre que le DOM soit complètement chargé
         setTimeout(() => {
@@ -2002,7 +1950,8 @@ function checkURLParamsAndShowResults() {
                     powerStage1: engineData.powerStage1,
                     torqueOriginal: engineData.torqueOriginal,
                     torqueStage1: engineData.torqueStage1,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    url: window.location.href // Stocker l'URL associée à ces données
                 }));
                 
                 // Pour les URL partagées, s'assurer que l'engineType est toujours défini correctement
@@ -2022,6 +1971,70 @@ function checkURLParamsAndShowResults() {
         }, 500);
         
         return true; // Indiquer que nous avons traité les paramètres d'URL
+    }
+    
+    // Si on n'a pas de paramètres dans l'URL actuelle, utiliser le localStorage en dernier recours
+    try {
+        const storedData = localStorage.getItem('vehicleResultData');
+        if (storedData) {
+            const data = JSON.parse(storedData);
+            // Vérifier si les données ne sont pas trop anciennes (24h max)
+            const now = Date.now();
+            const dataAge = now - (data.timestamp || 0);
+            
+            // Vérifier si l'URL actuelle correspond à celle stockée
+            const currentURL = window.location.href;
+            const storedURL = data.url || '';
+            
+            // Si l'URL stockée existe et ne correspond pas à l'URL actuelle, ne pas utiliser les données stockées
+            if (storedURL && storedURL !== currentURL) {
+                console.log('L\'URL actuelle ne correspond pas à l\'URL stockée, suppression des données');
+                localStorage.removeItem('vehicleResultData');
+                return false;
+            }
+            
+            if (dataAge < 24 * 60 * 60 * 1000) {
+                console.log('Utilisation des données stockées pour afficher les résultats');
+                
+                // Vérifier que toutes les données nécessaires sont présentes
+                if (data.brand && data.model && data.version && data.engineType) {
+                    // Utiliser directement les données stockées
+                    currentSelection = {
+                        brand: data.brand,
+                        model: data.model,
+                        version: data.version,
+                        type: getVehicleTypeFromURL() || 'cars',
+                        engine: data.engineType,
+                        powerOriginal: data.powerOriginal || 150,
+                        powerStage1: data.powerStage1 || 180,
+                        torqueOriginal: data.torqueOriginal || 250,
+                        torqueStage1: data.torqueStage1 || 300
+                    };
+                    
+                    // Simuler la sélection du moteur pour afficher la page de résultats
+                    handleEngineSelection(data.brand, currentSelection.type, data.model, data.version, {
+                        type: data.engineType,
+                        powerOriginal: data.powerOriginal || 150,
+                        powerStage1: data.powerStage1 || 180,
+                        torqueOriginal: data.torqueOriginal || 250,
+                        torqueStage1: data.torqueStage1 || 300,
+                        engineType: data.engineType
+                    });
+                    
+                    return true;
+                } else {
+                    console.error('Données localStorage incomplètes, suppression');
+                    localStorage.removeItem('vehicleResultData');
+                }
+            } else {
+                // Les données sont trop anciennes, les supprimer
+                console.log('Données localStorage expirées, suppression');
+                localStorage.removeItem('vehicleResultData');
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données stockées:', error);
+        localStorage.removeItem('vehicleResultData');
     }
     
     return false; // Indiquer que nous n'avons pas traité les paramètres d'URL
