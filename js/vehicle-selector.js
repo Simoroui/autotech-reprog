@@ -1314,9 +1314,6 @@ function handleBack() {
         return;
     }
     
-    // Au lieu de rediriger vers index.html#boost, nous redirigerons directement vers vehicle-selector.html
-    // avec les paramètres de sélection précédents
-    
     // Stocker les sélections dans localStorage pour les restaurer
     localStorage.setItem('previousSelection', JSON.stringify({
         type: type,
@@ -1326,8 +1323,8 @@ function handleBack() {
         engineType: engineType
     }));
     
-    // Rediriger vers vehicle-selector.html
-    window.location.href = 'vehicle-selector.html?restore=true';
+    // Rediriger vers la section #boost de la page d'accueil avec le paramètre restore=true
+    window.location.href = 'index.html?restore=true#boost';
 }
 
 // Modifier l'écouteur popstate
@@ -1977,3 +1974,27 @@ function initVehicleSelector() {
     // Charger les explications des options
     loadOptionExplanations();
 }
+
+// Ajouter un écouteur pour le chargement du DOM
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM chargé, vérification de l'URL");
+    
+    // Vérifier si nous sommes sur la section #boost
+    if (window.location.hash === '#boost' || window.location.hash === '' || window.location.hash === '#') {
+        console.log("Section #boost détectée ou page d'accueil, initialisation du sélecteur de véhicule");
+        // Initialiser le sélecteur de véhicule
+        initVehicleSelector();
+    }
+});
+
+// Ajouter un écouteur pour les changements de hash dans l'URL
+window.addEventListener('hashchange', function() {
+    console.log("Changement de hash détecté:", window.location.hash);
+    
+    // Vérifier si nous sommes sur la section #boost
+    if (window.location.hash === '#boost') {
+        console.log("Section #boost détectée après changement de hash, initialisation du sélecteur de véhicule");
+        // Initialiser le sélecteur de véhicule
+        initVehicleSelector();
+    }
+});
