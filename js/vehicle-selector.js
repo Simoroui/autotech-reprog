@@ -679,10 +679,10 @@ function handleEngineSelection(brand, type, model, version, engineData) {
         console.error('Données moteur invalides dans handleEngineSelection:', engineData);
         engineData = {
             type: 'Moteur non spécifié',
-            powerOriginal: 150,
-            powerStage1: 180,
-            torqueOriginal: 250,
-            torqueStage1: 300
+            powerOriginal: "00",
+            powerStage1: "00",
+            torqueOriginal: "00",
+            torqueStage1: "00"
         };
     }
     
@@ -907,10 +907,10 @@ function showResultPage(vehicleData) {
             model: 'Modèle non spécifié',
             version: 'Version non spécifiée',
             engineType: 'Moteur non spécifié',
-            powerOriginal: 150,
-            powerStage1: 180,
-            torqueOriginal: 250,
-            torqueStage1: 300
+            powerOriginal: "00",
+            powerStage1: "00",
+            torqueOriginal: "00",
+            torqueStage1: "00"
         };
     }
     
@@ -919,10 +919,10 @@ function showResultPage(vehicleData) {
     const model = vehicleData.model || 'Modèle non spécifié';
     const version = vehicleData.version || 'Version non spécifiée';
     const engineType = vehicleData.engineType || 'Moteur non spécifié';
-    const powerOriginal = vehicleData.powerOriginal || 150;
-    const powerStage1 = vehicleData.powerStage1 || 180;
-    const torqueOriginal = vehicleData.torqueOriginal || 250;
-    const torqueStage1 = vehicleData.torqueStage1 || 300;
+    const powerOriginal = vehicleData.powerOriginal || "00";
+    const powerStage1 = vehicleData.powerStage1 || "00";
+    const torqueOriginal = vehicleData.torqueOriginal || "00";
+    const torqueStage1 = vehicleData.torqueStage1 || "00";
     
     console.log('Affichage des résultats avec les données:', {
         brand, model, version, engineType,
@@ -931,10 +931,10 @@ function showResultPage(vehicleData) {
 
     // Stocker les valeurs initiales
     initialValues = {
-        powerOriginal: parseInt(powerOriginal) || 150,
-        torqueOriginal: parseInt(torqueOriginal) || 250,
-        powerStage1: parseInt(powerStage1) || 180,
-        torqueStage1: parseInt(torqueStage1) || 300
+        powerOriginal: powerOriginal === "00" ? "00" : (parseInt(powerOriginal) || "00"),
+        torqueOriginal: torqueOriginal === "00" ? "00" : (parseInt(torqueOriginal) || "00"),
+        powerStage1: powerStage1 === "00" ? "00" : (parseInt(powerStage1) || "00"),
+        torqueStage1: torqueStage1 === "00" ? "00" : (parseInt(torqueStage1) || "00")
     };
     
     // Stocker les données complètes dans localStorage pour les récupérer après actualisation
@@ -986,8 +986,17 @@ function showResultPage(vehicleData) {
     window.history.replaceState({}, '', currentUrl);
     
     // Calculer les différences pour l'affichage
-    const powerDiff = parseInt(powerStage1) - parseInt(powerOriginal);
-    const torqueDiff = parseInt(torqueStage1) - parseInt(torqueOriginal);
+    let powerDiff = "00";
+    let torqueDiff = "00";
+    
+    // Calculer seulement si les valeurs ne sont pas "00"
+    if (powerOriginal !== "00" && powerStage1 !== "00") {
+        powerDiff = parseInt(powerStage1) - parseInt(powerOriginal);
+    }
+    
+    if (torqueOriginal !== "00" && torqueStage1 !== "00") {
+        torqueDiff = parseInt(torqueStage1) - parseInt(torqueOriginal);
+    }
     
     // Ajouter le contenu HTML
     container.innerHTML = `
@@ -1126,20 +1135,26 @@ function showResultPage(vehicleData) {
     setTimeout(() => {
         const ctx = document.getElementById('performanceChart').getContext('2d');
         if (ctx) {
+            // Convertir les valeurs "00" en zéro pour le graphique
+            const powerOriginalValue = initialValues.powerOriginal === "00" ? 0 : initialValues.powerOriginal;
+            const powerStage1Value = initialValues.powerStage1 === "00" ? 0 : initialValues.powerStage1;
+            const torqueOriginalValue = initialValues.torqueOriginal === "00" ? 0 : initialValues.torqueOriginal;
+            const torqueStage1Value = initialValues.torqueStage1 === "00" ? 0 : initialValues.torqueStage1;
+            
             const chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Puissance', 'Couple'],
                     datasets: [{
                         label: 'Origine',
-                        data: [initialValues.powerOriginal, initialValues.torqueOriginal],
+                        data: [powerOriginalValue, torqueOriginalValue],
                         backgroundColor: 'rgba(255, 255, 255, 0.2)',
                         borderColor: 'rgba(255, 255, 255, 0.8)',
                         borderWidth: 1,
                         barPercentage: 0.8
                     }, {
                         label: 'Stage 1',
-                        data: [initialValues.powerStage1, initialValues.torqueStage1],
+                        data: [powerStage1Value, torqueStage1Value],
                         backgroundColor: function(context) {
                             const chart = context.chart;
                             const {ctx, chartArea} = chart;
@@ -1543,45 +1558,79 @@ function updatePerformanceData(isStage2) {
     const torqueDiffCell = document.querySelector('.torque-diff span');
     const stageColumn = document.querySelector('.stage-column:nth-child(3)');
     
-    // Extraire les valeurs numériques des initialValues
-    const powerOriginal = parseInt(initialValues.powerOriginal);
-    const torqueOriginal = parseInt(initialValues.torqueOriginal);
-    const powerStage1 = parseInt(initialValues.powerStage1);
-    const torqueStage1 = parseInt(initialValues.torqueStage1);
+    // Vérifier si les valeurs sont "00"
+    const powerOriginalIsZero = initialValues.powerOriginal === "00";
+    const torqueOriginalIsZero = initialValues.torqueOriginal === "00";
+    const powerStage1IsZero = initialValues.powerStage1 === "00";
+    const torqueStage1IsZero = initialValues.torqueStage1 === "00";
+    
+    // Convertir en nombres si possible
+    const powerOriginal = powerOriginalIsZero ? 0 : parseInt(initialValues.powerOriginal);
+    const torqueOriginal = torqueOriginalIsZero ? 0 : parseInt(initialValues.torqueOriginal);
+    const powerStage1 = powerStage1IsZero ? 0 : parseInt(initialValues.powerStage1);
+    const torqueStage1 = torqueStage1IsZero ? 0 : parseInt(initialValues.torqueStage1);
     
     if (isStage2) {
         // Calculer les valeurs Stage 2
-        const powerStage2 = powerStage1 + 10;  // +10 Hp par rapport au Stage 1
-        const torqueStage2 = torqueStage1 + 20;  // +20 Nm par rapport au Stage 1
+        const powerStage2 = powerStage1IsZero ? "00" : (powerStage1 + 10);  // +10 Hp par rapport au Stage 1
+        const torqueStage2 = torqueStage1IsZero ? "00" : (torqueStage1 + 20);  // +20 Nm par rapport au Stage 1
 
         // Mettre à jour le titre
         stageColumn.textContent = 'STAGE2';
         
         // Mettre à jour les valeurs
-        powerStageCell.textContent = `${powerStage2} Hp`;
-        torqueStageCell.textContent = `${torqueStage2} Nm`;
-        powerDiffCell.textContent = `+${powerStage2 - powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${torqueStage2 - torqueOriginal} Nm`;
+        powerStageCell.textContent = powerStage2 === "00" ? "00 Hp" : `${powerStage2} Hp`;
+        torqueStageCell.textContent = torqueStage2 === "00" ? "00 Nm" : `${torqueStage2} Nm`;
+        
+        // Calculer et mettre à jour les différences
+        if (powerOriginalIsZero || powerStage2 === "00") {
+            powerDiffCell.textContent = "+00 Hp";
+        } else {
+            powerDiffCell.textContent = `+${powerStage2 - powerOriginal} Hp`;
+        }
+        
+        if (torqueOriginalIsZero || torqueStage2 === "00") {
+            torqueDiffCell.textContent = "+00 Nm";
+        } else {
+            torqueDiffCell.textContent = `+${torqueStage2 - torqueOriginal} Nm`;
+        }
         
         // Mettre à jour le graphique
         const chart = Chart.getChart('performanceChart');
         if (chart) {
-            chart.data.datasets[1].data = [powerStage2, torqueStage2];
+            chart.data.datasets[1].data = [
+                powerStage2 === "00" ? 0 : powerStage2, 
+                torqueStage2 === "00" ? 0 : torqueStage2
+            ];
             chart.data.datasets[1].label = 'Stage 2';
             chart.update();
         }
     } else {
         // Restaurer Stage 1
         stageColumn.textContent = 'STAGE1';
-        powerStageCell.textContent = `${powerStage1} Hp`;
-        torqueStageCell.textContent = `${torqueStage1} Nm`;
-        powerDiffCell.textContent = `+${powerStage1 - powerOriginal} Hp`;
-        torqueDiffCell.textContent = `+${torqueStage1 - torqueOriginal} Nm`;
+        powerStageCell.textContent = powerStage1IsZero ? "00 Hp" : `${powerStage1} Hp`;
+        torqueStageCell.textContent = torqueStage1IsZero ? "00 Nm" : `${torqueStage1} Nm`;
+        
+        // Calculer et mettre à jour les différences
+        if (powerOriginalIsZero || powerStage1IsZero) {
+            powerDiffCell.textContent = "+00 Hp";
+        } else {
+            powerDiffCell.textContent = `+${powerStage1 - powerOriginal} Hp`;
+        }
+        
+        if (torqueOriginalIsZero || torqueStage1IsZero) {
+            torqueDiffCell.textContent = "+00 Nm";
+        } else {
+            torqueDiffCell.textContent = `+${torqueStage1 - torqueOriginal} Nm`;
+        }
 
         // Restaurer le graphique
         const chart = Chart.getChart('performanceChart');
         if (chart) {
-            chart.data.datasets[1].data = [powerStage1, torqueStage1];
+            chart.data.datasets[1].data = [
+                powerStage1IsZero ? 0 : powerStage1, 
+                torqueStage1IsZero ? 0 : torqueStage1
+            ];
             chart.data.datasets[1].label = 'Stage 1';
             chart.update();
         }
@@ -1608,9 +1657,9 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('vehicleResultData');
             console.log('Données de résultats supprimées du localStorage');
             // Laisser l'événement se poursuivre normalement
-        });
     });
-    
+});
+
     // Gérer aussi les clics sur le logo ou les liens de navigation principale
     document.querySelectorAll('header a, .logo a, nav a').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -1638,12 +1687,12 @@ function getEngineData(brand, model, version, engineType) {
     // S'assurer que tous les paramètres sont définis
     if (!brand || !model || !version || !engineType) {
         console.error('Paramètres incomplets pour getEngineData:', { brand, model, version, engineType });
-        // Retourner des valeurs par défaut sécurisées
+        // Retourner "00" comme valeurs par défaut
         return { 
-            powerOriginal: 150, 
-            powerStage1: 180, 
-            torqueOriginal: 250, 
-            torqueStage1: 300,
+            powerOriginal: "00", 
+            powerStage1: "00", 
+            torqueOriginal: "00", 
+            torqueStage1: "00",
             engineType: engineType || "Moteur non spécifié"
         };
     }
@@ -1686,7 +1735,7 @@ function getEngineData(brand, model, version, engineType) {
         'default': {
             'default': {
                 'default': {
-                    'default': { powerOriginal: 150, powerStage1: 180, torqueOriginal: 250, torqueStage1: 300 }
+                    'default': { powerOriginal: "00", powerStage1: "00", torqueOriginal: "00", torqueStage1: "00" }
                 }
             }
         }
@@ -1710,12 +1759,12 @@ function getEngineData(brand, model, version, engineType) {
             engineData = engineDatabase['default']['default']['default']['default'];
         }
         
-        // S'assurer que les valeurs sont des nombres valides
+        // S'assurer que les valeurs sont des nombres valides ou "00" si non trouvées
         const result = {
-            powerOriginal: parseInt(engineData.powerOriginal) || 150,
-            powerStage1: parseInt(engineData.powerStage1) || 180,
-            torqueOriginal: parseInt(engineData.torqueOriginal) || 250,
-            torqueStage1: parseInt(engineData.torqueStage1) || 300,
+            powerOriginal: engineData.powerOriginal === "00" ? "00" : (parseInt(engineData.powerOriginal) || "00"),
+            powerStage1: engineData.powerStage1 === "00" ? "00" : (parseInt(engineData.powerStage1) || "00"),
+            torqueOriginal: engineData.torqueOriginal === "00" ? "00" : (parseInt(engineData.torqueOriginal) || "00"),
+            torqueStage1: engineData.torqueStage1 === "00" ? "00" : (parseInt(engineData.torqueStage1) || "00"),
             engineType: cleanEngineType
         };
         
@@ -1723,12 +1772,12 @@ function getEngineData(brand, model, version, engineType) {
         return result;
     } catch (error) {
         console.error('Erreur lors de la récupération des données du moteur:', error);
-        // Retourner des valeurs par défaut en cas d'erreur
+        // Retourner "00" comme valeurs par défaut en cas d'erreur
         return { 
-            powerOriginal: 150, 
-            powerStage1: 180, 
-            torqueOriginal: 250, 
-            torqueStage1: 300,
+            powerOriginal: "00", 
+            powerStage1: "00", 
+            torqueOriginal: "00", 
+            torqueStage1: "00",
             engineType: cleanEngineType
         };
     }
@@ -1911,13 +1960,13 @@ function checkURLParamsAndShowResults() {
                     // Si toutes les valeurs sont dans l'URL, les utiliser directement
                     console.log('Utilisation des valeurs de performance depuis l\'URL');
                     engineData = {
-                        powerOriginal: parseInt(powerOriginal) || 150,
-                        powerStage1: parseInt(powerStage1) || 180,
-                        torqueOriginal: parseInt(torqueOriginal) || 250,
-                        torqueStage1: parseInt(torqueStage1) || 300,
+                        powerOriginal: parseInt(powerOriginal) || "00",
+                        powerStage1: parseInt(powerStage1) || "00",
+                        torqueOriginal: parseInt(torqueOriginal) || "00",
+                        torqueStage1: parseInt(torqueStage1) || "00",
                         engineType: engineType
                     };
-                } else {
+    } else {
                     // Sinon, récupérer les données du moteur depuis la base de données
                     engineData = getEngineData(brand, model, version, engineType);
                 }
@@ -2005,19 +2054,19 @@ function checkURLParamsAndShowResults() {
                         version: data.version,
                         type: getVehicleTypeFromURL() || 'cars',
                         engine: data.engineType,
-                        powerOriginal: data.powerOriginal || 150,
-                        powerStage1: data.powerStage1 || 180,
-                        torqueOriginal: data.torqueOriginal || 250,
-                        torqueStage1: data.torqueStage1 || 300
+                        powerOriginal: data.powerOriginal || "00",
+                        powerStage1: data.powerStage1 || "00",
+                        torqueOriginal: data.torqueOriginal || "00",
+                        torqueStage1: data.torqueStage1 || "00"
                     };
                     
                     // Simuler la sélection du moteur pour afficher la page de résultats
                     handleEngineSelection(data.brand, currentSelection.type, data.model, data.version, {
                         type: data.engineType,
-                        powerOriginal: data.powerOriginal || 150,
-                        powerStage1: data.powerStage1 || 180,
-                        torqueOriginal: data.torqueOriginal || 250,
-                        torqueStage1: data.torqueStage1 || 300,
+                        powerOriginal: data.powerOriginal || "00",
+                        powerStage1: data.powerStage1 || "00",
+                        torqueOriginal: data.torqueOriginal || "00",
+                        torqueStage1: data.torqueStage1 || "00",
                         engineType: data.engineType
                     });
                     
