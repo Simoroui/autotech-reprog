@@ -1,101 +1,75 @@
-// Fonction pour créer les circuits électroniques
-function createCircuits() {
-    const container = document.getElementById('techCircuit');
-    if (!container) return;
+// Fonction pour créer l'effet matrice
+function createMatrixEffect() {
+    const matrixContainer = document.querySelector('.matrix-bg');
+    if (!matrixContainer) return;
     
     // Vider le conteneur
-    container.innerHTML = '';
+    matrixContainer.innerHTML = '';
     
-    // Créer des lignes horizontales
-    for (let i = 0; i < 10; i++) {
-        const line = document.createElement('div');
-        line.className = 'circuit-line horizontal';
+    // Caractères pour la matrice
+    const matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+<>?{}[]~`|";
+    
+    // Créer les colonnes de la matrice
+    const columnCount = Math.floor(window.innerWidth / 20); // Une colonne tous les ~20px
+    
+    for (let i = 0; i < columnCount; i++) {
+        const column = document.createElement('div');
+        column.className = 'matrix-column';
         
-        const top = Math.random() * 100 + '%';
-        const left = Math.random() * 40 + '%';
-        const width = Math.random() * 60 + 40 + 'px';
+        // Position aléatoire horizontale
+        column.style.left = (i * 20 + Math.random() * 10) + 'px';
         
-        line.style.top = top;
-        line.style.left = left;
-        line.style.width = width;
-        line.style.animationDelay = (Math.random() * 4) + 's';
+        // Vitesse aléatoire pour la chute
+        const fallDuration = (Math.random() * 5 + 5) + 's'; // Entre 5 et 10 secondes
+        column.style.setProperty('--fall-duration', fallDuration);
         
-        container.appendChild(line);
+        // Délai aléatoire pour le début de l'animation
+        column.style.animationDelay = (Math.random() * 5) + 's';
+        
+        // Nombre aléatoire de caractères dans la colonne
+        const charCount = Math.floor(Math.random() * 20 + 10); // Entre 10 et 30 caractères
+        
+        // Créer les caractères de la colonne
+        for (let j = 0; j < charCount; j++) {
+            const charSpan = document.createElement('span');
+            const randomChar = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+            charSpan.textContent = randomChar;
+            
+            // Animation d'opacité indépendante pour chaque caractère
+            const glowDuration = (Math.random() * 2 + 1) + 's';
+            const glowDelay = (Math.random() * 2) + 's';
+            
+            charSpan.style.setProperty('--glow-duration', glowDuration);
+            charSpan.style.setProperty('--glow-delay', glowDelay);
+            
+            column.appendChild(charSpan);
+        }
+        
+        matrixContainer.appendChild(column);
     }
     
-    // Créer des lignes verticales
-    for (let i = 0; i < 10; i++) {
-        const line = document.createElement('div');
-        line.className = 'circuit-line vertical';
-        
-        const top = Math.random() * 40 + '%';
-        const left = Math.random() * 100 + '%';
-        const height = Math.random() * 60 + 40 + 'px';
-        
-        line.style.top = top;
-        line.style.left = left;
-        line.style.height = height;
-        line.style.animationDelay = (Math.random() * 4) + 's';
-        
-        container.appendChild(line);
-    }
-    
-    // Créer des noeuds
-    for (let i = 0; i < 15; i++) {
-        const node = document.createElement('div');
-        node.className = 'circuit-node';
-        
-        const top = Math.random() * 100 + '%';
-        const left = Math.random() * 100 + '%';
-        
-        node.style.top = top;
-        node.style.left = left;
-        node.style.animationDelay = (Math.random() * 2) + 's';
-        
-        container.appendChild(node);
-    }
+    // Changer les caractères périodiquement pour l'effet "vivant"
+    setInterval(() => {
+        const spans = document.querySelectorAll('.matrix-column span');
+        const randomIndex = Math.floor(Math.random() * spans.length);
+        if (spans[randomIndex]) {
+            const randomChar = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+            spans[randomIndex].textContent = randomChar;
+        }
+    }, 100);
 }
 
-// Fonction pour créer les particules technologiques
-function createTechParticles() {
-    const container = document.getElementById('techParticles');
-    if (!container) return;
+// Fonction pour animer la ligne de scan
+function createScanLine() {
+    const scanLine = document.querySelector('.scan-line');
+    if (!scanLine) return;
     
-    // Vider le conteneur
-    container.innerHTML = '';
-    
-    // Créer des particules
-    for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'tech-particle';
-        
-        // Position et animation aléatoires
-        const startX = Math.random() * 100 + 'vw';
-        const startY = Math.random() * 100 + 'vh';
-        const endX = Math.random() * 100 + 'vw';
-        const endY = Math.random() * 100 + 'vh';
-        const duration = (Math.random() * 20 + 10) + 's';
-        const delay = (Math.random() * 5) + 's';
-        const opacity = Math.random() * 0.5 + 0.3;
-        
-        // Appliquer les variables CSS personnalisées
-        particle.style.setProperty('--startX', startX);
-        particle.style.setProperty('--startY', startY);
-        particle.style.setProperty('--endX', endX);
-        particle.style.setProperty('--endY', endY);
-        particle.style.setProperty('--duration', duration);
-        particle.style.setProperty('--delay', delay);
-        particle.style.setProperty('--opacity', opacity);
-        
-        // Taille et position aléatoires
-        particle.style.left = Math.random() * 100 + 'vw';
-        particle.style.top = Math.random() * 100 + 'vh';
-        particle.style.width = (Math.random() * 3 + 1) + 'px';
-        particle.style.height = (Math.random() * 3 + 1) + 'px';
-        particle.style.animationDelay = delay;
-        
-        container.appendChild(particle);
-    }
+    // Réinitialiser l'animation régulièrement pour éviter les bugs
+    setInterval(() => {
+        scanLine.style.animation = 'none';
+        scanLine.offsetHeight; // Force reflow
+        scanLine.style.animation = 'scan 3s linear infinite';
+    }, 3000);
 }
 
 // Fonction pour gérer l'écran de démarrage (splash screen)
@@ -109,11 +83,17 @@ function initializeSplashScreen() {
         return;
     }
     
-    // Créer les particules technologiques
-    createTechParticles();
+    // Créer l'effet matrice
+    createMatrixEffect();
     
-    // Créer les circuits électroniques
-    createCircuits();
+    // Créer l'effet de scan
+    createScanLine();
+    
+    // Gestion du redimensionnement de la fenêtre
+    window.addEventListener('resize', () => {
+        // Recréer la matrice pour qu'elle s'adapte à la nouvelle taille
+        createMatrixEffect();
+    });
     
     // Masquer la page principale pendant le chargement
     pageWrapper.style.visibility = 'hidden';

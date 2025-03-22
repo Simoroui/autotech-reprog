@@ -2879,130 +2879,156 @@ html {
 /* Style pour l'icône Pop & Bang */
 .popbang-icon {
     width: 60px;
-    height: 40px;
+    height: 60px;
     position: relative;
     margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-}
-
-.exhaust {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.exhaust-pipe {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    width: 30px;
-    height: 12px;
-    background: var(--primary-color);
-    transform: translateY(-50%);
-}
-
-.exhaust-tip {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    width: 15px;
-    height: 16px;
-    background: var(--primary-color);
-    transform: translateY(-50%);
-    border-radius: 0 4px 4px 0;
-}
-
-.flames {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.flame {
+.explosion-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.explosion-center {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    background-color: #ffcc00;
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    animation: pulse 1.5s infinite alternate;
+}
+
+.explosion-ray {
     position: absolute;
-    right: 5px;
-    width: 0;
-    height: 0;
-    border-style: solid;
+    top: 50%;
+    left: 50%;
+    background-color: var(--primary-color);
+    transform-origin: center;
+    z-index: 1;
+}
+
+.ray1, .ray5, .ray9, .ray13 {
+    width: 4px;
+    height: 28px;
+}
+
+.ray3, .ray7, .ray11, .ray15 {
+    width: 4px;
+    height: 28px;
+}
+
+.ray2, .ray6, .ray10, .ray14 {
+    width: 28px;
+    height: 4px;
+}
+
+.ray4, .ray8, .ray12, .ray16 {
+    width: 28px;
+    height: 4px;
+}
+
+.ray1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-14px); }
+.ray2 { transform: translate(-50%, -50%) rotate(0deg) translateX(14px); }
+.ray3 { transform: translate(-50%, -50%) rotate(0deg) translateY(14px); }
+.ray4 { transform: translate(-50%, -50%) rotate(0deg) translateX(-14px); }
+
+.ray5 { transform: translate(-50%, -50%) rotate(45deg) translateY(-14px); }
+.ray6 { transform: translate(-50%, -50%) rotate(45deg) translateX(14px); }
+.ray7 { transform: translate(-50%, -50%) rotate(45deg) translateY(14px); }
+.ray8 { transform: translate(-50%, -50%) rotate(45deg) translateX(-14px); }
+
+.sound-wave {
+    position: absolute;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
     opacity: 0;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
 }
 
-.flame1 {
-    border-width: 8px 16px 8px 0;
-    border-color: transparent #ff4d4d transparent transparent;
-    animation: flame1 0.5s infinite alternate;
+.wave1 {
+    width: 30px;
+    height: 30px;
+    animation: wave 1.2s infinite;
 }
 
-.flame2 {
-    border-width: 6px 12px 6px 0;
-    border-color: transparent #ff9933 transparent transparent;
-    animation: flame2 0.5s infinite alternate 0.1s;
+.wave2 {
+    width: 40px;
+    height: 40px;
+    animation: wave 1.2s infinite 0.15s;
 }
 
-.flame3 {
-    border-width: 4px 8px 4px 0;
-    border-color: transparent #ffcc00 transparent transparent;
-    animation: flame3 0.5s infinite alternate 0.2s;
+.wave3 {
+    width: 50px;
+    height: 50px;
+    animation: wave 1.2s infinite 0.3s;
 }
 
-@keyframes flame1 {
+@keyframes pulse {
     0% {
-        opacity: 0;
-        transform: translateX(0) scale(1);
+        transform: scale(0.8);
+        box-shadow: 0 0 5px rgba(255, 204, 0, 0.6);
     }
     100% {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 204, 0, 1);
+    }
+}
+
+@keyframes wave {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
         opacity: 0.8;
-        transform: translateX(10px) scale(1.2);
-    }
-}
-
-@keyframes flame2 {
-    0% {
-        opacity: 0;
-        transform: translateX(0) scale(1);
     }
     100% {
-        opacity: 0.6;
-        transform: translateX(8px) scale(1.1);
-    }
-}
-
-@keyframes flame3 {
-    0% {
+        transform: translate(-50%, -50%) scale(1.2);
         opacity: 0;
-        transform: translateX(0) scale(1);
-    }
-    100% {
-        opacity: 0.4;
-        transform: translateX(6px) scale(1);
     }
 }
 
-.popbang-icon:hover .flame {
-    animation-duration: 0.3s;
+.popbang-icon:hover .explosion-center {
+    animation-duration: 0.8s;
+}
+
+.popbang-icon:hover .sound-wave {
+    animation-duration: 0.8s;
 }
 
 /* Responsive */
 @media screen and (max-width: 768px) {
     .popbang-icon {
         width: 50px;
-        height: 35px;
+        height: 50px;
     }
-
-    .exhaust-pipe {
-        width: 25px;
-        height: 10px;
+    
+    .explosion-center {
+        width: 16px;
+        height: 16px;
     }
-
-    .exhaust-tip {
-        width: 12px;
-        height: 14px;
+    
+    .ray1, .ray5, .ray9, .ray13,
+    .ray3, .ray7, .ray11, .ray15 {
+        height: 22px;
     }
+    
+    .ray2, .ray6, .ray10, .ray14,
+    .ray4, .ray8, .ray12, .ray16 {
+        width: 22px;
+    }
+    
+    .wave1 { width: 24px; height: 24px; }
+    .wave2 { width: 32px; height: 32px; }
+    .wave3 { width: 40px; height: 40px; }
 }
 
 /* Style pour l'icône Hard Cut */
