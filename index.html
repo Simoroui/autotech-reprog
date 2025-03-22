@@ -23,9 +23,11 @@
     
     <!-- Préchargement des ressources critiques -->
     <link rel="preload" href="images/logo-min.png" as="image">
+    <link rel="preload" href="images/Logo-H.png" as="image">
     <link rel="preload" href="css/style.css" as="style">
     <link rel="preload" href="css/header.css" as="style">
     <link rel="preload" href="css/footer.css" as="style">
+    <link rel="preload" href="js/script.js" as="script">
     <link rel="preload" href="js/header.js" as="script">
     
     <!-- Favicon -->
@@ -64,6 +66,236 @@
             font-family: 'Roboto', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        /* Styles pour le splash screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        #splash-screen:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(227, 6, 19, 0.1) 30%, 
+                rgba(227, 6, 19, 0.2) 40%, 
+                transparent 50%);
+            transform-origin: center;
+            animation: rotateGradient 15s linear infinite;
+            z-index: -2;
+        }
+
+        #splash-screen:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(227, 6, 19, 0.3) 0%, transparent 25%),
+                radial-gradient(circle at 85% 85%, rgba(227, 6, 19, 0.3) 0%, transparent 25%);
+            background-size: 100% 100%;
+            z-index: -1;
+        }
+
+        .tech-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, rgba(227, 6, 19, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(227, 6, 19, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.5;
+            perspective: 1000px;
+            animation: gridPulse 8s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .tech-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .tech-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: rgba(227, 6, 19, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(227, 6, 19, 0.9);
+            animation: floatParticle var(--duration) linear infinite;
+            opacity: var(--opacity);
+        }
+
+        /* Circuits électroniques animés */
+        .tech-circuit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.2;
+            overflow: hidden;
+        }
+
+        .circuit-line {
+            position: absolute;
+            background-color: rgba(227, 6, 19, 0.8);
+            transform-origin: left center;
+        }
+
+        .circuit-line.horizontal {
+            height: 1px;
+            animation: circuitGlow 4s ease-in-out infinite;
+        }
+
+        .circuit-line.vertical {
+            width: 1px;
+            animation: circuitGlow 4s ease-in-out infinite;
+        }
+
+        .circuit-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: rgba(227, 6, 19, 0.8);
+            border-radius: 50%;
+            animation: nodeGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes rotateGradient {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes gridPulse {
+            0%, 100% {
+                transform: perspective(1000px) rotateX(10deg) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: perspective(1000px) rotateX(20deg) scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translate(var(--startX), var(--startY));
+                opacity: 0;
+            }
+            25% {
+                opacity: var(--opacity);
+            }
+            75% {
+                opacity: var(--opacity);
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY));
+                opacity: 0;
+            }
+        }
+
+        @keyframes circuitGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(227, 6, 19, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 12px rgba(227, 6, 19, 1);
+            }
+        }
+
+        @keyframes nodeGlow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 5px rgba(227, 6, 19, 0.8);
+            }
+            50% {
+                transform: scale(1.5);
+                box-shadow: 0 0 12px rgba(227, 6, 19, 1);
+            }
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            text-align: center;
+        }
+
+        .splash-logo {
+            width: 280px;
+            height: auto;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-bar-container {
+            width: 280px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         .page-wrapper {
@@ -310,6 +542,20 @@
     </style>
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="tech-grid"></div>
+        <div class="tech-particles" id="techParticles"></div>
+        <div class="tech-circuit" id="techCircuit"></div>
+        <div class="splash-content">
+            <img src="images/Logo-H.png" alt="AUTOTECH" class="splash-logo">
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
+            </div>
+            <p class="loading-text">Chargement en cours...</p>
+        </div>
+    </div>
+    
     <div class="page-wrapper">
     <header class="header">
         <button class="hamburger-menu" aria-label="Menu">
@@ -988,6 +1234,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/script.js" defer></script>
     <script src="js/header.js" defer></script>
     <script src="js/vehicle-selector.js" defer></script>
     <script src="js/slideshow.js" defer></script>
