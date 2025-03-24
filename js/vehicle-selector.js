@@ -629,6 +629,9 @@ function handleVersionSelection(brand, type, model, version) {
         }
     }
 
+    // Extraire les types d'énergie disponibles
+    const energyTypes = [...new Set(engines.map(engine => engine.energy))];
+
     // Mettre à jour le contenu de la page avec un affichage en boîtes
     const detailsSection = document.querySelector('.vehicle-details');
     
@@ -663,9 +666,18 @@ function handleVersionSelection(brand, type, model, version) {
             </div>
             <div class="selection-grid">
                 <h3 class="selection-title">Sélectionnez une motorisation</h3>
+                <div class="energy-filter">
+                    <div class="filter-label">Filtrer par énergie:</div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-energy="all">Toutes</button>
+                        ${energyTypes.map(energy => `
+                            <button class="filter-btn" data-energy="${energy}">${energy}</button>
+                        `).join('')}
+                    </div>
+                </div>
                 <div class="selection-items engine-items">
             ${engines.map(engine => `
-                <div class="selection-item engine-item" data-engine='${JSON.stringify(engine)}'>
+                <div class="selection-item engine-item" data-energy="${engine.energy}" data-engine='${JSON.stringify(engine)}'>
                         <div class="engine-info">
                             <div class="engine-type">${engine.type}</div>
                             <div class="engine-details">
@@ -675,7 +687,7 @@ function handleVersionSelection(brand, type, model, version) {
                                 </div>
                                 <div class="detail-item">
                                 <span class="detail-label">Cylindrée:</span>
-                                        <span class="detail-value">${engine.displacement}</span>
+                                    <span class="detail-value">${engine.displacement}</span>
                                 </div>
                             <div class="detail-item">
                                 <span class="detail-label">Energie:</span>
@@ -696,6 +708,27 @@ function handleVersionSelection(brand, type, model, version) {
             </div>
         </div>
     `;
+
+    // Ajouter les écouteurs d'événements pour les filtres d'énergie
+    detailsSection.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Retirer la classe active de tous les boutons
+            detailsSection.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // Ajouter la classe active au bouton cliqué
+            btn.classList.add('active');
+            
+            const selectedEnergy = btn.dataset.energy;
+            const engineItems = detailsSection.querySelectorAll('.engine-item');
+            
+            engineItems.forEach(item => {
+                if (selectedEnergy === 'all' || item.dataset.energy === selectedEnergy) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
 
     // Ajouter les écouteurs d'événements pour les motorisations
     detailsSection.querySelectorAll('.selection-item[data-engine]').forEach(item => {

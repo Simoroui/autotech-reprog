@@ -4549,3 +4549,78 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
         padding: 10px;
     }
 }
+
+/* Styles pour les filtres d'énergie */
+.energy-filter {
+    margin-top: -10px;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: linear-gradient(145deg, #1a1a1a, #222);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0;
+    margin-right: 15px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+}
+
+.filter-btn {
+    padding: 8px 15px;
+    background: linear-gradient(145deg, #222, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 30px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(227, 6, 19, 0.2);
+    border-color: rgba(227, 6, 19, 0.3);
+}
+
+.filter-btn.active {
+    background: linear-gradient(145deg, rgba(227, 6, 19, 0.8), rgba(200, 0, 0, 0.8));
+    border-color: rgba(227, 6, 19, 0.5);
+    box-shadow: 0 0 15px rgba(227, 6, 19, 0.3);
+}
+
+@media (max-width: 768px) {
+    .filter-buttons {
+        justify-content: center;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .energy-filter {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .filter-label {
+        margin-right: 0;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+}
