@@ -345,26 +345,26 @@ function handleBrandSelection(brand, type) {
             models.add(columns[1].trim());
         }
     }
-
-    // Créer ou mettre à jour la section des détails
+    
+    // Créer ou utiliser la section existante
     let detailsSection = document.querySelector('.vehicle-details');
     if (!detailsSection) {
         detailsSection = document.createElement('div');
         detailsSection.className = 'vehicle-details';
         document.querySelector('.section-container').appendChild(detailsSection);
     }
-
-    // S'assurer que la section des détails est visible
+    
+    // S'assurer que la section est visible
     detailsSection.style.display = 'block';
-
-    // Mettre à jour le contenu
+    
+    // Mettre à jour le contenu avec un affichage en boîtes
     detailsSection.innerHTML = `
         <button class="back-button">Retour</button>
-        <div class="selection-steps">
-            <div class="step active">
-                <div class="step-title">Marque sélectionnée</div>
-                <div class="step-content">
-                    <div class="selection-item selected" data-scroll-to="model">
+        <div class="selection-page">
+            <div class="selected-info">
+                <div class="selected-item">
+                    <div class="selected-label">Marque sélectionnée</div>
+                    <div class="selected-value">
                         <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
                              onerror="this.onerror=null; this.src='images/logos/default.png';"
                              onload="this.style.display='block';">
@@ -372,9 +372,9 @@ function handleBrandSelection(brand, type) {
                     </div>
                 </div>
             </div>
-            <div class="step active" id="model-step">
-                <div class="step-title">Modèle</div>
-                <div class="step-content">
+            <div class="selection-grid">
+                <h3 class="selection-title">Sélectionnez un modèle</h3>
+                <div class="selection-items">
                     ${Array.from(models).map(model => `
                         <div class="selection-item" data-model="${model}">${model}</div>
                     `).join('')}
@@ -383,8 +383,21 @@ function handleBrandSelection(brand, type) {
         </div>
     `;
 
-    // Ajouter les écouteurs d'événements
-    addEventListeners(detailsSection, brand, type, models);
+    // Ajouter les écouteurs d'événements pour les modèles
+    detailsSection.querySelectorAll('.selection-item[data-model]').forEach(item => {
+        item.addEventListener('click', () => handleModelSelection(brand, type, item.dataset.model));
+    });
+
+    // Ajouter l'écouteur pour le bouton retour
+    detailsSection.querySelector('.back-button').addEventListener('click', () => {
+        // Afficher à nouveau les grilles de marques et les onglets
+        document.querySelectorAll('.brands-grid').forEach(grid => {
+            grid.style.display = '';
+            grid.classList.add('active');
+        });
+        document.querySelector('.vehicle-tabs').style.display = '';
+        detailsSection.style.display = 'none';
+    });
 
     // Faire défiler jusqu'au titre "CHOISISSEZ VOTRE VÉHICULE"
     setTimeout(() => {
@@ -411,13 +424,6 @@ function handleBrandSelection(brand, type) {
                 top: offset,
                 behavior: 'smooth'
             });
-            
-            // Sur mobile, après avoir défilé verticalement, centrer horizontalement
-            if (window.innerWidth <= 768) {
-                setTimeout(() => {
-                    scrollToStepCenter('model');
-                }, 300);
-            }
         }
     }, 100);
 }
@@ -494,26 +500,21 @@ function addEventListeners(detailsSection, brand, type, models) {
 
 // Modifier handleModelSelection pour centrer la sélection de version
 function handleModelSelection(brand, type, model) {
-    currentSelection.model = model;
-    
-    // Mettre à jour le style de l'élément du modèle sélectionné
-    document.querySelectorAll('.selection-item[data-model]').forEach(item => {
-        item.classList.remove('selected');
-        if (item.dataset.model === model) {
-            item.classList.add('selected');
-        }
-    });
+    // Mettre à jour la sélection courante
+    currentSelection = {
+        brand: brand,
+        model: model,
+        version: null,
+        type: type
+    };
 
-    // Utiliser un hash dans l'URL au lieu de modifier le chemin
-    const url = `#reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}`;
-    window.history.pushState({ type, brand, model }, '', url);
-    updateBreadcrumb({ type, brand, model });
+    // Mettre à jour le breadcrumb
+    updateBreadcrumb(currentSelection);
 
-    // Récupérer toutes les années/versions pour ce modèle
+    // Récupérer toutes les versions pour cette marque et ce modèle
     const versions = new Set();
     const lines = parseCSV(csvContent);
     
-    // Collecter toutes les versions pour ce modèle
     for (let i = 1; i < lines.length; i++) {
         const columns = lines[i].split(',');
         if (columns[0].trim() === brand && columns[1].trim() === model) {
@@ -521,71 +522,90 @@ function handleModelSelection(brand, type, model) {
         }
     }
 
-    // Créer ou mettre à jour la colonne des versions
-    const existingVersionStep = document.querySelector('.step[data-step="version"]');
-    let versionStep;
-
-    if (!existingVersionStep) {
-        versionStep = document.createElement('div');
-        versionStep.className = 'step active';
-        versionStep.setAttribute('data-step', 'version');
-        document.querySelector('.selection-steps').appendChild(versionStep);
-    } else {
-        versionStep = existingVersionStep;
-    }
-
-    // Mettre à jour le contenu de la colonne des versions
-    versionStep.innerHTML = `
-        <div class="step-title">Version</div>
-        <div class="step-content">
-            ${Array.from(versions).map(version => `
-                <div class="selection-item" data-version="${version}">${version}</div>
-            `).join('')}
+    // Mettre à jour le contenu de la page avec un affichage en boîtes
+    const detailsSection = document.querySelector('.vehicle-details');
+    
+    // S'assurer que la section est visible
+    detailsSection.style.display = 'block';
+    
+    detailsSection.innerHTML = `
+        <button class="back-button">Retour</button>
+        <div class="selection-page">
+            <div class="selected-info">
+                <div class="selected-item">
+                    <div class="selected-label">Marque sélectionnée</div>
+                    <div class="selected-value">
+                        <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
+                             onerror="this.onerror=null; this.src='images/logos/default.png';"
+                             onload="this.style.display='block';">
+                        <span class="brand-name">${brand}</span>
+                    </div>
+                </div>
+                <div class="selected-item">
+                    <div class="selected-label">Modèle sélectionné</div>
+                    <div class="selected-value">
+                        <span class="model-name">${model}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="selection-grid">
+                <h3 class="selection-title">Sélectionnez une version</h3>
+                <div class="selection-items">
+                    ${Array.from(versions).map(version => `
+                        <div class="selection-item" data-version="${version}">${version}</div>
+                    `).join('')}
+                </div>
+            </div>
         </div>
     `;
 
-    // Ajouter les écouteurs pour les versions
-    versionStep.querySelectorAll('.selection-item[data-version]').forEach(item => {
-        item.addEventListener('click', () => {
-            handleVersionSelection(brand, type, model, item.dataset.version);
-        });
+    // Ajouter les écouteurs d'événements pour les versions
+    detailsSection.querySelectorAll('.selection-item[data-version]').forEach(item => {
+        item.addEventListener('click', () => handleVersionSelection(brand, type, model, item.dataset.version));
     });
 
-    // Scroll vers le version step
-    scrollToStepCenter('version');
+    // Ajouter l'écouteur pour le bouton retour
+    detailsSection.querySelector('.back-button').addEventListener('click', () => {
+        // Revenir à la sélection des modèles
+        handleBrandSelection(brand, type);
+    });
+    
+    // Faire défiler la page pour centrer la sélection
+    setTimeout(() => {
+        const selectionGrid = detailsSection.querySelector('.selection-grid');
+        if (selectionGrid) {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+            const offset = selectionGrid.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+            
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
 }
 
 // Modifier handleVersionSelection pour centrer la sélection de motorisation
 function handleVersionSelection(brand, type, model, version) {
-    currentSelection.version = version;
-    
-    // Mettre à jour le style de la version sélectionnée
-    document.querySelectorAll('.selection-item[data-version]').forEach(item => {
-        item.classList.remove('selected');
-        if (item.dataset.version === version) {
-            item.classList.add('selected');
-        }
-    });
+    // Mettre à jour la sélection courante
+    currentSelection = {
+        brand: brand,
+        model: model,
+        version: version,
+        type: type
+    };
 
-    // Utiliser un hash dans l'URL au lieu de modifier le chemin
-    const url = `#reprogrammation/${type}/${brand.toLowerCase().replace(/\s+/g, '-')}/${model.toLowerCase().replace(/\s+/g, '-')}/${version.toLowerCase().replace(/\s+/g, '-')}`;
-    window.history.pushState({ type, brand, model, version }, '', url);
-    updateBreadcrumb({ type, brand, model, version });
+    // Mettre à jour le breadcrumb
+    updateBreadcrumb(currentSelection);
 
-    // Récupérer les motorisations disponibles
+    // Récupérer tous les moteurs pour cette marque, ce modèle et cette version
     const engines = [];
     const lines = parseCSV(csvContent);
     
     for (let i = 1; i < lines.length; i++) {
         const columns = lines[i].split(',');
-        if (columns[0]?.trim() === brand && 
-            columns[1]?.trim() === model && 
-            columns[2]?.trim() === version) {
-            
+        if (columns[0].trim() === brand && columns[1].trim() === model && columns[2].trim() === version) {
             const engine = {
-                brand,
-                model,
-                version,
                 type: columns[3]?.trim() || 'N/A',
                 energy: columns[4]?.trim() || 'N/A',
                 powerOriginal: columns[5]?.trim() || 'N/A',
@@ -609,56 +629,76 @@ function handleVersionSelection(brand, type, model, version) {
         }
     }
 
-    // Créer ou mettre à jour la colonne des motorisations
-    const existingEngineStep = document.querySelector('.step[data-step="engine"]');
-    let engineStep;
-
-    if (!existingEngineStep) {
-        engineStep = document.createElement('div');
-        engineStep.className = 'step active';
-        engineStep.setAttribute('data-step', 'engine');
-        document.querySelector('.selection-steps').appendChild(engineStep);
-    } else {
-        engineStep = existingEngineStep;
-    }
-
-    // Mettre à jour le contenu avec les motorisations trouvées
-    engineStep.innerHTML = `
-        <div class="step-title">Motorisation</div>
-        <div class="step-content">
-            ${engines.map(engine => `
-                <div class="selection-item engine-item" data-engine='${JSON.stringify(engine)}'>
-                        <div class="engine-info">
-                            <div class="engine-type">${engine.type}</div>
-                            <div class="engine-details">
-                                <div class="detail-item">
-                                <span class="detail-label">Puissance:</span>
-                                <span class="detail-value">${engine.powerOriginal.toString().includes('Hp') ? engine.powerOriginal : `${engine.powerOriginal} Hp`}</span>
-                                </div>
-                                <div class="detail-item">
-                                <span class="detail-label">Cylindrée:</span>
-                                    <span class="detail-value">${engine.displacement.toString().includes('L') ? engine.displacement : `${engine.displacement} L`}</span>
-                                </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Energie:</span>
-                                <span class="detail-value">${engine.energy.toString().includes('E') ? engine.energy : `${engine.energy} E`}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Code moteur:</span>
-                                <span class="detail-value ${engine.engineInfo ? 'tooltip' : ''}" 
-                                    ${engine.engineInfo ? `data-tooltip="ECU: ${engine.engineInfo}"` : ''}>
-                                    ${engine.engineCode}
-                                </span>
-                        </div>
-                    </div>
+    // Mettre à jour le contenu de la page avec un affichage en boîtes
+    const detailsSection = document.querySelector('.vehicle-details');
+    
+    // S'assurer que la section est visible
+    detailsSection.style.display = 'block';
+    
+    detailsSection.innerHTML = `
+        <button class="back-button">Retour</button>
+        <div class="selection-page">
+            <div class="selected-info">
+                <div class="selected-item">
+                    <div class="selected-label">Marque sélectionnée</div>
+                    <div class="selected-value">
+                        <img src="${getLogoPath(brand)}" alt="${brand}" class="brand-logo" 
+                             onerror="this.onerror=null; this.src='images/logos/default.png';"
+                             onload="this.style.display='block';">
+                        <span class="brand-name">${brand}</span>
                     </div>
                 </div>
-            `).join('')}
+                <div class="selected-item">
+                    <div class="selected-label">Modèle sélectionné</div>
+                    <div class="selected-value">
+                        <span class="model-name">${model}</span>
+                    </div>
+                </div>
+                <div class="selected-item">
+                    <div class="selected-label">Version sélectionnée</div>
+                    <div class="selected-value">
+                        <span class="version-name">${version}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="selection-grid">
+                <h3 class="selection-title">Sélectionnez une motorisation</h3>
+                <div class="selection-items engine-items">
+                    ${engines.map(engine => `
+                        <div class="selection-item engine-item" data-engine='${JSON.stringify(engine)}'>
+                            <div class="engine-info">
+                                <div class="engine-type">${engine.type}</div>
+                                <div class="engine-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Puissance:</span>
+                                        <span class="detail-value">${engine.powerOriginal.toString().includes('Hp') ? engine.powerOriginal : `${engine.powerOriginal} Hp`}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Cylindrée:</span>
+                                        <span class="detail-value">${engine.displacement.toString().includes('L') ? engine.displacement : `${engine.displacement} L`}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Energie:</span>
+                                        <span class="detail-value">${engine.energy}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Code moteur:</span>
+                                        <span class="detail-value ${engine.engineInfo ? 'tooltip' : ''}" 
+                                            ${engine.engineInfo ? `data-tooltip="ECU: ${engine.engineInfo}"` : ''}>
+                                            ${engine.engineCode}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         </div>
     `;
 
-    // Ajouter les écouteurs pour les motorisations
-    engineStep.querySelectorAll('.selection-item[data-engine]').forEach(item => {
+    // Ajouter les écouteurs d'événements pour les motorisations
+    detailsSection.querySelectorAll('.selection-item[data-engine]').forEach(item => {
         item.addEventListener('click', () => {
             try {
                 const engineData = JSON.parse(item.dataset.engine);
@@ -669,8 +709,25 @@ function handleVersionSelection(brand, type, model, version) {
         });
     });
 
-    // Scroll vers le engine step
-    scrollToStepCenter('engine');
+    // Ajouter l'écouteur pour le bouton retour
+    detailsSection.querySelector('.back-button').addEventListener('click', () => {
+        // Revenir à la sélection des versions
+        handleModelSelection(brand, type, model);
+    });
+    
+    // Faire défiler la page pour centrer la sélection
+    setTimeout(() => {
+        const selectionGrid = detailsSection.querySelector('.selection-grid');
+        if (selectionGrid) {
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+            const offset = selectionGrid.getBoundingClientRect().top + window.scrollY - headerHeight - 20;
+            
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
 }
 
 function handleEngineSelection(brand, type, model, version, engineData) {
