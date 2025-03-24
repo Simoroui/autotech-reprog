@@ -4353,3 +4353,199 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
 .slideshow-nav.next {
     right: 10px;
 }
+
+/* Nouveau style pour les pages de sélection */
+.selection-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 15px;
+    gap: 20px;
+}
+
+.selected-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.selected-item {
+    flex: 1;
+    min-width: 200px;
+    background: linear-gradient(145deg, #1a1a1a, #222);
+    border-radius: 10px;
+    border: 1px solid rgba(227, 6, 19, 0.3);
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.selected-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.selected-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.selected-value .brand-logo {
+    width: 80px;
+    height: auto;
+    object-fit: contain;
+}
+
+.selected-value .brand-name,
+.selected-value .model-name,
+.selected-value .version-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.selection-grid {
+    background: linear-gradient(145deg, #1a1a1a, #222);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.selection-title {
+    font-size: 18px;
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(227, 6, 19, 0.3);
+}
+
+.selection-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.selection-items .selection-item {
+    background: linear-gradient(145deg, #222, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.selection-items .selection-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(227, 6, 19, 0.2);
+}
+
+/* Styles spécifiques pour les items de moteur */
+.engine-items {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.engine-items .selection-item {
+    padding: 20px;
+    display: block;
+    text-align: left;
+    min-height: 120px;
+}
+
+.engine-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.engine-type {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.engine-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.detail-item {
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    color: white;
+    font-weight: bold;
+}
+
+/* Bouton retour */
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(145deg, rgba(227, 6, 19, 0.8), rgba(200, 0, 0, 0.8));
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.back-button:before {
+    content: '←';
+    margin-right: 8px;
+}
+
+.back-button:hover {
+    background: linear-gradient(145deg, rgba(227, 6, 19, 1), rgba(200, 0, 0, 1));
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(227, 6, 19, 0.3);
+}
+
+/* Media queries pour les écrans mobiles */
+@media (max-width: 768px) {
+    .selection-items {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+    
+    .engine-items {
+        grid-template-columns: 1fr;
+    }
+    
+    .selected-info {
+        flex-direction: column;
+    }
+    
+    .selection-page {
+        padding: 10px;
+    }
+}
