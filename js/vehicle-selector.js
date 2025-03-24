@@ -345,7 +345,7 @@ function handleBrandSelection(brand, type) {
             models.add(columns[1].trim());
         }
     }
-    
+
     // Créer ou utiliser la section existante
     let detailsSection = document.querySelector('.vehicle-details');
     if (!detailsSection) {
@@ -353,10 +353,10 @@ function handleBrandSelection(brand, type) {
         detailsSection.className = 'vehicle-details';
         document.querySelector('.section-container').appendChild(detailsSection);
     }
-    
+
     // S'assurer que la section est visible
     detailsSection.style.display = 'block';
-    
+
     // Mettre à jour le contenu avec un affichage en boîtes
     detailsSection.innerHTML = `
         <button class="back-button">Retour</button>
@@ -551,9 +551,9 @@ function handleModelSelection(brand, type, model) {
             <div class="selection-grid">
                 <h3 class="selection-title">Sélectionnez une version</h3>
                 <div class="selection-items">
-                    ${Array.from(versions).map(version => `
-                        <div class="selection-item" data-version="${version}">${version}</div>
-                    `).join('')}
+            ${Array.from(versions).map(version => `
+                <div class="selection-item" data-version="${version}">${version}</div>
+            `).join('')}
                 </div>
             </div>
         </div>
@@ -664,34 +664,34 @@ function handleVersionSelection(brand, type, model, version) {
             <div class="selection-grid">
                 <h3 class="selection-title">Sélectionnez une motorisation</h3>
                 <div class="selection-items engine-items">
-                    ${engines.map(engine => `
-                        <div class="selection-item engine-item" data-engine='${JSON.stringify(engine)}'>
-                            <div class="engine-info">
-                                <div class="engine-type">${engine.type}</div>
-                                <div class="engine-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Puissance:</span>
+            ${engines.map(engine => `
+                <div class="selection-item engine-item" data-engine='${JSON.stringify(engine)}'>
+                        <div class="engine-info">
+                            <div class="engine-type">${engine.type}</div>
+                            <div class="engine-details">
+                                <div class="detail-item">
+                                <span class="detail-label">Puissance:</span>
                                         <span class="detail-value">${engine.powerOriginal.toString().includes('Hp') ? engine.powerOriginal : `${engine.powerOriginal} Hp`}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Cylindrée:</span>
-                                        <span class="detail-value">${engine.displacement.toString().includes('L') ? engine.displacement : `${engine.displacement} L`}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Energie:</span>
-                                        <span class="detail-value">${engine.energy}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Code moteur:</span>
-                                        <span class="detail-value ${engine.engineInfo ? 'tooltip' : ''}" 
-                                            ${engine.engineInfo ? `data-tooltip="ECU: ${engine.engineInfo}"` : ''}>
-                                            ${engine.engineCode}
-                                        </span>
-                                    </div>
                                 </div>
+                                <div class="detail-item">
+                                <span class="detail-label">Cylindrée:</span>
+                                        <span class="detail-value">${engine.displacement}</span>
+                                </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Energie:</span>
+                                <span class="detail-value">${engine.energy}</span>
                             </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Code moteur:</span>
+                                <span class="detail-value ${engine.engineInfo ? 'tooltip' : ''}" 
+                                    ${engine.engineInfo ? `data-tooltip="ECU: ${engine.engineInfo}"` : ''}>
+                                    ${engine.engineCode}
+                                </span>
                         </div>
-                    `).join('')}
+                    </div>
+                    </div>
+                </div>
+            `).join('')}
                 </div>
             </div>
         </div>
