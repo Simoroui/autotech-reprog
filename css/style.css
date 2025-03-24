@@ -77,9 +77,9 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 800px;
-    height: 300px;
+    width: 61%;
+    max-width: 544px;
+    height: 220px;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     z-index: -1;
@@ -143,29 +143,29 @@ body {
 }
 
 .text-red {
-    color: #ffffff; /* Changement de la couleur en blanc */
-    font-size: 2rem;
+    color: #ffffff;
+    font-size: 1.36rem;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
     display: block;
     margin-top: 1rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .boost-button {
     display: inline-block;
-    padding: 1rem 2rem;
+    padding: 0.65rem 1.3rem;
     background-color: #E30613;
     color: white;
     text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
     font-weight: 500;
+    border-radius: 30px;
     transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    margin-top: 1.5rem; /* Ajout d'un espacement en haut */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 0;
+    position: relative;
+    z-index: 3;
 }
 
 .boost-button:hover {
@@ -451,7 +451,7 @@ body {
     .hero-content::before {
         width: 95%;
         height: 280px;
-        animation: laser-border 2.5s infinite; /* Animation légèrement plus rapide sur mobile */
+        animation: laser-border 2.5s infinite;
     }
     
     .hero {
@@ -459,11 +459,16 @@ body {
     }
     
     .hero-logo {
-        max-width: 200px;
+        height: 43px;
+        width: auto;
+        max-width: 100%;
+        display: block;
+        margin: 0 auto 15px;
+        object-fit: contain;
     }
     
     .text-red {
-        font-size: 1.2rem;
+        font-size: 1.02rem;
     }
     
     .boost-button {
@@ -513,7 +518,7 @@ body {
     .hero-content::before {
         width: 95%;
         height: 250px;
-        border-width: 1px; /* Bordure plus fine sur petit mobile */
+        border-width: 1px;
     }
     
     .hero-content {
@@ -548,7 +553,7 @@ body {
 .vehicle-details {
     position: relative;
     width: 100%;
-    padding-top: 4rem; /* Espace pour le bouton */
+    padding-top: 4rem;
     display: none;
     background: linear-gradient(145deg, #1a1a1a, #000000);
     border-radius: 16px;
@@ -688,7 +693,7 @@ body {
 }
 
 .step-content {
-    max-height: 500px; /* Plus de hauteur pour une meilleure visibilité */
+    max-height: 500px;
     overflow-y: auto;
 }
 
@@ -702,7 +707,7 @@ body {
 }
 
 .step:first-child .brand-logo {
-    width: 120px; /* Logo plus grand dans la sélection */
+    width: 120px;
     height: auto;
     object-fit: contain;
 }
@@ -946,8 +951,8 @@ body {
     text-align: center;
     background: rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 0;  /* Assure qu'il n'y a pas de margin en bas */
-    padding-bottom: 0; /* Assure qu'il n'y a pas de padding en bas */
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .results-title {
@@ -1346,7 +1351,7 @@ td:last-child::before {
 
 /* Style pour le logo dans le hero */
 .hero-logo {
-    height: 100px;
+    height: 68px;
     width: auto;
     margin: 0;
     object-fit: contain;
@@ -1355,7 +1360,7 @@ td:last-child::before {
 /* Ajuster la taille sur mobile */
 @media screen and (max-width: 768px) {
     .hero-logo {
-        height: 64px;
+        height: 43px;
         width: auto;
         max-width: 100%;
         display: block;
@@ -1382,7 +1387,7 @@ td:last-child::before {
     }
     
     .text-red {
-        font-size: 1.5rem;
+        font-size: 1.02rem;
     }
 }
 
@@ -1817,7 +1822,7 @@ html {
 }
 
 .form-group textarea {
-    min-height: 235px; /* Hauteur ajustée pour un alignement parfait des boutons */
+    min-height: 235px;
     resize: vertical;
 }
 
@@ -2329,13 +2334,13 @@ html {
 
 .option-box {
     position: relative;
-    height: 126px; /* Réduction de 30% de la hauteur originale de 180px */
+    height: 126px;
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.4s ease;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     background: linear-gradient(145deg, #222, #111);
-    border: 1px solid rgba(var(--primary-color-rgb), 0.3); /* Réduction de l'épaisseur du cadre à 1px */
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3);
 }
 
 .option-box::before, 
@@ -2350,13 +2355,13 @@ html {
 }
 
 .options-reprog .option-box {
-    border: 8px solid #ff0000 !important; /* Cadre rouge très épais */
-    box-shadow: 0 0 10px #ff0000 !important, 0 0 20px #ff0000 !important, 0 0 30px #ff0000 !important; /* Triple ombre pour effet néon */
+    border: 8px solid #ff0000 !important;
+    box-shadow: 0 0 10px #ff0000 !important, 0 0 20px #ff0000 !important, 0 0 30px #ff0000 !important;
 }
 
 .options-reprog .option-box:hover {
-    border: 8px solid #ff3333 !important; /* Rouge légèrement différent */
-    box-shadow: 0 0 15px #ff0000 !important, 0 0 30px #ff0000 !important, 0 0 45px #ff0000 !important; /* Ombre plus intense au survol */
+    border: 8px solid #ff3333 !important;
+    box-shadow: 0 0 15px #ff0000 !important, 0 0 30px #ff0000 !important, 0 0 45px #ff0000 !important;
 }
 
 .option-content {
@@ -3173,9 +3178,9 @@ html {
 /* Ajouter le style pour le symbole lambda */
 .lambda-symbol {
     position: absolute;
-    right: 5px; /* Position ajustée */
+    right: 5px;
     top: 50%;
-    transform: translateY(-50%); /* Plus de rotation nécessaire */
+    transform: translateY(-50%);
     color: var(--primary-color);
     font-size: 24px;
     font-family: "Times New Roman", serif;
@@ -3659,20 +3664,20 @@ html {
     /* Items de sélection */
     .selection-item {
         width: 100%;
-        min-height: 70px;     /* Encore augmenté */
-        padding: 18px;        /* Encore augmenté */
-        margin: 10px 0;       /* Encore augmenté */
+        min-height: 70px;    
+        padding: 18px;       
+        margin: 10px 0;      
     display: flex;
     align-items: center;
         background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;  /* Augmenté */
+        border-radius: 10px;  
     }
 
     /* Texte dans les items */
     .selection-item span {
-        font-size: 17px;      /* Encore augmenté */
-        line-height: 1.5;     /* Augmenté */
-        padding: 0 15px;      /* Encore augmenté */
+        font-size: 17px;     
+        line-height: 1.5;    
+        padding: 0 15px;     
         width: 100%;
         text-align: left;
     }
@@ -3682,32 +3687,32 @@ html {
         display: flex;
         flex-direction: column;
         width: 100%;
-        gap: 10px;           /* Encore augmenté */
-        padding: 8px;        /* Augmenté */
+        gap: 10px;           
+        padding: 8px;       
     }
 
     .motorisation-info span {
         width: 100%;
-        padding: 15px;       /* Encore augmenté */
+        padding: 15px;      
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 8px;  /* Encore augmenté */
-        font-size: 17px;     /* Encore augmenté */
-        line-height: 1.5;    /* Augmenté */
+        border-radius: 8px;  
+        font-size: 17px;    
+        line-height: 1.5;   
     }
 
     /* Titres des étapes */
     .step-title {
-        font-size: 20px;     /* Encore augmenté */
-        margin-bottom: 18px; /* Encore augmenté */
-        padding: 0 8px;      /* Augmenté */
-        font-weight: 500;    /* Ajouté */
+        font-size: 20px;     
+        margin-bottom: 18px; 
+        padding: 0 8px;      
+        font-weight: 500;    
     }
 }
 
 /* Supprimer les points rouges en mode mobile */
 @media screen and (max-width: 768px) {
     .step-title::before {
-        display: none !important; /* Supprime le point rouge */
+        display: none !important;
     }
 
     /* Ajuster le padding pour compenser la suppression du point */
@@ -4091,7 +4096,7 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     position: relative;
     overflow: hidden;
     border-radius: 12px;
-    height: 450px; /* Hauteur conservée */
+    height: 450px;
     box-shadow: 0 8px 25px rgba(227, 6, 19, 0.3), 0 0 5px rgba(227, 6, 19, 0.2);
     border: 2px solid rgba(227, 6, 19, 0.5);
     animation: diaporama-glow 4s infinite alternate;
@@ -4247,18 +4252,18 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
 
 /* Cadre rouge pour les options de reprogrammation sur la page options-reprog.html */
 .options-reprog .option-box {
-    border: 8px solid #ff0000 !important; /* Cadre rouge très épais */
-    box-shadow: 0 0 10px #ff0000 !important, 0 0 20px #ff0000 !important, 0 0 30px #ff0000 !important; /* Triple ombre pour effet néon */
+    border: 8px solid #ff0000 !important;
+    box-shadow: 0 0 10px #ff0000 !important, 0 0 20px #ff0000 !important, 0 0 30px #ff0000 !important;
 }
 
 .options-reprog .option-box:hover {
-    border: 8px solid #ff3333 !important; /* Rouge légèrement différent */
-    box-shadow: 0 0 15px #ff0000 !important, 0 0 30px #ff0000 !important, 0 0 45px #ff0000 !important; /* Ombre plus intense au survol */
+    border: 8px solid #ff3333 !important;
+    box-shadow: 0 0 15px #ff0000 !important, 0 0 30px #ff0000 !important, 0 0 45px #ff0000 !important;
 }
 
 /* Augmentation de la hauteur du champ de message pour aligner les boutons */
 .form-group textarea {
-    min-height: 238px; /* Hauteur ajustée pour un alignement parfait des boutons */
+    min-height: 238px;
     resize: vertical;
 }
 
@@ -4304,8 +4309,8 @@ input.error ~ .form-border, textarea.error ~ .form-border, select.error ~ .form-
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Garde le ratio de l'image sans la couper */
-    object-position: center center; /* Centrage horizontal et vertical */
+    object-fit: contain;
+    object-position: center center;
     opacity: 0;
     transition: opacity 1s ease-in-out;
     border-radius: 8px;
