@@ -406,14 +406,17 @@
                 margin-bottom: 10px !important;
             }
             
+            /* Repositionner le bouton en dehors du cadre mais plus haut */
             .boost-button {
-                position: absolute !important;
-                bottom: 25px !important;
+                position: fixed !important;
+                bottom: 80px !important; /* Remonté par rapport au bas de l'écran */
                 left: 50% !important;
                 transform: translateX(-50%) !important;
-                z-index: 2 !important;
-                padding: 0.4rem 1rem !important;
-                font-size: 0.8rem !important;
+                z-index: 3 !important;
+                padding: 0.4rem 1.5rem !important;
+                font-size: 0.9rem !important;
+                border-radius: 30px !important;
+                box-shadow: 0 4px 12px rgba(227, 6, 19, 0.5) !important;
             }
         }
     </style>
