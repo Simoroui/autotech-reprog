@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTOTECH - Reprogrammation & Optimisation Moteur</title>
-    <meta name="description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances pour voitures, motos, camions et véhicules agricoles.">
+    <title>AUTOTECH - Reprogrammation & Optimisation Moteur sur Banc de puissance</title>
+    <meta name="description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances sur banc de puissance pour voitures, motos, camions et véhicules agricoles.">
     
     <!-- Balises Open Graph pour Facebook, LinkedIn, etc. -->
-    <meta property="og:title" content="AUTOTECH - Reprogrammation & Optimisation Moteur">
-    <meta property="og:description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances pour voitures, motos, camions et véhicules agricoles.">
+    <meta property="og:title" content="AUTOTECH - Reprogrammation & Optimisation Moteur sur Banc de puissance">
+    <meta property="og:description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances sur banc de puissance pour voitures, motos, camions et véhicules agricoles.">
     <meta property="og:image" content="https://simoroui.github.io/autotech-reprog/images/logo-min.png">
     <meta property="og:url" content="https://simoroui.github.io/autotech-reprog/">
     <meta property="og:type" content="website">
@@ -17,8 +17,8 @@
     
     <!-- Balises Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="AUTOTECH - Reprogrammation & Optimisation Moteur">
-    <meta name="twitter:description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances pour voitures, motos, camions et véhicules agricoles.">
+    <meta name="twitter:title" content="AUTOTECH - Reprogrammation & Optimisation Moteur sur Banc de puissance">
+    <meta name="twitter:description" content="AUTOTECH - Spécialiste en reprogrammation moteur et optimisation de performances sur banc de puissance pour voitures, motos, camions et véhicules agricoles.">
     <meta name="twitter:image" content="https://simoroui.github.io/autotech-reprog/images/logo-min.png">
     
     <!-- Préchargement des ressources critiques -->
@@ -379,7 +379,7 @@
                 position: absolute !important;
                 width: 90% !important;
                 max-width: 320px !important;
-                height: 150px !important;
+                height: 170px !important;
             }
             
             .hero-content h1 {
@@ -391,7 +391,7 @@
                 flex-direction: column !important;
                 align-items: center !important;
                 justify-content: center !important;
-                width: 80% !important;
+                width: 85% !important;
                 z-index: 2 !important;
             }
             
@@ -401,15 +401,16 @@
             }
             
             .text-red {
-                font-size: 0.9rem !important;
+                font-size: 0.85rem !important;
                 text-align: center !important;
                 margin-bottom: 10px !important;
+                line-height: 1.3 !important;
             }
             
             /* Repositionner le bouton en dehors du cadre mais plus haut */
             .boost-button {
                 position: fixed !important;
-                bottom: 80px !important; /* Remonté par rapport au bas de l'écran */
+                bottom: 80px !important;
                 left: 50% !important;
                 transform: translateX(-50%) !important;
                 z-index: 3 !important;
@@ -417,6 +418,21 @@
                 font-size: 0.9rem !important;
                 border-radius: 30px !important;
                 box-shadow: 0 4px 12px rgba(227, 6, 19, 0.5) !important;
+            }
+        }
+
+        /* Style pour réduire l'espace entre les deux lignes de texte */
+        .hero-content h1 .text-red:first-of-type {
+            margin-bottom: 2px !important;
+        }
+        
+        .hero-content h1 .text-red:last-of-type {
+            margin-top: 0 !important;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .hero-content h1 .text-red:first-of-type {
+                margin-bottom: 0 !important;
             }
         }
     </style>
@@ -696,6 +712,7 @@
                 <h1>
                             <img src="images/Logo-H.png" alt="AUTOTECH" class="hero-logo">
                             <span class="text-red">Reprogrammation & Optimisation Moteur</span>
+                            <span class="text-red">sur Banc de puissance</span>
                 </h1>
                 <a href="#boost" class="boost-button">Boostez votre véhicule</a>
             </div>
